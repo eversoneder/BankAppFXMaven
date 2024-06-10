@@ -60,6 +60,10 @@ public class SimpleDbConnection {
 		}
 	}
 	
+	protected Connection getConnection() {
+		return this.connection;
+	}
+	
 	public void getUser() {
 		
 		try {

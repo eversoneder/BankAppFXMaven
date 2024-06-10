@@ -1,0 +1,71 @@
+User:
+UserID (Primary Key)
+Email (Unique)
+Password
+FirstName
+LastName
+AccountNumber (Unique)
+CreatedAt
+UpdatedAt
+
+Account:
+AccountID (Primary Key)
+UserID (Foreign Key)
+Balance
+CreatedAt
+UpdatedAt
+
+Transaction:
+TransactionID (Primary Key)
+AccountID (Foreign Key)
+Type (Deposit, Withdrawal, Transfer)
+Amount
+Timestamp
+RelatedAccountID (For transfers)
+
+PasswordRecovery:
+RecoveryID (Primary Key)
+UserID (Foreign Key)
+Token
+ExpiresAt
+CreatedAt
+
+Sql Schema:
+CREATE TABLE User (
+    UserID INT AUTO_INCREMENT PRIMARY KEY,
+    Email VARCHAR(255) UNIQUE NOT NULL,
+    Password VARCHAR(255) NOT NULL,
+    FirstName VARCHAR(100),
+    LastName VARCHAR(100),
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Account (
+    AccountID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID INT,
+    AccountNumber VARCHAR(100) UNIQUE NOT NULL,
+    Balance DECIMAL(10, 2) NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (UserID) REFERENCES User(UserID)
+);
+
+CREATE TABLE Transaction (
+    TransactionID INT AUTO_INCREMENT PRIMARY KEY,
+    AccountID INT,
+    Type ENUM('Deposit', 'Withdrawal', 'Transfer') NOT NULL,
+    Amount DECIMAL(10, 2) NOT NULL,
+    Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    RelatedAccountID INT,
+    FOREIGN KEY (AccountID) REFERENCES Account(AccountID)
+);
+
+CREATE TABLE PasswordRecovery (
+    RecoveryID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID INT,
+    Token VARCHAR(255) NOT NULL,
+    ExpiresAt TIMESTAMP NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UserID) REFERENCES User(UserID)
+);
