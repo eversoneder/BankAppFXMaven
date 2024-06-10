@@ -1,0 +1,16 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+**/target/
+**/.classpath
+**/.project
+**/.settings
+*.log
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.db
+*.sql
+.DS_Store
+config.properties
