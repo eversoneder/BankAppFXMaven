@@ -60,7 +60,7 @@ public class MainScene extends Application {
 		backgroundImageView.setPickOnBounds(true);
 
 //Set the bg image in the ImageView
-		Image backgroundImage = new Image(getClass().getResource("../img/background.png").toExternalForm());
+		Image backgroundImage = new Image(getClass().getResource("/img/background.png").toExternalForm());
 		backgroundImageView.setImage(backgroundImage);
 
 //Add the ImageView to the AnchorPane
@@ -89,7 +89,7 @@ public class MainScene extends Application {
 		logoView.setPreserveRatio(true);
 
 // Set the image for the ImageView
-		Image logoImage = new Image(getClass().getResourceAsStream("../img/EconoBank-Logo.png"));
+		Image logoImage = new Image(getClass().getResourceAsStream("/img/EconoBank-Logo.png"));
 		logoView.setImage(logoImage);
 
 // Create the Button
@@ -182,7 +182,7 @@ public class MainScene extends Application {
 		primaryStage.setScene(scene);
 
 //Logo icon for taskbar icon area
-		Image logoIcon = new Image(getClass().getResourceAsStream("../img/EconoBank-Icon-Circle.png"));
+		Image logoIcon = new Image(getClass().getResourceAsStream("/img/EconoBank-Icon-Circle.png"));
 		primaryStage.getIcons().add(logoIcon);
 
 		primaryStage.setResizable(false);

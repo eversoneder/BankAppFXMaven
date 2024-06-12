@@ -68,7 +68,7 @@ public class TransactionScene extends Application {
 		backgroundImageView.setPreserveRatio(true);
 
 		// Set the image for the ImageView
-		Image backgroundImage = new Image(getClass().getResource("../img/background.png").toExternalForm());
+		Image backgroundImage = new Image(getClass().getResource("/img/background.png").toExternalForm());
 		backgroundImageView.setImage(backgroundImage);
 
 		// Add the ImageView to the AnchorPane
@@ -84,7 +84,7 @@ public class TransactionScene extends Application {
 		logoView.setPreserveRatio(true);
 
 		// Set the image for the ImageView
-		Image logoImage = new Image(getClass().getResourceAsStream("../img/EconoBank-Logo.png"));
+		Image logoImage = new Image(getClass().getResourceAsStream("/img/EconoBank-Logo.png"));
 		logoView.setImage(logoImage);
 
 		anchorPane.getChildren().add(logoView);
@@ -127,7 +127,7 @@ public class TransactionScene extends Application {
 		withdrawBtnView.setPickOnBounds(true);
 		withdrawBtnView.setPreserveRatio(true);
 
-		Image withdrawImage = new Image(getClass().getResourceAsStream("../img/btnsPNG/withdraw.png"));// this imgs
+		Image withdrawImage = new Image(getClass().getResourceAsStream("/img/btnsPNG/withdraw.png"));// this imgs
 																										// lives on BIN
 																										// folder!
 		withdrawBtnView.setImage(withdrawImage);
@@ -156,7 +156,7 @@ public class TransactionScene extends Application {
 		depositBtnView.setPickOnBounds(true);
 		depositBtnView.setPreserveRatio(true);
 
-		Image depositImage = new Image(getClass().getResourceAsStream("../img/btnsPNG/deposit.png"));// this imgs lives
+		Image depositImage = new Image(getClass().getResourceAsStream("/img/btnsPNG/deposit.png"));// this imgs lives
 																										// on BIN
 																										// folder!
 		depositBtnView.setImage(depositImage);
@@ -185,7 +185,7 @@ public class TransactionScene extends Application {
 		transferBtnView.setPickOnBounds(true);
 		transferBtnView.setPreserveRatio(true);
 
-		Image transferImage = new Image(getClass().getResourceAsStream("../img/btnsPNG/transfer.png"));// this imgs
+		Image transferImage = new Image(getClass().getResourceAsStream("/img/btnsPNG/transfer.png"));// this imgs
 																										// lives
 																										// on BIN
 																										// folder!
@@ -215,7 +215,7 @@ public class TransactionScene extends Application {
 		balanceBtnView.setPickOnBounds(true);
 		balanceBtnView.setPreserveRatio(true);
 
-		Image balanceImage = new Image(getClass().getResourceAsStream("../img/btnsPNG/balance.png"));// this imgs lives
+		Image balanceImage = new Image(getClass().getResourceAsStream("/img/btnsPNG/balance.png"));// this imgs lives
 																										// on BIN
 																										// folder!
 		balanceBtnView.setImage(balanceImage);
@@ -244,7 +244,7 @@ public class TransactionScene extends Application {
 		statementBtnView.setPickOnBounds(true);
 		statementBtnView.setPreserveRatio(true);
 
-		Image statementImage = new Image(getClass().getResourceAsStream("../img/btnsPNG/statement.png"));// this imgs
+		Image statementImage = new Image(getClass().getResourceAsStream("/img/btnsPNG/statement.png"));// this imgs
 																											// lives
 																											// on BIN
 																											// folder!
@@ -274,7 +274,7 @@ public class TransactionScene extends Application {
 		logoutBtnView.setPickOnBounds(true);
 		logoutBtnView.setPreserveRatio(true);
 
-		Image logoutImage = new Image(getClass().getResourceAsStream("../img/btnsPNG/logout.png"));// this imgs lives
+		Image logoutImage = new Image(getClass().getResourceAsStream("/img/btnsPNG/logout.png"));// this imgs lives
 																									// on BIN
 																									// folder!
 		logoutBtnView.setImage(logoutImage);
@@ -316,7 +316,7 @@ public class TransactionScene extends Application {
 		accInfoBtnView.setPickOnBounds(true);
 		accInfoBtnView.setPreserveRatio(true);
 
-		Image accInfoImage = new Image(getClass().getResourceAsStream("../img/btnsPNG/accinfo.png"));// this imgs lives
+		Image accInfoImage = new Image(getClass().getResourceAsStream("/img/btnsPNG/accinfo.png"));// this imgs lives
 																										// on BIN
 																										// folder!
 		accInfoBtnView.setImage(accInfoImage);

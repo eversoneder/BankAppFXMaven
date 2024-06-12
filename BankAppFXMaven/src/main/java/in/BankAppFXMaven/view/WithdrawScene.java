@@ -58,7 +58,7 @@ public class WithdrawScene extends Application {
 		backgroundImageView.setPreserveRatio(true);
 
 		// Set the image for the ImageView
-		Image backgroundImage = new Image(getClass().getResource("../img/background.png").toExternalForm());
+		Image backgroundImage = new Image(getClass().getResource("/img/background.png").toExternalForm());
 		backgroundImageView.setImage(backgroundImage);
 
 		// Add the ImageView to the AnchorPane
@@ -72,7 +72,7 @@ public class WithdrawScene extends Application {
 		backArrowView.setPreserveRatio(true);
 
 		// Load the image and setImage on the ImageArrowView
-		Image BackArrowImage = new Image(getClass().getResourceAsStream("../img/Back-Arrow.png"));
+		Image BackArrowImage = new Image(getClass().getResourceAsStream("/img/Back-Arrow.png"));
 		backArrowView.setImage(BackArrowImage);
 
 		Button backButton = new Button();
@@ -100,7 +100,7 @@ public class WithdrawScene extends Application {
 		logoView.setPreserveRatio(true);
 
 		// Set the image for the ImageView
-		Image logoImage = new Image(getClass().getResourceAsStream("../img/EconoBank-Logo.png"));
+		Image logoImage = new Image(getClass().getResourceAsStream("/img/EconoBank-Logo.png"));
 		logoView.setImage(logoImage);
 
 		anchorPane.getChildren().add(logoView);
@@ -145,7 +145,7 @@ public class WithdrawScene extends Application {
 
 		// Set the image for the ImageView
 		Image withdrawIconImage = new Image(
-				getClass().getResource("../img/withdraw-icon-grey-lg.png").toExternalForm());
+				getClass().getResource("/img/withdraw-icon-grey-lg.png").toExternalForm());
 		withdrawIconImageView.setImage(withdrawIconImage);
 
 		// Add the ImageView to the AnchorPane

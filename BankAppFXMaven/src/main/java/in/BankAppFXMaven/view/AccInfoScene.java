@@ -75,7 +75,7 @@ public class AccInfoScene extends Application {
 		backgroundImageView.setPreserveRatio(true);
 
 		// Set the image for the ImageView
-		Image backgroundImage = new Image(getClass().getResource("../img/background.png").toExternalForm());
+		Image backgroundImage = new Image(getClass().getResource("/img/background.png").toExternalForm());
 		backgroundImageView.setImage(backgroundImage);
 
 		// Add the ImageView to the AnchorPane
@@ -89,7 +89,7 @@ public class AccInfoScene extends Application {
 		backArrowView.setPreserveRatio(true);
 
 		// Load the image and setImage on the ImageArrowView
-		Image BackArrowImage = new Image(getClass().getResourceAsStream("../img/Back-Arrow.png"));
+		Image BackArrowImage = new Image(getClass().getResourceAsStream("/img/Back-Arrow.png"));
 		backArrowView.setImage(BackArrowImage);
 
 		Button backButton = new Button();
@@ -117,7 +117,7 @@ public class AccInfoScene extends Application {
 		logoView.setPreserveRatio(true);
 
 		// Set the image for the ImageView
-		Image logoImage = new Image(getClass().getResourceAsStream("../img/EconoBank-Logo.png"));
+		Image logoImage = new Image(getClass().getResourceAsStream("/img/EconoBank-Logo.png"));
 		logoView.setImage(logoImage);
 
 		anchorPane.getChildren().add(logoView);
@@ -217,7 +217,7 @@ public class AccInfoScene extends Application {
 		nameEditView.setPreserveRatio(true);
 
 		// Load the image and setImage on the ImageArrowView
-		Image nameEditImage = new Image(getClass().getResourceAsStream("../img/edit.png"));
+		Image nameEditImage = new Image(getClass().getResourceAsStream("/img/edit.png"));
 		nameEditView.setImage(nameEditImage);
 
 		Button nameEditButton = new Button();
@@ -283,7 +283,7 @@ public class AccInfoScene extends Application {
 		surnameEditView.setPreserveRatio(true);
 
 		// Load the image and setImage on the ImageArrowView
-		Image surnameEditImage = new Image(getClass().getResourceAsStream("../img/edit.png"));
+		Image surnameEditImage = new Image(getClass().getResourceAsStream("/img/edit.png"));
 		surnameEditView.setImage(surnameEditImage);
 
 		Button surnameEditButton = new Button();
@@ -350,7 +350,7 @@ public class AccInfoScene extends Application {
 		passwordEditView.setPreserveRatio(true);
 
 		// Load the image and setImage on the ImageArrowView
-		Image passwordEditImage = new Image(getClass().getResourceAsStream("../img/edit.png"));
+		Image passwordEditImage = new Image(getClass().getResourceAsStream("/img/edit.png"));
 		passwordEditView.setImage(passwordEditImage);
 
 		Button passwordEditButton = new Button();

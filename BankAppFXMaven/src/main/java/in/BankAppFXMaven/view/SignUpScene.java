@@ -63,7 +63,7 @@ public class SignUpScene extends Application {
 		backgroundImageView.setFitWidth(500.0);
 		backgroundImageView.setPickOnBounds(true);
 
-		Image backgroundImage = new Image(getClass().getResource("../img/background.png").toExternalForm());
+		Image backgroundImage = new Image(getClass().getResource("/img/background.png").toExternalForm());
 		backgroundImageView.setImage(backgroundImage);
 
 //Add the ImageView directly to the AnchorPane1
@@ -78,7 +78,7 @@ public class SignUpScene extends Application {
 		backArrowView.setPreserveRatio(true);
 
 		// Load the image and setImage on the ImageArrowView
-		Image BackArrowImage = new Image(getClass().getResourceAsStream("../img/Back-Arrow.png"));
+		Image BackArrowImage = new Image(getClass().getResourceAsStream("/img/Back-Arrow.png"));
 		backArrowView.setImage(BackArrowImage);
 
 		Button backButton = new Button();
@@ -114,7 +114,7 @@ public class SignUpScene extends Application {
 		logoView.setPreserveRatio(true);
 
 		// Set the image for the ImageView
-		Image logoImage = new Image(getClass().getResourceAsStream("../img/EconoBank-Logo.png"));
+		Image logoImage = new Image(getClass().getResourceAsStream("/img/EconoBank-Logo.png"));
 		logoView.setImage(logoImage);
 
 		anchorPane.getChildren().add(logoView);
