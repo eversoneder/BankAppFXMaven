@@ -11,60 +11,94 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DbUserSection {
-	
-	private SimpleDbConnection dbService;
+
+	private DatabaseDAO db;
 	private static DbUserSection dbUserSection;
-	
-    private DbUserSection() {
-    }
-    
-    public static DbUserSection getInstance() {
-    	if(dbUserSection == null) {
-    		dbUserSection = new DbUserSection();
-    	}
-    	return dbUserSection;
-    }
-    
-    public List<User> getUsers() {
-        List<User> users = new ArrayList<>();
-        String query = "SELECT * FROM user";
 
-        try (Statement st = dbService.getConnection().createStatement();
-             ResultSet rs = st.executeQuery(query)) {
+	private DbUserSection() {
+	}
 
-            while (rs.next()) {
-                User newUser = new User();
+	public static DbUserSection getInstance() {
+		if (dbUserSection == null) {
+			dbUserSection = new DbUserSection();
+		}
+		return dbUserSection;
+	}
+
+	/**
+	 * @param rs executed ResultSet
+	 * @return ArrayList of User
+	 */
+	public ArrayList<User> getUsers(ResultSet rs) {
+
+		ArrayList<User> userList = new ArrayList<User>();
+
+		try {
+			do {
+				if (!rs.wasNull()) {
+					User newUser = new User();
+					newUser.setId(rs.getInt("user_id"));
+					newUser.setName(rs.getString("name"));
+					newUser.setSurname(rs.getString("surname"));
+					newUser.setEmail(rs.getString("email"));
+					userList.add(newUser);
+
+					System.out.println("User ID: " + newUser.getId());
+					System.out.println("Name: " + newUser.getName());
+					System.out.println("Surname: " + newUser.getSurname());
+					System.out.println("Email: " + newUser.getEmail());
+					System.out.println(); // Adds an empty line for better readability
+				}
+			} while (rs.next());
+
+		} catch (SQLException sqle) {
+			DatabaseDAO.exceptionMessages(sqle);
+			sqle.printStackTrace();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+
+		return userList;
+	}
+
+	/**
+	 * @param rs executed ResultSet
+	 * @return User
+	 */
+	public User getUser(ResultSet rs) {
+
+		User newUser = new User();
+
+		try {
+			if (!rs.wasNull()) {
 				newUser.setId(rs.getInt("user_id"));
 				newUser.setName(rs.getString("name"));
 				newUser.setSurname(rs.getString("surname"));
 				newUser.setEmail(rs.getString("email"));
-				users.add(newUser);
-            }
 
-        } catch (SQLException ex) {
-            Logger.getLogger(DbUserSection.class.getName()).log(Level.SEVERE, null, ex);
-        }
+				System.out.println("User ID: " + newUser.getId());
+				System.out.println("Name: " + newUser.getName());
+				System.out.println("Surname: " + newUser.getSurname());
+				System.out.println("Email: " + newUser.getEmail());
+				System.out.println(); // Adds an empty line for better readability
+			}
 
-        return users;
-    }
-    
-    public User getUserInfo(String userID) {
-    	String query = "SELECT "
-    			+ "    User.email,"
-    			+ "    User.name,"
-    			+ "    User.surname,"
-    			+ "    Bank_Account.account_number,"
-    			+ "    Login.password"
-    			+ "FROM "
-    			+ "    user"
-    			+ "JOIN "
-    			+ "login ON user.user_id = login.user_id"
-    			+ "JOIN "
-    			+ "bank_Aaccount ON user.user_id = bank_account.user_id"
-    			+ "WHERE "
-    			+ "user.user_id = " + userID
-    			+ ";";
-    	User user = new User();
-    	return user;
-    }
+		} catch (SQLException sqle) {
+			DatabaseDAO.exceptionMessages(sqle);
+			sqle.printStackTrace();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+
+		return newUser;
+	}
+
+	public User getUserInfo(String userID) {
+		String query = "SELECT " + "    User.email," + "    User.name," + "    User.surname,"
+				+ "    Bank_Account.account_number," + "    Login.password" + "FROM " + "    user" + "JOIN "
+				+ "login ON user.user_id = login.user_id" + "JOIN "
+				+ "bank_Aaccount ON user.user_id = bank_account.user_id" + "WHERE " + "user.user_id = " + userID + ";";
+		User user = new User();
+		return user;
+	}
 }

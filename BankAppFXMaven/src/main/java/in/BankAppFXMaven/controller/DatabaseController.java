@@ -1,26 +1,21 @@
 package in.BankAppFXMaven.controller;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.util.ArrayList;
 
-import in.BankAppFXMaven.model.DbUserSection;
+import in.BankAppFXMaven.model.DatabaseDAO;
+import in.BankAppFXMaven.model.User;
 
 public class DatabaseController {
 
 	
-	private static DatabaseController db = null;
-	private static DbUserSection dbUserSection = null;
+	private static DatabaseController dbController = DatabaseController.getInstance();
+	private static DatabaseDAO db = DatabaseDAO.getInstance();
 	
-	private Connection connection = null;
-	private Statement st = null;
-	private ResultSet rs = null;
-
 	public static DatabaseController getInstance() {
-		if (db == null) {
-			db = new DatabaseController();
+		if (dbController == null) {
+			dbController = new DatabaseController();
 		}
-		return db;
+		return dbController;
 	}
 
 	private DatabaseController() {
@@ -37,5 +32,12 @@ public class DatabaseController {
 		}
 	}
 	
+	public static ArrayList<User> getUsers(){
+		return db.getUsers();
+	}
 	
+	public User getUser(int ID){
+		User user = db.getUser(ID);
+		return user;
+	}
 }

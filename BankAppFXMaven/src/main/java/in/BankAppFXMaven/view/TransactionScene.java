@@ -2,6 +2,7 @@ package in.BankAppFXMaven.view;
 
 import java.util.Optional;
 
+import in.BankAppFXMaven.model.User;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -28,6 +29,7 @@ public class TransactionScene extends Application {
 	private static TransferScene transferSceneSingletonInstance = TransferScene.getInstance();
 	private static BalanceScene balanceSceneSingletonInstance = BalanceScene.getInstance();
 	private static AccInfoScene accInfoSceneSingletonInstance = AccInfoScene.getInstance();
+	private User user;
 
 	private static TransactionScene transactionsSceneSingletonInstance;
 

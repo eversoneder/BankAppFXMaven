@@ -2,6 +2,7 @@ package in.BankAppFXMaven.view;
 
 import java.util.Optional;
 
+import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.model.User;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -28,7 +29,7 @@ public class AccInfoScene extends Application {
 
 	private static TransactionScene transactionSceneSingletonInstance = TransactionScene.getInstance();
 	private static AccInfoScene AccInfoSceneSingletonInstance;
-//	private static DatabaseService db = DatabaseService.getInstance();
+	private static DatabaseController dbController = DatabaseController.getInstance();
 	private Stage primaryStage;
 	private TextField nameField;
 	private TextField surnameField;
@@ -163,7 +164,12 @@ public class AccInfoScene extends Application {
 		emailTxtField.setLayoutY(120.0);
 		emailTxtField.setPrefHeight(30.0);
 		emailTxtField.setPrefWidth(380.0);
-		emailTxtField.setText("everson_spinola@hotmail.com");
+		emailTxtField.setText(user.getEmail());
+		User userTest = new User();
+		
+		
+		//OR
+		emailTxtField.setText(dbController.getUser(user.getId()).getEmail());
 		emailTxtField.setFont(Font.font("Roboto Regular", 16.0));
 		emailTxtField.setEditable(false); // Making the TextField non-editable
 		emailTxtField.setMouseTransparent(true); // Making the TextField to not respond to mouse clicks

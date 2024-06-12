@@ -3,6 +3,8 @@ package in.BankAppFXMaven.view;
 import java.util.Optional;
 
 import in.BankAppFXMaven.controller.DatabaseController;
+import in.BankAppFXMaven.model.LoggedUser;
+import in.BankAppFXMaven.model.User;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -29,6 +31,7 @@ public class SignInScene extends Application {
 	private static SignUpScene signUpSceneSingletonInstance = SignUpScene.getInstance();
 	private static TransactionScene transactionsSceneSingletonInstance = TransactionScene.getInstance();
 	private static SignInScene signInSceneSingletonInstance;
+	private LoggedUser user;
 
 	private SignInScene() {
 	}
@@ -241,7 +244,9 @@ public class SignInScene extends Application {
 			try {
 				// CHECK AND CREATE USER ON DB
 				
+				//Validade the email and password on database and get all the user data to fill up the LoggedUser class
 				transactionsSceneSingletonInstance.start(primaryStage);
+				
 //				boolean emailCheck = EmailValidator.validate(emailTxtInput.getText());
 //
 //				if (!emailCheck) {
@@ -288,6 +293,10 @@ public class SignInScene extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
 		primaryStage.show();
+	}
+	
+	public void setLoggedUser(LoggedUser user) {
+		this.user = user;
 	}
 
 }

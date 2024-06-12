@@ -1,6 +1,6 @@
 package in.BankAppFXMaven;
 
-import in.BankAppFXMaven.model.SimpleDbConnection;
+import in.BankAppFXMaven.model.DatabaseDAO;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import in.BankAppFXMaven.view.MainScene;
@@ -12,7 +12,8 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			SimpleDbConnection db = SimpleDbConnection.getInstance();
+			
+			DatabaseDAO db = DatabaseDAO.getInstance();
 			
 			
 			mainScene.start(primaryStage);
