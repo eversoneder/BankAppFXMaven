@@ -1,9 +1,11 @@
 # Econo Bank
 
 ## Introduction
-Econo Bank is a simple banking application developed in Java, featuring a JavaFX Graphic User Interface (GUI) with design elements created in Corel Draw. This project was built using the Model-View-Controller (MVC) architectural pattern, which enhances safety and encapsulation. It serves as a learning platform for JavaFX, building upon my previous experience with JavaSwing GUI. The application aims to provide a practical example of a banking system with a modern interface and robust backend storage using a SQL database.
+Econo Bank is a simple banking application developed in Java, featuring a JavaFX Graphic User Interface (GUI) with design elements created in Corel Draw. This project was built using the Model-View-Controller (MVC) architectural pattern to enhance safety through encapsulation with strict access modifiers. It serves as a learning platform for JavaFX, building upon my previous experience with JavaSwing GUI. The application aims to provide a practical example of a banking system with a modern interface and robust backend storage using a MySQL database.
 
-<img src="resources/img/econobankexample.png" width="800">
+To further ensure security and efficient memory management, the application implements the singleton pattern across all classes, allowing only one instantiation of each class.
+
+<img src="BankAppFXMaven/src/main/resources/img/econobankexample.png" width="800">
 
 ## Features
 - Log-in system
