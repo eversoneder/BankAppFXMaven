@@ -101,4 +101,12 @@ public class DbUserSection {
 		User user = new User();
 		return user;
 	}
+
+	public boolean checkLoginCredentials(String email, String password) {
+
+		String query = "SELECT * FROM user JOIN login ON user.password_hash = login.password_hash "
+				+ "WHERE user.email = '" + email + "' AND login.password_hash = '" + password + "';";
+
+		return false;
+	}
 }

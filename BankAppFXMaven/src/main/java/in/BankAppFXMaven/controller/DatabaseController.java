@@ -8,7 +8,7 @@ import in.BankAppFXMaven.model.User;
 public class DatabaseController {
 
 	
-	private static DatabaseController dbController = DatabaseController.getInstance();
+	private static DatabaseController dbController;
 	private static DatabaseDAO db = DatabaseDAO.getInstance();
 	
 	public static DatabaseController getInstance() {
@@ -39,5 +39,14 @@ public class DatabaseController {
 	public User getUser(int ID){
 		User user = db.getUser(ID);
 		return user;
+	}
+	
+	public boolean checkLoginCredentials(String email, String password) {
+		return db.checkLoginCredentials(email, password);
+	}
+	
+	public void saveUserNameAndSurname() {
+		
+		
 	}
 }

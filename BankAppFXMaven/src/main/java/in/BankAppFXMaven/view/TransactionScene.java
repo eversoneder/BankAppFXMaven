@@ -2,22 +2,35 @@ package in.BankAppFXMaven.view;
 
 import java.util.Optional;
 
+import in.BankAppFXMaven.model.Login;
 import in.BankAppFXMaven.model.User;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import javafx.util.Pair;
 
 public class TransactionScene extends Application {
 
@@ -30,6 +43,7 @@ public class TransactionScene extends Application {
 	private static BalanceScene balanceSceneSingletonInstance = BalanceScene.getInstance();
 	private static AccInfoScene accInfoSceneSingletonInstance = AccInfoScene.getInstance();
 	private User user;
+	private Login login;
 
 	private static TransactionScene transactionsSceneSingletonInstance;
 
@@ -48,6 +62,12 @@ public class TransactionScene extends Application {
 		// TODO Auto-generated method stub
 		this.primaryStage = primaryStage;
 
+		//check the last_login
+		
+		if(login.getLastLogin() == null) {
+			saveUserNameAndSurname();
+		}
+		
 		transactionSceneViewBuilder();
 	}
 
@@ -348,4 +368,84 @@ public class TransactionScene extends Application {
 		primaryStage.show();
 	}
 
+	public void saveUserNameAndSurname() {
+
+		// Create a boolean flag to track if the save button was clicked
+		final boolean[] saveClicked = {false};
+
+		// Create the custom dialog.
+		Dialog<Pair<String, String>> dialog = new Dialog<>();
+		dialog.initModality(Modality.APPLICATION_MODAL); // Set the dialog to be modal so user can't drag it and use the other page without giving their name
+		dialog.setTitle("Required");
+		dialog.setHeaderText("Please enter your Name and Surname.");
+
+		// Set the button types.
+		ButtonType loginButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(loginButtonType);
+
+		// Create the name and surname labels and fields.
+		GridPane grid = new GridPane();
+		grid.setAlignment(Pos.CENTER);
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
+
+		TextField nameTextField = new TextField();
+		nameTextField.setPromptText("Name");
+		TextField surnameTextField = new TextField();
+		surnameTextField.setPromptText("Surname");
+
+		grid.add(new Label("Name:"), 0, 0);
+		grid.add(nameTextField, 1, 0);
+		grid.add(new Label("Surname:"), 0, 1);
+		grid.add(surnameTextField, 1, 1);
+
+		// Enable/Disable save button depending on whether a name and surname were entered.
+		Node saveButton = dialog.getDialogPane().lookupButton(loginButtonType);
+		saveButton.setDisable(true);
+
+		// Do some validation (using the Java 8 lambda syntax).
+		nameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+		    saveButton.setDisable(newValue.trim().isEmpty() || surnameTextField.getText().trim().isEmpty());
+		});
+		surnameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+		    saveButton.setDisable(newValue.trim().isEmpty() || nameTextField.getText().trim().isEmpty());
+		});
+
+		dialog.getDialogPane().setContent(grid);
+
+		// Request focus on the name field by default.
+		Platform.runLater(() -> nameTextField.requestFocus());
+
+		// Convert the result to a name-surname pair when the save button is clicked.
+		dialog.setResultConverter(dialogButton -> {
+		    if (dialogButton == loginButtonType) {
+		        saveClicked[0] = true;
+		        return new Pair<>(nameTextField.getText(), surnameTextField.getText());
+		    }
+		    return null;
+		});
+
+		// Add an event filter to consume the close request when the 'X' button is clicked
+		dialog.getDialogPane().getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, event -> {
+		    if (!saveClicked[0]) {
+		        event.consume();
+		    }
+		});
+
+		Optional<Pair<String, String>> result = dialog.showAndWait();
+
+		result.ifPresent(nameSurname -> {
+		    // Save the name and surname
+		    // ...
+
+		    Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
+		    confirmationAlert.setTitle("Confirmation");
+		    confirmationAlert.setHeaderText(null);
+		    confirmationAlert.setContentText(
+		            "Name and Surname have been set.\n Welcome to Econo Bank " + nameSurname.getKey() + " " + nameSurname.getValue() + "!");
+		    confirmationAlert.showAndWait();
+		});
+
+	}
 }

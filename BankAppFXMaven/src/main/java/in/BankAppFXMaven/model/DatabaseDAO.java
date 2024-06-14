@@ -111,4 +111,8 @@ public class DatabaseDAO {
 		}
 	}
 
+	public boolean checkLoginCredentials(String email, String password) {
+		return dbUser.checkLoginCredentials(email, password);
+	}
+
 }
