@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import in.BankAppFXMaven.model.DatabaseDAO;
 import in.BankAppFXMaven.model.User;
+import in.BankAppFXMaven.utility.AccountNumberGenerator;
 
 public class DatabaseController {
 
@@ -48,5 +49,31 @@ public class DatabaseController {
 	public void saveUserNameAndSurname() {
 		
 		
+	}
+
+	public boolean accNumberExists(String randomNumber) {
+		// TODO Auto-generated method stub
+		return db.accNumberExists(randomNumber);
+	}
+	
+	public void createNewAccount(String email, String password) {
+		
+		//user email (upload & get user_id) 
+		
+		
+		
+		//get unique random 8 digit number to upload along with user_id into bankappfx.bank_account table
+		String randomNum = AccountNumberGenerator.generateRandomNumber(this);
+		//
+		
+		//login password_hash
+	}
+	
+	public void uploadUserEmail() {
+		
+	}
+	
+	public boolean emailExists(String email) {
+		return db.emailExists(email);
 	}
 }

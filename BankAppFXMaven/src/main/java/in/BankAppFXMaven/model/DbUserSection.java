@@ -52,7 +52,7 @@ public class DbUserSection {
 			} while (rs.next());
 
 		} catch (SQLException sqle) {
-			DatabaseDAO.exceptionMessages(sqle);
+			db.exceptionMessages(sqle);
 			sqle.printStackTrace();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -84,7 +84,7 @@ public class DbUserSection {
 			}
 
 		} catch (SQLException sqle) {
-			DatabaseDAO.exceptionMessages(sqle);
+			db.exceptionMessages(sqle);
 			sqle.printStackTrace();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -94,8 +94,8 @@ public class DbUserSection {
 	}
 
 	public User getUserInfo(String userID) {
-		String query = "SELECT " + "    User.email," + "    User.name," + "    User.surname,"
-				+ "    Bank_Account.account_number," + "    Login.password" + "FROM " + "    user" + "JOIN "
+		String query = "SELECT " + "    user.email," + "    user.name," + "    user.surname,"
+				+ "    bank_account.account_number," + "    login.password" + "FROM " + "    user" + "JOIN "
 				+ "login ON user.user_id = login.user_id" + "JOIN "
 				+ "bank_Aaccount ON user.user_id = bank_account.user_id" + "WHERE " + "user.user_id = " + userID + ";";
 		User user = new User();
@@ -108,5 +108,30 @@ public class DbUserSection {
 				+ "WHERE user.email = '" + email + "' AND login.password_hash = '" + password + "';";
 
 		return false;
+	}
+
+	public boolean emailExists(String email) {
+		// TODO Auto-generated method stub
+		String query = "SELECT * FROM bankappfx.user WHERE user.email = '" + email + "';";
+
+		ResultSet rs = db.executeQueryRS(query);
+		int i = 0;
+		
+		try {
+			// if there are records in the database(email exists)
+			if (!rs.wasNull()) {
+				i = 1;
+			}
+		} catch (SQLException sqle) {
+			db.exceptionMessages(sqle);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		// if there are NO records in the database(email does NOT exists)
+		if(i == 1) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

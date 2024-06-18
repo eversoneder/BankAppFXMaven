@@ -3,9 +3,9 @@ package in.BankAppFXMaven.view;
 import java.util.Optional;
 
 import in.BankAppFXMaven.controller.DatabaseController;
-import in.BankAppFXMaven.controller.EmailValidator;
 import in.BankAppFXMaven.model.LoggedUser;
 import in.BankAppFXMaven.model.Login;
+import in.BankAppFXMaven.utility.EmailValidator;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -259,48 +259,49 @@ public class SignInScene extends Application {
 		signInBtn.setFont(Font.font("Roboto Bold", 16.0));
 		signInBtn.setOnAction(e -> {
 			try {
-				//Steps to be taken(email format check, db credentials check, populate login & loggedUser w/ db data and check lastlogin to enter name and surname
-				String email = emailTxtInput.getText();
-				String pass = passwordField.getText();
-
-				//email format check
-				boolean emailCheck = EmailValidator.validate(email);
-
-				if (!emailCheck) {
-					Alert alert = new Alert(Alert.AlertType.ERROR);
-					alert.setTitle("Invalid Email.");
-					alert.setHeaderText(null);
-					alert.setContentText("Please enter a valid email address.");
-					alert.showAndWait();
-				} else {
-					System.out.println("Valid email.");
-
-					// check credentials in database 
-					if (dbController.checkLoginCredentials(email, pass)) {
-
-						
-						LoggedUser user = LoggedUser.getInstance();
-						Login login = Login.getInstance();
-
-						if (login.getLastLogin() == null) {
-							Alert alert = new Alert(Alert.AlertType.ERROR);
-							alert.setTitle("Required.");
-							alert.setHeaderText(null);
-							alert.setContentText("Please enter your Name and Surname.");
-							alert.showAndWait();
-						} else {
-
-						}
-						// Ask user to enter name and surname if it's first ever login
-						transactionsSceneSingletonInstance.start(primaryStage);
-					} else {
-						Alert alert = new Alert(Alert.AlertType.ERROR);
-						alert.setTitle("Wrong Email or Password.");
-						alert.setHeaderText(null);
-						alert.setContentText("Incorrect email or password, try again please.");
-						alert.showAndWait();
-					}
-				}
+				transactionsSceneSingletonInstance.start(primaryStage);
+//				//Steps to be taken(email format check, db credentials check, populate login & loggedUser w/ db data and check lastlogin to enter name and surname
+//				String email = emailTxtInput.getText();
+//				String pass = passwordField.getText();
+//
+//				//email format check
+//				boolean emailCheck = EmailValidator.validate(email);
+//
+//				if (!emailCheck) {
+//					Alert alert = new Alert(Alert.AlertType.ERROR);
+//					alert.setTitle("Invalid Email.");
+//					alert.setHeaderText(null);
+//					alert.setContentText("Please enter a valid email address.");
+//					alert.showAndWait();
+//				} else {
+//					System.out.println("Valid email.");
+//
+//					// check credentials in database 
+//					if (dbController.checkLoginCredentials(email, pass)) {
+//
+//						
+//						LoggedUser user = LoggedUser.getInstance();
+//						Login login = Login.getInstance();
+//
+//						if (login.getLastLogin() == null) {
+//							Alert alert = new Alert(Alert.AlertType.ERROR);
+//							alert.setTitle("Required.");
+//							alert.setHeaderText(null);
+//							alert.setContentText("Please enter your Name and Surname.");
+//							alert.showAndWait();
+//						} else {
+//
+//						}
+//						// Ask user to enter name and surname if it's first ever login
+//						transactionsSceneSingletonInstance.start(primaryStage);
+//					} else {
+//						Alert alert = new Alert(Alert.AlertType.ERROR);
+//						alert.setTitle("Wrong Email or Password.");
+//						alert.setHeaderText(null);
+//						alert.setContentText("Incorrect email or password, try again please.");
+//						alert.showAndWait();
+//					}
+//				}
 
 			} catch (Exception e2) {
 				e2.printStackTrace();

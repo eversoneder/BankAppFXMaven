@@ -19,7 +19,7 @@ public class DatabaseDAO {
 	private String user;
 	private String password;
 
-	private static DatabaseDAO db = null;
+	private static DatabaseDAO db;
 	private DbUserSection dbUser = DbUserSection.getInstance();
 
 	public static DatabaseDAO getInstance() {
@@ -83,7 +83,7 @@ public class DatabaseDAO {
 
 		return userList;
 	}
-	
+
 	public User getUser(int ID) {
 
 		User user = new User();
@@ -99,8 +99,77 @@ public class DatabaseDAO {
 		return user;
 	}
 
+	public boolean checkLoginCredentials(String email, String password) {
+		return dbUser.checkLoginCredentials(email, password);
+	}
+
+	public boolean accNumberExists(String randomNumber) {
+
+		String query = "SELECT * FROM bankappfx.bank_account WHERE bank_acc_number = " + randomNumber + ";";
+
+		try {
+			rs = st.executeQuery(query);
+			rs.next();
+
+			// number already exist (was not null, it was true that accNumberExists)
+			if (!rs.wasNull()) {
+				System.out.println(randomNumber + " already exists.");
+				return true;
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		System.out.println(randomNumber + " does not exist.");
+		// number do not exist (was null, 0 records in database, it was false that
+		// accNumberExists)
+		return false;
+	}
+
+	/**
+	 * @param query the query to execute (reusable method for SELECT queries)
+	 * @return ResultSet of query given
+	 * 
+	 */
+	protected ResultSet executeQueryRS(String query) {
+
+		ResultSet rs = null;
+		try {
+			rs = st.executeQuery(query);
+			rs.next();
+		} catch (SQLException sqle) {
+			exceptionMessages(sqle);
+			sqle.printStackTrace();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return rs;
+	}
+
+	/**
+	 * @param query query to execute update (reusable method for INSERT, UPDATE &
+	 *              DELETE queries)
+	 * @return int 1 if succeed, 0 if fail
+	 * 
+	 *         this method has default access modifier, only classes within the same
+	 *         package can access
+	 */
+	int executeUpdateRS(String query) {
+
+		int rsi = 0;
+		try {
+			st.executeUpdate(query);
+			rsi = 1;
+		} catch (SQLException sqle) {
+			exceptionMessages(sqle);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return rsi;
+	}
+
 	/**
 	 * @param sqle exception messages to execute if error occurs(breaking down code)
+	 * 
 	 */
 	protected static void exceptionMessages(SQLException sqle) {
 		while (sqle != null) {
@@ -111,8 +180,8 @@ public class DatabaseDAO {
 		}
 	}
 
-	public boolean checkLoginCredentials(String email, String password) {
-		return dbUser.checkLoginCredentials(email, password);
+	public boolean emailExists(String email) {
+		return dbUser.emailExists(email);
 	}
 
 }

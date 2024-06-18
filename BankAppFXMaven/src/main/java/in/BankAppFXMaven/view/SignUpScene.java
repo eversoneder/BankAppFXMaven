@@ -1,7 +1,7 @@
 package in.BankAppFXMaven.view;
 
-import in.BankAppFXMaven.controller.EmailValidator;
 import in.BankAppFXMaven.model.User;
+import in.BankAppFXMaven.utility.EmailValidator;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -29,13 +29,13 @@ public class SignUpScene extends Application {
 
 	private SignUpScene() {
 	}
-	
+
 	public static SignUpScene getInstance() {
-        if (signUpSceneSingletonInstance == null) {
-        	signUpSceneSingletonInstance = new SignUpScene();
-        }
-        return signUpSceneSingletonInstance;
-    }
+		if (signUpSceneSingletonInstance == null) {
+			signUpSceneSingletonInstance = new SignUpScene();
+		}
+		return signUpSceneSingletonInstance;
+	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -204,7 +204,7 @@ public class SignUpScene extends Application {
 				e1.printStackTrace();
 			}
 		});
-		
+
 		Button signUpBtn = new Button("Sign up");
 		signUpBtn.setLayoutX(255.0);
 		signUpBtn.setLayoutY(310.0);
@@ -216,18 +216,21 @@ public class SignUpScene extends Application {
 		signUpBtn.setFont(Font.font("Roboto Bold", 16.0));
 		signUpBtn.setOnAction(e -> {
 			try {
-				//CHECK AND CREATE USER ON DB
-				
+				// CHECK AND CREATE USER ON DB
+
 				boolean emailCheck = EmailValidator.validate(emailTxtInput.getText());
-				
+
 				if (!emailCheck) {
-				    Alert alert = new Alert(Alert.AlertType.ERROR);
-				    alert.setTitle("Invalid Email.");
-				    alert.setHeaderText(null);
-				    alert.setContentText("Please enter a valid email address.");
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Invalid Email.");
+					alert.setHeaderText(null);
+					alert.setContentText("Please enter a valid email address.");
 					alert.showAndWait();
 				} else {
 					System.out.println("Valid email.");
+
+					// check email existence, if so display dialog "User already exists."
+
 				}
 			} catch (Exception e2) {
 				e2.printStackTrace();
@@ -239,7 +242,7 @@ public class SignUpScene extends Application {
 		alreadyHaveAccTxt.setLayoutX(120.0);
 		alreadyHaveAccTxt.setLayoutY(385.0);
 		alreadyHaveAccTxt.setFont(Font.font("Roboto Regular", 16.0));
-		
+
 //Create Sign in Button
 		Button signInBtn = new Button("Sign in!");
 		signInBtn.setLayoutX(295.0);
@@ -261,8 +264,6 @@ public class SignUpScene extends Application {
 				passwordField, confirmPassTxt, passwordConfirm, cancelBtn, signUpBtn, alreadyHaveAccTxt, signInBtn);
 		anchorPane.getChildren().add(whiteMiddlePane);
 //////////////////////////////white box end//////////////////////////////
-
-
 
 //====================================================================================================
 //END OF "WHITE PANE ITEMS============================================================================

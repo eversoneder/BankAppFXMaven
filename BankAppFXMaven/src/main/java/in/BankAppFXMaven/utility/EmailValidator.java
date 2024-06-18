@@ -1,4 +1,4 @@
-package in.BankAppFXMaven.controller;
+package in.BankAppFXMaven.utility;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;

@@ -64,9 +64,9 @@ public class TransactionScene extends Application {
 
 		//check the last_login
 		
-		if(login.getLastLogin() == null) {
-			saveUserNameAndSurname();
-		}
+//		if(login.getLastLogin() == null) {
+//			saveUserNameAndSurname();
+//		}
 		
 		transactionSceneViewBuilder();
 	}
