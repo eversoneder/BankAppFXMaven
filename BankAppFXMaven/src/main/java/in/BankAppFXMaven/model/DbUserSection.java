@@ -1,14 +1,8 @@
 package in.BankAppFXMaven.model;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DbUserSection {
 
@@ -103,11 +97,7 @@ public class DbUserSection {
 	}
 
 	public boolean checkLoginCredentials(String email, String password) {
-
-		String query = "SELECT * FROM user JOIN login ON user.password_hash = login.password_hash "
-				+ "WHERE user.email = '" + email + "' AND login.password_hash = '" + password + "';";
-
-		return false;
+		return db.checkLoginCredentials(email, password);
 	}
 
 	public boolean emailExists(String email) {

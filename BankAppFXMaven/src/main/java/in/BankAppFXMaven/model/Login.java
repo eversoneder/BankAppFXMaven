@@ -2,8 +2,8 @@ package in.BankAppFXMaven.model;
 
 public class Login {
 
-	private String loginId;
-	private String userId;
+	private int loginId;
+	private int userId;
 	private String passwordHash;
 	private String lastLogin;
 	private static Login loginSingletonInstance;
@@ -21,28 +21,28 @@ public class Login {
 	/**
 	 * @return the loginId
 	 */
-	public String getLoginId() {
+	public int getLoginId() {
 		return loginId;
 	}
 
 	/**
 	 * @param loginId the loginId to set
 	 */
-	public void setLoginId(String loginId) {
+	public void setLoginId(int loginId) {
 		this.loginId = loginId;
 	}
 
 	/**
 	 * @return the userId
 	 */
-	public String getUserId() {
+	public int getUserId() {
 		return userId;
 	}
 
 	/**
 	 * @param userId the userId to set
 	 */
-	public void setUserId(String userId) {
+	public void setUserId(int userId) {
 		this.userId = userId;
 	}
 

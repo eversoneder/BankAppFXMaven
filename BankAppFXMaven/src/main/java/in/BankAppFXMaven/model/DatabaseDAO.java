@@ -100,7 +100,39 @@ public class DatabaseDAO {
 	}
 
 	public boolean checkLoginCredentials(String email, String password) {
-		return dbUser.checkLoginCredentials(email, password);
+		String query = "SELECT * FROM user JOIN login ON user.user_id = login.user_id "
+				+ "WHERE user.email = '" + email + "' "
+				+ "AND login.password_hash = '" + password + "';";
+		
+		try {
+			rs = st.executeQuery(query);
+			rs.next();
+
+			//if query had 1 result, it means the email + password exists
+			if (!rs.wasNull()) {
+				System.out.println("User: " + user.getClass().getName() + " exists.");
+				return true;
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		//if no result, it means no email + password exists
+		return false;
+	}
+	
+	public BankAccount getUserAcc(User user) {
+		
+		String query = "";
+		BankAccount ba = new BankAccount();
+		
+		return null;
+	}
+	
+	public boolean createUser() {
+		//create user + login + bank account + statement on the database
+		
+		
+		return false;
 	}
 
 	public boolean accNumberExists(String randomNumber) {

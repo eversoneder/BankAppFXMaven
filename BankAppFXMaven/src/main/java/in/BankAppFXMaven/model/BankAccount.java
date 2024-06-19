@@ -1,63 +1,58 @@
 package in.BankAppFXMaven.model;
 
 public class BankAccount {
-	private String customerName;
-	private String customerID;
-	private int balance;
-	private int previousTransaction;
-
-	public BankAccount(String customerName, String customerID) {
-		this.customerName = customerName;
-		this.customerID = customerID;
+	
+	private int userID;
+	private int bankAccNum;
+	private double bankAccBalance;
+	private int bankAccID;
+	
+	/**
+	 * @return the bankAccID
+	 */
+	public int getBankAccID() {
+		return bankAccID;
 	}
-
-	public void deposit(int amount) {
-		if (amount != 0) {
-			balance = balance + amount;
-			previousTransaction = amount;
-		}
+	/**
+	 * @param bankAccID the bankAccID to set
+	 */
+	public void setBankAccID(int bankAccID) {
+		this.bankAccID = bankAccID;
 	}
-
-	public void withdraw(int amount) {
-		if (amount != 0) {
-			balance = balance - amount;
-			previousTransaction = -amount;// assign a negative value so getPreviousTransaction knows the last
-											// transaction was a withdrawn.
-		} else if (amount > balance) {
-			System.out.println("Sorry, you have only " + balance + "that can be withdrawn.");
-		} else {
-			System.out.println("Sorry, you don't have money to withdraw.");
-		}
+	/**
+	 * @return the userID
+	 */
+	public int getUserID() {
+		return userID;
 	}
-
-	public boolean checkBalance() {
-		if (balance == 0) {
-			System.out.println("\nSorry, you don't have money to withdraw.\n");
-			return false;
-		} else {
-			return true;
-		}
+	/**
+	 * @param userID the userID to set
+	 */
+	public void setUserID(int userID) {
+		this.userID = userID;
 	}
-
-	public String getPreviousTransaction() {
-		if (previousTransaction > 0) {
-			return "Deposit of " + Integer.toString(previousTransaction) + "€.";
-		} else if (previousTransaction < 0) {// modifies negative to positive number
-			return "Withdrawn of " + Math.abs(previousTransaction) + "€.";
-		} else {
-			return "No transaction has occurred yet.";
-		}
+	/**
+	 * @return the bankAccNum
+	 */
+	public int getBankAccNum() {
+		return bankAccNum;
 	}
-
-	public String getCustomerName() {
-		return this.customerName;
+	/**
+	 * @param bankAccNum the bankAccNum to set
+	 */
+	public void setBankAccNum(int bankAccNum) {
+		this.bankAccNum = bankAccNum;
 	}
-
-	public String getCustomerID() {
-		return this.customerID;
+	/**
+	 * @return the bankAccBalance
+	 */
+	public double getBankAccBalance() {
+		return bankAccBalance;
 	}
-
-	public int getBalance() {
-		return this.balance;
+	/**
+	 * @param bankAccBalance the bankAccBalance to set
+	 */
+	public void setBankAccBalance(double bankAccBalance) {
+		this.bankAccBalance = bankAccBalance;
 	}
 }

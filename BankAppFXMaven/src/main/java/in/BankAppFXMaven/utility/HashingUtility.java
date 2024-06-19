@@ -1,4 +1,4 @@
-package in.BankAppFXMaven.model;
+package in.BankAppFXMaven.utility;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

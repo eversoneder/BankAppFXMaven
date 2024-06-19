@@ -36,7 +36,7 @@ public class BalanceScene extends Application {
 	private static TransactionScene transactionSceneSingletonInstance = TransactionScene.getInstance();
 //	private static DatabaseService db = DatabaseService.getInstance();
 	private Dialog<Void> dialog = new Dialog<>();
-	private static ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+	private static ArrayList<TransactionView> transactions = new ArrayList<TransactionView>();
 
 	private BalanceScene() {
 	}
@@ -203,7 +203,7 @@ public class BalanceScene extends Application {
 				-75.90, 80.00, 29.40};
 
 		for (int i = 0; i < emails.length; i++) {
-			Transaction t = new Transaction(emails[i], amounts[i]);
+			TransactionView t = new TransactionView(emails[i], amounts[i]);
 			transactions.add(t);
 		}
 
