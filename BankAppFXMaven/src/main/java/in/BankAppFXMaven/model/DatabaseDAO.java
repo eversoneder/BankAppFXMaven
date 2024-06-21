@@ -3,6 +3,7 @@ package in.BankAppFXMaven.model;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -120,19 +121,70 @@ public class DatabaseDAO {
 		return false;
 	}
 	
-	public BankAccount getUserAcc(User user) {
+	/**
+	 * @param user to get the bank account from
+	 * @return bank account from user
+	 */
+	public BankAccount getUserBankAcc(User user) {
 		
-		String query = "";
-		BankAccount ba = new BankAccount();
+		String query = "SELECT * FROM bankappfx.bank_account WHERE user_id = " + user.getId() + ";";
+		BankAccount ba = null;
 		
-		return null;
+//		private int userID;
+//		private int bankAccNum;
+//		private double bankAccBalance;
+//		private int bankAccID;
+		
+		try {
+			rs = st.executeQuery(query);
+			rs.next();
+			
+			// number already exist (was not null, it was true that accNumberExists)
+			if (!rs.wasNull()) {
+				
+				ba = new BankAccount();
+				ba.setUserID(rs.getInt("user_id"));
+				ba.setBankAccNum(rs.getInt("bank_acc_number"));
+				ba.setBankAccBalance(rs.getDouble("bank_acc_balance"));
+				ba.setBankAccID(rs.getInt("bank_acc_id"));
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return ba;
 	}
 	
-	public boolean createUser() {
+	public boolean createUser(NewUser newUser) {
 		//create user + login + bank account + statement on the database
+		
+		//bank_account saves only user_id
+		//user saves only email from sign up page, when first logs in, app asks name & surname
+		//statement saves only bank_account_id
+		//login saves user_id & password_hash
+		
+		//on the signUp page, utilize the hashingUtility to save up the password in hashed form before calling createUser.
+		
+		//insert user.email, login.user_id & login.password_hash
+		String userQuery = "INSERT INTO user (email) VALUES('" + newUser.getUser().getEmail() + "');";
+		String loginQuery = "INSERT INTO login (user_id, password_hash) VALUES (" + newUser.getLogin().getUserId() + ", " + newUser.getLogin().getPasswordHash() + ");";
+		
+		//get user_id from database (auto incremented)
+		String bankAccountQuery = "INSERT INTO bank_account (user_id) VALUES (" + newUser.getUser().getId() + ");";
+		
+		//get bank_acc_id from bank_account table (auto incremented)
+		
+		//insert bank_acc_id on statement
+		String statementQuery = "INSERT INTO statement (bank_acc_id) VALUES(" + newUser.getBankAccount().getBankAccID() + ");";
+		
 		
 		
 		return false;
+	}
+	
+	public void setLastLogin(Date date, User user) {
+		String query = "UPDATE login SET last_login = '" + date + "' WHERE user_id = " + user.getId() + ";";
+		executeUpdateRS(query);
 	}
 
 	public boolean accNumberExists(String randomNumber) {
@@ -155,6 +207,14 @@ public class DatabaseDAO {
 		// number do not exist (was null, 0 records in database, it was false that
 		// accNumberExists)
 		return false;
+	}
+	
+	/**
+	 * @param email email to check if exists in database
+	 * @return true if exists, false if email doesn't exist in databse 
+	 */
+	public boolean emailExists(String email) {
+		return dbUser.emailExists(email);
 	}
 
 	/**
@@ -211,9 +271,4 @@ public class DatabaseDAO {
 			sqle = sqle.getNextException();
 		}
 	}
-
-	public boolean emailExists(String email) {
-		return dbUser.emailExists(email);
-	}
-
 }

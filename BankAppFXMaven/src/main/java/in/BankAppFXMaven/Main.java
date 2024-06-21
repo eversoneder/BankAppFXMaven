@@ -21,7 +21,6 @@ public class Main extends Application {
 			String hashedPassword = HashingUtility.hashPassword("pass1234!");
 			System.out.println(hashedPassword);
 			
-//			fe6b8c6dc4602d8229a7b2b3f7c2f4da7ab9055e23b12ae00db0dd201351b6c2			
 			
 //			int i = 9;
 //			boolean test = db.emailExists("everson_spinola@hotmail.com");
