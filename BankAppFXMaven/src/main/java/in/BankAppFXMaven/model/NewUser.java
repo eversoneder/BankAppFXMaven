@@ -1,10 +1,14 @@
 package in.BankAppFXMaven.model;
 
 /**
- * NewUser class collects all the necessary classes a user needs and create
- * insert in the database in order to access the application
+ * NewUser class is used in the sign up page, uploading the user.email & login.password_hash
  */
 public class NewUser {
+	
+	//user saves only email from sign up page, when first logs in, app asks name & surname
+			//login saves user_id & password_hash
+			//bank_account saves only user_id
+			//statement saves only bank_account_id
 
 	private Login login;
 	private User user;

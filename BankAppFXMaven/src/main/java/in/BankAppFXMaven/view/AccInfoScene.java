@@ -3,6 +3,7 @@ package in.BankAppFXMaven.view;
 import java.util.Optional;
 
 import in.BankAppFXMaven.controller.DatabaseController;
+import in.BankAppFXMaven.model.LoggedUser;
 import in.BankAppFXMaven.model.User;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -35,6 +36,7 @@ public class AccInfoScene extends Application {
 	private TextField surnameField;
 	private TextField passwordField;
 	private User user;
+	private LoggedUser loggedUser = LoggedUser.getInstance();
 
 	private AccInfoScene() {
 	}
@@ -169,7 +171,7 @@ public class AccInfoScene extends Application {
 		
 		
 		//OR
-		emailTxtField.setText(dbController.getUser(user.getId()).getEmail());
+		emailTxtField.setText(loggedUser.getUser().getEmail());
 		emailTxtField.setFont(Font.font("Roboto Regular", 16.0));
 		emailTxtField.setEditable(false); // Making the TextField non-editable
 		emailTxtField.setMouseTransparent(true); // Making the TextField to not respond to mouse clicks

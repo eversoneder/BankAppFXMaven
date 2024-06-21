@@ -39,8 +39,8 @@ public class DatabaseController {
 		return db.getUsers();
 	}
 	
-	public User getUser(int ID){
-		User user = db.getUser(ID);
+	public User getUser(String email){
+		User user = db.getUser(email);
 		return user;
 	}
 	
@@ -57,8 +57,8 @@ public class DatabaseController {
 	 * @param user to get the bank acc from db
 	 * @return bank account of the parameter user
 	 */
-	public BankAccount getUserBankAcc(User user) {
-		return db.getUserBankAcc(user);
+	public BankAccount getUserBankAcc(int userID) {
+		return db.getUserBankAccByUserID(userID);
 	}
 	
 	public boolean accNumberExists(String randomNumber) {

@@ -85,11 +85,11 @@ public class DatabaseDAO {
 		return userList;
 	}
 
-	public User getUser(int ID) {
+	public User getUser(String email) {
 
 		User user = new User();
 		try {
-			rs = st.executeQuery("SELECT * FROM user WHERE user_id = " + ID + ";");
+			rs = st.executeQuery("SELECT * FROM user WHERE email = '" + email + "';");
 			rs.next();
 
 			user = dbUser.getUser(rs);
@@ -125,15 +125,18 @@ public class DatabaseDAO {
 	 * @param user to get the bank account from
 	 * @return bank account from user
 	 */
-	public BankAccount getUserBankAcc(User user) {
+	public BankAccount getUserBankAccByUserID(int userID) {
+		String query = "SELECT * FROM bankappfx.bank_account WHERE user_id = " + userID + ";";
+		return getBankAccountReusableMethod(query);
+	}
+	
+	/**
+	 * @param query to get the bank account
+	 * @return the bank account
+	 */
+	public BankAccount getBankAccountReusableMethod(String query) {
 		
-		String query = "SELECT * FROM bankappfx.bank_account WHERE user_id = " + user.getId() + ";";
 		BankAccount ba = null;
-		
-//		private int userID;
-//		private int bankAccNum;
-//		private double bankAccBalance;
-//		private int bankAccID;
 		
 		try {
 			rs = st.executeQuery(query);
@@ -155,24 +158,45 @@ public class DatabaseDAO {
 		return ba;
 	}
 	
+	/**
+	 * @param newUser all info needed to create a user in db
+	 * @return true if created
+	 */
 	public boolean createUser(NewUser newUser) {
 		//create user + login + bank account + statement on the database
 		
-		//bank_account saves only user_id
 		//user saves only email from sign up page, when first logs in, app asks name & surname
-		//statement saves only bank_account_id
 		//login saves user_id & password_hash
+		//bank_account saves only user_id
+		//statement saves only bank_account_id
+		
 		
 		//on the signUp page, utilize the hashingUtility to save up the password in hashed form before calling createUser.
 		
 		//insert user.email, login.user_id & login.password_hash
 		String userQuery = "INSERT INTO user (email) VALUES('" + newUser.getUser().getEmail() + "');";
-		String loginQuery = "INSERT INTO login (user_id, password_hash) VALUES (" + newUser.getLogin().getUserId() + ", " + newUser.getLogin().getPasswordHash() + ");";
+		executeUpdateRS(userQuery);
 		
-		//get user_id from database (auto incremented)
-		String bankAccountQuery = "INSERT INTO bank_account (user_id) VALUES (" + newUser.getUser().getId() + ");";
+		//now get user_id since it was created using the email above
+		User user = getUser(newUser.getUser().getEmail());
 		
-		//get bank_acc_id from bank_account table (auto incremented)
+		//insert login.user_id & login.password_hash
+		String loginQuery = "INSERT INTO login (user_id, password_hash) VALUES (" + user.getId() + ", " + newUser.getLogin().getPasswordHash() + ");";
+		executeUpdateRS(loginQuery);
+		
+		//set user_id in bank_account table (auto incremented) creating a bank_acc_id
+		
+		//IMPORTANTE, ALTERAR A QUERY E COLOCAR +1 INSERT (accountNumberGenerator) pra bank_account_number 
+		String bankAccountQuery = "INSERT INTO bank_account (user_id) VALUES (" + user.getId() + ");";
+		executeUpdateRS(bankAccountQuery);
+		
+		//get bank_acc_id from bank_account table (auto incremented) to save into statement
+		String getBankAccIdQuery = "SELECT * FROM bank_account WHERE user_id = " + user.getId() + ";";
+		BankAccount ba = getBankAccountReusableMethod(getBankAccIdQuery);		
+		
+		
+		//get bank_acc_id
+		
 		
 		//insert bank_acc_id on statement
 		String statementQuery = "INSERT INTO statement (bank_acc_id) VALUES(" + newUser.getBankAccount().getBankAccID() + ");";
@@ -263,7 +287,7 @@ public class DatabaseDAO {
 	 * @param sqle exception messages to execute if error occurs(breaking down code)
 	 * 
 	 */
-	protected static void exceptionMessages(SQLException sqle) {
+	protected void exceptionMessages(SQLException sqle) {
 		while (sqle != null) {
 			System.out.println("State: " + sqle.getSQLState());
 			System.out.println("Message: " + sqle.getMessage());
