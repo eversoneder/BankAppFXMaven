@@ -61,22 +61,13 @@ public class DatabaseController {
 		return db.getUserBankAccByUserID(userID);
 	}
 	
-	public boolean accNumberExists(String randomNumber) {
+	public boolean accNumberExists(int randomNumber) {
 		// TODO Auto-generated method stub
 		return db.accNumberExists(randomNumber);
 	}
 	
 	public void createUser(String email, String password) {
-		
-		//user email (upload & get user_id) 
-		
-		
-		
-		//get unique random 8 digit number to upload along with user_id into bankappfx.bank_account table
-		String randomNum = AccountNumberGenerator.generateRandomNumber(this);
-		//
-		
-		//login password_hash
+		db.createUser(email, password);
 	}
 	
 	public void setLastLogin(Date date, User user) {
