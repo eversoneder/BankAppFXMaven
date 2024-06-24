@@ -40,9 +40,7 @@ import javafx.util.Pair;
 public class SignInScene extends Application {
 
 	private Stage primaryStage;
-	private static MainScene mainSceneSingletonInstance = MainScene.getInstance();
-	private static SignUpScene signUpSceneSingletonInstance = SignUpScene.getInstance();
-	private static TransactionScene transactionsSceneSingletonInstance = TransactionScene.getInstance();
+	
 	private static SignInScene signInSceneSingletonInstance;
 	private static DatabaseController dbController = DatabaseController.getInstance();
 	private LoggedUser user;
@@ -110,7 +108,7 @@ public class SignInScene extends Application {
 
 		backButton.setOnAction(e -> {
 			try {
-				mainSceneSingletonInstance.start(primaryStage);
+				MainScene.getInstance().start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -259,7 +257,7 @@ public class SignInScene extends Application {
 		signInBtn.setFont(Font.font("Roboto Bold", 16.0));
 		signInBtn.setOnAction(e -> {
 			try {
-				transactionsSceneSingletonInstance.start(primaryStage);
+				TransactionScene.getInstance().start(primaryStage);
 //				//Steps to be taken(email format check, db credentials check, populate login & loggedUser w/ db data and check lastlogin to enter name and surname
 //				String email = emailTxtInput.getText();
 //				String pass = passwordField.getText();
@@ -323,7 +321,7 @@ public class SignInScene extends Application {
 		signUpBtn.setFont(Font.font("Roboto Bold", FontWeight.BOLD, 16.0));
 		signUpBtn.setOnAction(e -> {
 			try {
-				signUpSceneSingletonInstance.start(primaryStage);
+				SignUpScene.getInstance().start(primaryStage);
 			} catch (Exception e3) {
 				e3.printStackTrace();
 			}

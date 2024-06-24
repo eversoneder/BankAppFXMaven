@@ -1,5 +1,6 @@
 package in.BankAppFXMaven.view;
 
+import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.model.User;
 import in.BankAppFXMaven.utility.EmailValidator;
 import javafx.application.Application;
@@ -22,10 +23,7 @@ import javafx.stage.Stage;
 public class SignUpScene extends Application {
 
 	private Stage primaryStage;
-	private static MainScene mainSceneSingletonInstance = MainScene.getInstance();
-	private static SignInScene signInSceneSingletonInstance = SignInScene.getInstance();
 	private static SignUpScene signUpSceneSingletonInstance;
-	private User user;
 
 	private SignUpScene() {
 	}
@@ -89,7 +87,7 @@ public class SignUpScene extends Application {
 
 		backButton.setOnAction(e -> {
 			try {
-				mainSceneSingletonInstance.start(primaryStage);
+				MainScene.getInstance().start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -199,7 +197,7 @@ public class SignUpScene extends Application {
 		cancelBtn.setFont(Font.font("Roboto Bold", 16.0));
 		cancelBtn.setOnAction(e -> {
 			try {
-				mainSceneSingletonInstance.start(primaryStage);
+				MainScene.getInstance().start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -229,8 +227,39 @@ public class SignUpScene extends Application {
 				} else {
 					System.out.println("Valid email.");
 
-					// check email existence, if so display dialog "User already exists."
+					// both password input field does not match
+					if (!passwordField.equals(passwordConfirm)) {
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle("Password does not match.");
+						alert.setHeaderText(null);
+						alert.setContentText("The password and password confirmation does not match.");
+						alert.showAndWait();
+					} else {
+						
+						// check email existence in db, if so display dialog "User already exists."
+						DatabaseController db = DatabaseController.getInstance();
 
+						User user = db.getUser(emailTxtInput.getText());
+
+						if (user != null) {
+							Alert alert = new Alert(Alert.AlertType.ERROR);
+							alert.setTitle("User already exists.");
+							alert.setHeaderText(null);
+							alert.setContentText("This email is already being used.");
+							alert.showAndWait();
+							
+							//if null (user does not exist, then create user.
+						} else {
+
+							db.createUser(emailTxtInput.getText(), passwordField.getText());
+
+							Alert alert = new Alert(Alert.AlertType.INFORMATION);
+							alert.setTitle("Account created.");
+							alert.setHeaderText(null);
+							alert.setContentText("Welcome! Your account has been created! You can now Sign-in.");
+							alert.showAndWait();
+						}
+					}
 				}
 			} catch (Exception e2) {
 				e2.printStackTrace();
@@ -252,7 +281,7 @@ public class SignUpScene extends Application {
 		signInBtn.setFont(Font.font("Roboto Bold", FontWeight.BOLD, 16.0));
 		signInBtn.setOnAction(e -> {
 			try {
-				signInSceneSingletonInstance.start(primaryStage);
+				SignInScene.getInstance().start(primaryStage);
 			} catch (Exception e3) {
 				e3.printStackTrace();
 			}
