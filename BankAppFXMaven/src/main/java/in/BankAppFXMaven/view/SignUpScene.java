@@ -228,7 +228,7 @@ public class SignUpScene extends Application {
 					System.out.println("Valid email.");
 
 					// both password input field does not match
-					if (!passwordField.equals(passwordConfirm)) {
+					if (!passwordField.getText().equals(passwordConfirm.getText())) {
 						Alert alert = new Alert(Alert.AlertType.ERROR);
 						alert.setTitle("Password does not match.");
 						alert.setHeaderText(null);
@@ -236,23 +236,24 @@ public class SignUpScene extends Application {
 						alert.showAndWait();
 					} else {
 						
-						// check email existence in db, if so display dialog "User already exists."
+						// check email existence in db
 						DatabaseController db = DatabaseController.getInstance();
 
 						User user = db.getUser(emailTxtInput.getText());
+						
+						System.out.println("Name: "+user.getName()+".");
 
-						if (user != null) {
+						//user exists in db, display dialog "User already exists."
+						if (user.getEmail() != null) {
 							Alert alert = new Alert(Alert.AlertType.ERROR);
 							alert.setTitle("User already exists.");
 							alert.setHeaderText(null);
-							alert.setContentText("This email is already being used.");
+							alert.setContentText("This email is already in use. You already have an account. \nYou can simply Sign in...");
 							alert.showAndWait();
 							
 							//if null (user does not exist, then create user.
 						} else {
-
 							db.createUser(emailTxtInput.getText(), passwordField.getText());
-
 							Alert alert = new Alert(Alert.AlertType.INFORMATION);
 							alert.setTitle("Account created.");
 							alert.setHeaderText(null);

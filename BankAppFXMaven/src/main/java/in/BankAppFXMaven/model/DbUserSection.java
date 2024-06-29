@@ -82,6 +82,7 @@ public class DbUserSection {
 			sqle.printStackTrace();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
+			System.out.println("User with this email does not exist.");
 		}
 
 		return newUser;

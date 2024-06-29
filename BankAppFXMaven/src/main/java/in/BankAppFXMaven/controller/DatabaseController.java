@@ -24,6 +24,10 @@ public class DatabaseController {
 	private DatabaseController() {
 	}
 	
+	public void test() {
+		System.out.println("Test");
+	}
+	
 	public static boolean getAccValidity(String email, String accNum) {
 		String emailTest = "test";
 		String accNumTest = "test";

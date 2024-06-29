@@ -46,7 +46,7 @@ public class DatabaseDAO {
 		InputStream input = null;
 
 		try {
-			input = getClass().getClassLoader().getResourceAsStream("in/BankAppFXMaven/config.properties");
+			input = getClass().getClassLoader().getResourceAsStream("in/BankAppFXMaven/model/config.properties");
 			prop.load(input);
 
 			url = prop.getProperty("db.url");
@@ -183,6 +183,7 @@ public class DatabaseDAO {
 		
 		try {
 			String userQuery = "INSERT INTO user (email) VALUES('" + email + "');";
+			this.getConnection();
 			executeUpdateRS(userQuery);
 
 			// now get user_id since it was created using the email above
@@ -191,8 +192,8 @@ public class DatabaseDAO {
 			try {
 				password = HashingUtility.hashPassword(password);
 
-				String loginQuery = "INSERT INTO login (user_id, password_hash) VALUES (" + user.getId() + ", " + password
-						+ ");";
+				String loginQuery = "INSERT INTO login (user_id, password_hash) VALUES (" + user.getId() + ", '" + password
+						+ "');";
 				executeUpdateRS(loginQuery);
 			} catch (NoSuchAlgorithmException e) {
 				// TODO Auto-generated catch block
@@ -245,7 +246,7 @@ public class DatabaseDAO {
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
-		System.out.println(randomNumber + " does not exist.");
+		System.out.println("Bank account number: "+ randomNumber + " does not exist.");
 		// number do not exist (was null, 0 records in database, it was false that
 		// accNumberExists)
 		return false;

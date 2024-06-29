@@ -1,0 +1,27 @@
+USE bankappfx;
+
+SELECT * FROM bankappfx.bank_account;
+SELECT * FROM bankappfx.login;
+SELECT * FROM bankappfx.statement;
+SELECT * FROM bankappfx.user;
+
+SELECT * FROM bankappfx.transfer;
+SELECT * FROM bankappfx.transaction;
+
+SELECT * FROM user WHERE user.email = "everson_eder@hotmail.com"; 
+
+DELETE FROM bank_account WHERE (bank_acc_id = 2);
+DELETE FROM user WHERE (user_id = 2);
+DELETE FROM login WHERE (login_id = 2);
+DELETE FROM statement WHERE (statement_id = 2);
+
+SET FOREIGN_KEY_CHECKS = 0; -- Disable FK checks (for delete/update)
+SET FOREIGN_KEY_CHECKS = 1; -- Re-enable FK checks
+
+ALTER TABLE bank_account AUTO_INCREMENT = 2;
+ALTER TABLE login AUTO_INCREMENT = 2;
+ALTER TABLE statement AUTO_INCREMENT = 2;
+ALTER TABLE user AUTO_INCREMENT = 2;
+
+SELECT * FROM user, bank_account;
+SELECT * FROM user JOIN login ON user.user_id = login.user_id;
