@@ -91,7 +91,7 @@ public class DatabaseDAO {
 		return userList;
 	}
 
-	public User getUser(String email) {
+	public User getUserByEmail(String email) {
 
 		User user = new User();
 		try {
@@ -106,9 +106,14 @@ public class DatabaseDAO {
 		return user;
 	}
 
+	/**
+	 * @param email    to check
+	 * @param password to check
+	 * @return true if account exists
+	 */
 	public boolean checkLoginCredentials(String email, String password) {
 		String query = "SELECT * FROM user JOIN login ON user.user_id = login.user_id " + "WHERE user.email = '" + email
-				+ "' " + "AND login.password_hash = '" + password + "';";
+				+ "' " + "AND login.password_hash = " + password + ";";
 
 		try {
 			rs = st.executeQuery(query);
@@ -124,6 +129,103 @@ public class DatabaseDAO {
 		}
 		// if no result, it means no email + password exists
 		return false;
+	}
+
+	/**
+	 * @param email   to check
+	 * @param bankAcc bank account to check
+	 * @return true if both match user_id's
+	 */
+	public boolean checkEmailAndBankAcc(String email, int bankAcc) {
+
+		String query1 = "SELECT * FROM user WHERE email = '" + email + "';";
+
+		Object result1 = selectAndGetColumnValue(query1, "int", "user_id");
+		int intEmailResult = (int) result1;
+
+		String query2 = "SELECT * FROM bank_account WHERE bank_acc_number = " + bankAcc + ";";
+		Object result2 = selectAndGetColumnValue(query2, "int", "user_id");
+		int intBankAccResult = (int) result2;
+
+		//if user.user_id is the same as bank_account.user_id, return true
+		if (intEmailResult == intBankAccResult) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * @param query         to execute
+	 * @param resultSetType enter "string" for rs.getString, "int" for rs.getInt,
+	 *                      "double" for rs.getDouble
+	 * @param columnName    column name of database table from query
+	 * @throws SQLException
+	 */
+	public Object selectAndGetColumnValue(String query, String resultSetType, String columnName) {
+
+		ResultSet rs = executeQueryRS(query);
+
+		switch (resultSetType) {
+		case "string":
+			try {
+				return rs.getString(columnName);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		case "int":
+			try {
+				return rs.getInt(columnName);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		case "double":
+			try {
+				return rs.getDouble(columnName);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		default:
+			throw new IllegalArgumentException("Invalid resultSetType: " + resultSetType);
+		}
+	}
+
+	/**
+	 * @param email    to get user Id to update user's password
+	 * @param password new password to set
+	 * @return 1 if new password was set, 0 if not set
+	 */
+	public int setNewPassword(String email, String password) {
+		String queryGetId = "SELECT * FROM user WHERE email = '" + email + "';";
+		int userId = getUserId(queryGetId);
+
+		try {
+			password = HashingUtility.hashPassword(password);
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String query = "UPDATE login SET password_hash = '" + password + "' WHERE user_id = " + userId + ";";
+		return executeUpdateRS(query);
+	}
+
+	public int getUserId(String query) {
+		int userId = 0;
+		try {
+			rs = st.executeQuery(query);
+			rs.next();
+
+			if (!rs.wasNull()) {
+				userId = rs.getInt("user_id");
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return userId;
 	}
 
 	/**
@@ -176,24 +278,24 @@ public class DatabaseDAO {
 		// bank_account saves user_id and bank_account from AccountNumberGenerator class
 		// statement saves only bank_account_id
 
-		//user entity insert: email
-		//login entity insert: user.id, login.password_hash
-		//bank_account entity insert: user.id, bank_acc_number
-		//statement entity insert: bank_acc_id
-		
+		// user entity insert: email
+		// login entity insert: user.id, login.password_hash
+		// bank_account entity insert: user.id, bank_acc_number
+		// statement entity insert: bank_acc_id
+
 		try {
 			String userQuery = "INSERT INTO user (email) VALUES('" + email + "');";
 			this.getConnection();
 			executeUpdateRS(userQuery);
 
 			// now get user_id since it was created using the email above
-			User user = getUser(email);
+			User user = getUserByEmail(email);
 
 			try {
 				password = HashingUtility.hashPassword(password);
 
-				String loginQuery = "INSERT INTO login (user_id, password_hash) VALUES (" + user.getId() + ", '" + password
-						+ "');";
+				String loginQuery = "INSERT INTO login (user_id, password_hash) VALUES (" + user.getId() + ", '"
+						+ password + "');";
 				executeUpdateRS(loginQuery);
 			} catch (NoSuchAlgorithmException e) {
 				// TODO Auto-generated catch block
@@ -204,8 +306,8 @@ public class DatabaseDAO {
 
 			// set user_id in bank_account table (auto incremented) creating a bank_acc_id
 
-			String bankAccountQuery = "INSERT INTO bank_account (user_id, bank_acc_number) VALUES (" + user.getId() + ", "
-					+ AccountNumberGenerator.generateRandomNumber(dbController) + ");";
+			String bankAccountQuery = "INSERT INTO bank_account (user_id, bank_acc_number) VALUES (" + user.getId()
+					+ ", " + AccountNumberGenerator.generateRandomNumber(dbController) + ");";
 			executeUpdateRS(bankAccountQuery);
 
 			// get bank_acc_id from bank_account table (auto incremented) to save into
@@ -215,13 +317,13 @@ public class DatabaseDAO {
 
 			String statementQuery = "INSERT INTO statement (bank_acc_id) VALUES (" + ba.getBankAccID() + ");";
 			executeUpdateRS(statementQuery);
-			
+
 			return true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return false;
 	}
 
@@ -246,7 +348,7 @@ public class DatabaseDAO {
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
-		System.out.println("Bank account number: "+ randomNumber + " does not exist.");
+		System.out.println("Bank account number: " + randomNumber + " does not exist.");
 		// number do not exist (was null, 0 records in database, it was false that
 		// accNumberExists)
 		return false;

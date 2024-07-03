@@ -239,7 +239,7 @@ public class SignUpScene extends Application {
 						// check email existence in db
 						DatabaseController db = DatabaseController.getInstance();
 
-						User user = db.getUser(emailTxtInput.getText());
+						User user = db.getUserByEmail(emailTxtInput.getText());
 						
 						System.out.println("Name: "+user.getName()+".");
 

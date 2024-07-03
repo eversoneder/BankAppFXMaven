@@ -1,49 +1,36 @@
 package in.BankAppFXMaven.view;
 
 import java.util.Optional;
-
 import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.model.LoggedUser;
 import in.BankAppFXMaven.model.Login;
 import in.BankAppFXMaven.utility.EmailValidator;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import javafx.util.Pair;
 
 public class SignInScene extends Application {
 
 	private Stage primaryStage;
-	
+
 	private static SignInScene signInSceneSingletonInstance;
-	private static DatabaseController dbController = DatabaseController.getInstance();
-	private LoggedUser user;
+	private static DatabaseController dbController;
+	private LoggedUser loggedUser;
 
 	private SignInScene() {
 	}
@@ -217,29 +204,92 @@ public class SignInScene extends Application {
 					dialog2.setHeaderText("Enter your ACCOUNT NUMBER to reset your password:");
 					Optional<String> result2 = dialog2.showAndWait();
 
-					String accNum = result2.get();
+					if (result2.isPresent()) {
 
-					// fetch database and see if there's a account that has this email AND account
-					// number, if so, change the user password to 10.
+						// fetch database and see if there's a account that has this email AND
+						// account number, if so, change the user password to 'temporarypassword'.
 
-					boolean accValidity = DatabaseController.getAccValidity(email, accNum);
+						String accNum = result2.get();
 
-					if (accValidity) {
-						Alert alert = new Alert(AlertType.CONFIRMATION);
-						alert.setTitle("Password Reset Succeded");
-						alert.setHeaderText(null);
-						alert.setContentText(
-								"Correct, your temporary new password is: 10. Sign in and proceed to imediately change the password please.");
-						alert.showAndWait();
+						int accNumInt = 0;
+						try {
+							accNumInt = Integer.parseInt(accNum);
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+							Alert alert = new Alert(AlertType.ERROR);
+							alert.setTitle("Wrong Bank Account Format");
+							alert.setHeaderText(null);
+							alert.setContentText("Your bank account is numbers only. 8 digits and it starts by 950.");
+							alert.showAndWait();
+						}
 
-					} else {
-						Alert alert = new Alert(AlertType.ERROR);
-						alert.setTitle("Password Reset Failure");
-						alert.setHeaderText(null);
-						alert.setContentText(
-								"Incorrect, the information provided does not match in our database information.");
-						alert.showAndWait();
+						// 'forgot password' gets email and bank account number to check and match.
+						// by email it gets the user.user_id, and by bank account number it gets
+						// bank_account.user_id from the db, if both user.user_id and
+						// bank_account.user_id matches then user seems to be the owner of the
+						// account, then provided correctly the 2 information, kind of making
+						// it a small "2 factor authentication"
+
+						boolean loginCredentials = DatabaseController.checkEmailAndBankAcc(email, accNumInt);// wrong
+
+						if (loginCredentials) {
+						    // Display dialog for user to enter new password
+						    TextInputDialog dialogSetPass = new TextInputDialog();
+						    dialogSetPass.setTitle("Password Reset");
+						    dialogSetPass.setHeaderText("Set your new password:");
+						    Optional<String> resultNewPass = dialogSetPass.showAndWait();
+
+						    if (resultNewPass.isPresent()) {
+						        String newPass = resultNewPass.get();
+
+						        // Prompt user to re-enter the new password
+						        TextInputDialog dialogConfirmPass = new TextInputDialog();
+						        dialogConfirmPass.setTitle("Confirm Password");
+						        dialogConfirmPass.setHeaderText("Re-enter your new password:");
+						        Optional<String> resultConfirmPass = dialogConfirmPass.showAndWait();
+
+						        if (resultConfirmPass.isPresent()) {
+						            String confirmPass = resultConfirmPass.get();
+
+						            if (newPass.equals(confirmPass)) {
+						                // Passwords match, set the new password
+						                int setNewPass = DatabaseController.setNewPassword(email, newPass);
+
+						                if (setNewPass == 1) {
+						                    Alert alert = new Alert(AlertType.INFORMATION);
+						                    alert.setTitle("Password Reset Succeeded");
+						                    alert.setHeaderText(null);
+						                    alert.setContentText("Done! Your new password is set. You can sign in now.");
+						                    alert.showAndWait();
+						                } else {
+						                    Alert alert = new Alert(AlertType.ERROR);
+						                    alert.setTitle("Password Reset Failure");
+						                    alert.setHeaderText(null);
+						                    alert.setContentText("Couldn't set new password, please try again.");
+						                    alert.showAndWait();
+						                }
+						            } else {
+						                // Passwords don't match
+						                Alert alert = new Alert(AlertType.ERROR);
+						                alert.setTitle("Password Mismatch");
+						                alert.setHeaderText(null);
+						                alert.setContentText("The entered passwords do not match. Please try again.");
+						                alert.showAndWait();
+						            }
+						        }
+						    }
+						} else {
+						    Alert alert = new Alert(AlertType.ERROR);
+						    alert.setTitle("Password Reset Failure");
+						    alert.setHeaderText(null);
+						    alert.setContentText("Incorrect, the information provided does not match our database information.");
+						    alert.showAndWait();
+						}
+
+
 					}
+
 				}
 			} catch (Exception e3) {
 				e3.printStackTrace();
@@ -257,49 +307,64 @@ public class SignInScene extends Application {
 		signInBtn.setFont(Font.font("Roboto Bold", 16.0));
 		signInBtn.setOnAction(e -> {
 			try {
-				TransactionScene.getInstance().start(primaryStage);
+//				TransactionScene.getInstance().start(primaryStage);
+
 //				//Steps to be taken(email format check, db credentials check, populate login & loggedUser w/ db data and check lastlogin to enter name and surname
-//				String email = emailTxtInput.getText();
-//				String pass = passwordField.getText();
-//
-//				//email format check
-//				boolean emailCheck = EmailValidator.validate(email);
-//
-//				if (!emailCheck) {
-//					Alert alert = new Alert(Alert.AlertType.ERROR);
-//					alert.setTitle("Invalid Email.");
-//					alert.setHeaderText(null);
-//					alert.setContentText("Please enter a valid email address.");
-//					alert.showAndWait();
-//				} else {
-//					System.out.println("Valid email.");
-//
-//					// check credentials in database 
-//					if (dbController.checkLoginCredentials(email, pass)) {
-//
-//						
-//						LoggedUser user = LoggedUser.getInstance();
-//						Login login = Login.getInstance();
-//
-//						if (login.getLastLogin() == null) {
-//							Alert alert = new Alert(Alert.AlertType.ERROR);
-//							alert.setTitle("Required.");
-//							alert.setHeaderText(null);
-//							alert.setContentText("Please enter your Name and Surname.");
-//							alert.showAndWait();
-//						} else {
-//
-//						}
-//						// Ask user to enter name and surname if it's first ever login
-//						transactionsSceneSingletonInstance.start(primaryStage);
-//					} else {
-//						Alert alert = new Alert(Alert.AlertType.ERROR);
-//						alert.setTitle("Wrong Email or Password.");
-//						alert.setHeaderText(null);
-//						alert.setContentText("Incorrect email or password, try again please.");
-//						alert.showAndWait();
-//					}
-//				}
+				String email = emailTxtInput.getText();
+				String pass = passwordField.getText();
+
+				// email format check
+				boolean emailCheck = EmailValidator.validate(email);
+
+				if (!emailCheck) {
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Invalid Email.");
+					alert.setHeaderText(null);
+					alert.setContentText("Please enter a valid email address.");
+					alert.showAndWait();
+				} else {
+					System.out.println("Valid email.");
+
+					// check credentials in database
+					if (DatabaseController.checkLoginCredentials(email, pass)) {
+
+						loggedUser = LoggedUser.getInstance();
+						Login login = Login.getInstance();
+
+						// db check last login, if null, name & surname required.
+						// code this /\ on this line here
+
+						// last login variable on login class is string, check on how to deal with
+						// retrieving sql data to java class as Date or String
+
+						if (login.getLastLogin() == null) {
+							Alert alert = new Alert(Alert.AlertType.ERROR);
+							alert.setTitle("Required.");
+							alert.setHeaderText(null);
+							alert.setContentText("Please enter your Name and Surname.");
+							alert.showAndWait();
+						} else {
+
+							// now that email & pass are valid, logged user needs to be populated,
+							// query all entities: user, login, bank_account, statement, transfer &
+							// transaction to be able to have access on next page
+							// query and populate
+
+							dbController = DatabaseController.getInstance();
+							// set loggedUser
+							loggedUser.setUser(dbController.getUserByEmail(emailTxtInput.getText()));
+
+							TransactionScene.getInstance().start(primaryStage);
+						}
+
+					} else {
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle("Wrong Email or Password.");
+						alert.setHeaderText(null);
+						alert.setContentText("Incorrect email or password, try again please.");
+						alert.showAndWait();
+					}
+				}
 
 			} catch (Exception e2) {
 				e2.printStackTrace();
@@ -340,7 +405,7 @@ public class SignInScene extends Application {
 	}
 
 	public void setLoggedUser(LoggedUser user) {
-		this.user = user;
+		this.loggedUser = user;
 	}
 
 }

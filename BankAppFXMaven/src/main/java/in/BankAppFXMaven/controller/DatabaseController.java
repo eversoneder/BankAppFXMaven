@@ -24,39 +24,47 @@ public class DatabaseController {
 	private DatabaseController() {
 	}
 	
-	public void test() {
-		System.out.println("Test");
-	}
-	
-	public static boolean getAccValidity(String email, String accNum) {
-		String emailTest = "test";
-		String accNumTest = "test";
-
-		if (email.equalsIgnoreCase(emailTest) && accNum.equalsIgnoreCase(accNumTest)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+//	public static boolean getAccValidity(String email, String accNum) {
+//		String emailTest = "test";
+//		String accNumTest = "test";
+//
+//		if (email.equalsIgnoreCase(emailTest) && accNum.equalsIgnoreCase(accNumTest)) {
+//			return true;
+//		} else {
+//			return false;
+//		}
+//	}
 	
 	public static ArrayList<User> getUsers(){
 		return db.getUsers();
 	}
 	
-	public User getUser(String email){
-		User user = db.getUser(email);
+	public User getUserByEmail(String email){
+		User user = db.getUserByEmail(email);
 		return user;
 	}
 	
 	/**
-	 * @param email to check in database
-	 * @param password to check in database
-	 * @return true if email & password matches
+	 * @param email to check 
+	 * @param password to check 
+	 * @return true if account exists
 	 */
-	public boolean checkLoginCredentials(String email, String password) {
+	public static boolean checkLoginCredentials(String email, String password) {
 		return db.checkLoginCredentials(email, password);
 	}
 	
+	/**
+	 * @param email to check 
+	 * @param bankAcc bank account to check
+	 * @return true if both match user_id's
+	 */
+	public static boolean checkEmailAndBankAcc(String email, int bankAcc) {
+		return db.checkEmailAndBankAcc(email, bankAcc);
+	}
+	
+	public static int setNewPassword(String email, String password) {
+		return db.setNewPassword(email, password);
+	}
 	/**
 	 * @param user to get the bank acc from db
 	 * @return bank account of the parameter user
