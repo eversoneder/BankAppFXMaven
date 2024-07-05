@@ -105,7 +105,7 @@ public class LoggedUser {
 	/**
      * Clear the user information at log out
      */
-    public void clearUser() {
-        this.user = null;
+    public void clearUserInfo() {
+        LoggedUser.loggedUserSingletonInstance = null;
     }
 }

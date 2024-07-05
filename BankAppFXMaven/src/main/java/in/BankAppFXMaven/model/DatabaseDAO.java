@@ -9,6 +9,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -109,9 +110,19 @@ public class DatabaseDAO {
 	/**
 	 * @param email    to check
 	 * @param password to check
-	 * @return true if account exists
+	 * @return user's Id if account exists, 0 if doesn't exist
 	 */
-	public boolean checkLoginCredentials(String email, String password) {
+	public int checkLoginCredentials(String email, String password) {
+
+		try {
+			password = HashingUtility.hashPassword(password);
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		int userId = 0;
+
 		String query = "SELECT * FROM user JOIN login ON user.user_id = login.user_id " + "WHERE user.email = '" + email
 				+ "' " + "AND login.password_hash = " + password + ";";
 
@@ -122,13 +133,15 @@ public class DatabaseDAO {
 			// if query had 1 result, it means the email + password exists
 			if (!rs.wasNull()) {
 				System.out.println("User: " + user.getClass().getName() + " exists.");
-				return true;
+
+				// then get user's Id to get all data to load up to sign in
+				userId = rs.getInt("user_id");
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
+		return userId;
 		// if no result, it means no email + password exists
-		return false;
 	}
 
 	/**
@@ -147,49 +160,11 @@ public class DatabaseDAO {
 		Object result2 = selectAndGetColumnValue(query2, "int", "user_id");
 		int intBankAccResult = (int) result2;
 
-		//if user.user_id is the same as bank_account.user_id, return true
+		// if user.user_id is the same as bank_account.user_id, return true
 		if (intEmailResult == intBankAccResult) {
 			return true;
 		} else {
 			return false;
-		}
-	}
-
-	/**
-	 * @param query         to execute
-	 * @param resultSetType enter "string" for rs.getString, "int" for rs.getInt,
-	 *                      "double" for rs.getDouble
-	 * @param columnName    column name of database table from query
-	 * @throws SQLException
-	 */
-	public Object selectAndGetColumnValue(String query, String resultSetType, String columnName) {
-
-		ResultSet rs = executeQueryRS(query);
-
-		switch (resultSetType) {
-		case "string":
-			try {
-				return rs.getString(columnName);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		case "int":
-			try {
-				return rs.getInt(columnName);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		case "double":
-			try {
-				return rs.getDouble(columnName);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		default:
-			throw new IllegalArgumentException("Invalid resultSetType: " + resultSetType);
 		}
 	}
 
@@ -208,7 +183,7 @@ public class DatabaseDAO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		String query = "UPDATE login SET password_hash = '" + password + "' WHERE user_id = " + userId + ";";
 		return executeUpdateRS(query);
 	}
@@ -327,8 +302,25 @@ public class DatabaseDAO {
 		return false;
 	}
 
-	public void setLastLogin(Date date, User user) {
-		String query = "UPDATE login SET last_login = '" + date + "' WHERE user_id = " + user.getId() + ";";
+	/**
+	 * @param userId to get "last_login" from db
+	 * @return Timestamp of "last_login"
+	 */
+	public java.sql.Timestamp getLastLogin(int userId) {
+		String query = "SELECT * FROM login WHERE user_id = " + userId + ";";
+		
+		Object lastLoginTimeStamp = selectAndGetColumnValue(query, "timestamp", "last_login");
+		java.sql.Timestamp timeStamp = (Timestamp) lastLoginTimeStamp;
+		
+		return timeStamp;
+	}
+
+	/**
+	 * @param userId of user to set last_login
+	 */
+	public void setLastLoginNow(int userId) {
+		Timestamp timeStamp = new java.sql.Timestamp(System.currentTimeMillis());
+		String query = "UPDATE login SET last_login = '" + timeStamp + "' WHERE user_id = " + userId + ";";
 		executeUpdateRS(query);
 	}
 
@@ -360,6 +352,51 @@ public class DatabaseDAO {
 	 */
 	public boolean emailExists(String email) {
 		return dbUser.emailExists(email);
+	}
+
+	/**
+	 * @param query         to execute
+	 * @param rsGetType enter "string" for rs.getString, "int" for rs.getInt,
+	 *                      "double" for rs.getDouble or "timestamp" for rs.getTimestamp 
+	 * @param columnName    column name of database table from query
+	 * @throws SQLException
+	 */
+	public Object selectAndGetColumnValue(String query, String rsGetType, String columnName) {
+
+		ResultSet rs = executeQueryRS(query);
+
+		switch (rsGetType) {
+		case "string":
+			try {
+				return rs.getString(columnName);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		case "int":
+			try {
+				return rs.getInt(columnName);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		case "double":
+			try {
+				return rs.getDouble(columnName);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		case "timestamp":
+			try {
+				return rs.getTimestamp(columnName);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		default:
+			throw new IllegalArgumentException("Invalid resultSetType: " + rsGetType);
+		}
 	}
 
 	/**

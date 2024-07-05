@@ -1,21 +1,15 @@
 package in.BankAppFXMaven.model;
 
+import java.sql.Timestamp;
+
 public class Login {
 
 	private int loginId;
 	private int userId;
 	private String passwordHash;
-	private String lastLogin;
-	private static Login loginSingletonInstance;
+	private Timestamp lastLogin;
 
-	private Login() {
-	}
-
-	public static Login getInstance() {
-		if (loginSingletonInstance == null) {
-			loginSingletonInstance = new Login();
-		}
-		return loginSingletonInstance;
+	public Login() {
 	}
 
 	/**
@@ -63,21 +57,13 @@ public class Login {
 	/**
 	 * @return the lastLogin
 	 */
-	public String getLastLogin() {
+	public Timestamp getLastLogin() {
 		return lastLogin;
 	}
 	/**
 	 * @param lastLogin the lastLogin to set
 	 */
-	public void setLastLogin(String lastLogin) {
+	public void setLastLogin(Timestamp lastLogin) {
 		this.lastLogin = lastLogin;
 	}
-	
-	/**
-     * Clear the login information at log out
-     */
-    public void clearLogin() {
-    	loginSingletonInstance = null;
-    }
-
 }

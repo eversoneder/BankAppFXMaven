@@ -1,5 +1,7 @@
 package in.BankAppFXMaven;
 
+import java.sql.Timestamp;
+
 import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.model.DatabaseDAO;
 import in.BankAppFXMaven.model.User;
@@ -20,7 +22,6 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			singUp.start(primaryStage);
-			
 			
 		} catch(Exception e) {
 			e.printStackTrace();

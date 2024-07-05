@@ -49,7 +49,7 @@ public class DatabaseController {
 	 * @param password to check 
 	 * @return true if account exists
 	 */
-	public static boolean checkLoginCredentials(String email, String password) {
+	public static int checkLoginCredentials(String email, String password) {
 		return db.checkLoginCredentials(email, password);
 	}
 	
@@ -82,8 +82,12 @@ public class DatabaseController {
 		db.createUser(email, password);
 	}
 	
-	public void setLastLogin(Date date, User user) {
-		db.setLastLogin(date, user);
+	public void setLastLogin(int userId) {
+		db.setLastLoginNow(userId);
+	}
+	
+	public java.sql.Timestamp getLastLogin(int userId) {
+		return db.getLastLogin(userId);
 	}
 	
 	public boolean emailExists(String email) {

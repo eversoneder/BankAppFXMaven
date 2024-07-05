@@ -2,8 +2,13 @@ package in.BankAppFXMaven.view;
 
 import java.util.Optional;
 import in.BankAppFXMaven.controller.DatabaseController;
+import in.BankAppFXMaven.model.BankAccount;
 import in.BankAppFXMaven.model.LoggedUser;
 import in.BankAppFXMaven.model.Login;
+import in.BankAppFXMaven.model.Statement;
+import in.BankAppFXMaven.model.Transaction;
+import in.BankAppFXMaven.model.Transfer;
+import in.BankAppFXMaven.model.User;
 import in.BankAppFXMaven.utility.EmailValidator;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -160,27 +165,27 @@ public class SignInScene extends Application {
 		emailTxt.setFont(Font.font("Roboto Regular", FontWeight.BOLD, 16.0));
 
 		// text field with text clickable that disapears
-		TextField emailTxtInput = new TextField();
-		emailTxtInput.setLayoutX(55.0);
-		emailTxtInput.setLayoutY(120.0);
-		emailTxtInput.setPrefHeight(30.0);
-		emailTxtInput.setPrefWidth(380.0);
-		emailTxtInput.setPromptText("Enter your email or account number");
-		emailTxtInput.setFont(Font.font("Roboto Regular", 16.0));
+		TextField emailInput = new TextField();
+		emailInput.setLayoutX(55.0);
+		emailInput.setLayoutY(120.0);
+		emailInput.setPrefHeight(30.0);
+		emailInput.setPrefWidth(380.0);
+		emailInput.setPromptText("Enter your email or account number");
+		emailInput.setFont(Font.font("Roboto Regular", 16.0));
 
-		Text newPasswordTxt = new Text("Password");
-		newPasswordTxt.setFill(Color.web("#B3B3B3"));
-		newPasswordTxt.setLayoutX(55.0);
-		newPasswordTxt.setLayoutY(180.0);
-		newPasswordTxt.setFont(Font.font("Roboto Regular", FontWeight.BOLD, 16.0));
+		Text passwordTxt = new Text("Password");
+		passwordTxt.setFill(Color.web("#B3B3B3"));
+		passwordTxt.setLayoutX(55.0);
+		passwordTxt.setLayoutY(180.0);
+		passwordTxt.setFont(Font.font("Roboto Regular", FontWeight.BOLD, 16.0));
 
-		PasswordField passwordField = new PasswordField();
-		passwordField.setLayoutX(55.0);
-		passwordField.setLayoutY(190.0);
-		passwordField.setPrefHeight(30.0);
-		passwordField.setPrefWidth(380.0);
-		passwordField.setPromptText("Enter your password");
-		passwordField.setFont(Font.font("Roboto Regular", 16.0));
+		PasswordField passwordInput = new PasswordField();
+		passwordInput.setLayoutX(55.0);
+		passwordInput.setLayoutY(190.0);
+		passwordInput.setPrefHeight(30.0);
+		passwordInput.setPrefWidth(380.0);
+		passwordInput.setPromptText("Enter your password");
+		passwordInput.setFont(Font.font("Roboto Regular", 16.0));
 
 		// Create Sign in Button
 		Button forgotPassBtn = new Button("Forgot password?");
@@ -234,59 +239,60 @@ public class SignInScene extends Application {
 						boolean loginCredentials = DatabaseController.checkEmailAndBankAcc(email, accNumInt);// wrong
 
 						if (loginCredentials) {
-						    // Display dialog for user to enter new password
-						    TextInputDialog dialogSetPass = new TextInputDialog();
-						    dialogSetPass.setTitle("Password Reset");
-						    dialogSetPass.setHeaderText("Set your new password:");
-						    Optional<String> resultNewPass = dialogSetPass.showAndWait();
+							// Display dialog for user to enter new password
+							TextInputDialog dialogSetPass = new TextInputDialog();
+							dialogSetPass.setTitle("Password Reset");
+							dialogSetPass.setHeaderText("Set your new password:");
+							Optional<String> resultNewPass = dialogSetPass.showAndWait();
 
-						    if (resultNewPass.isPresent()) {
-						        String newPass = resultNewPass.get();
+							if (resultNewPass.isPresent()) {
+								String newPass = resultNewPass.get();
 
-						        // Prompt user to re-enter the new password
-						        TextInputDialog dialogConfirmPass = new TextInputDialog();
-						        dialogConfirmPass.setTitle("Confirm Password");
-						        dialogConfirmPass.setHeaderText("Re-enter your new password:");
-						        Optional<String> resultConfirmPass = dialogConfirmPass.showAndWait();
+								// Prompt user to re-enter the new password
+								TextInputDialog dialogConfirmPass = new TextInputDialog();
+								dialogConfirmPass.setTitle("Confirm Password");
+								dialogConfirmPass.setHeaderText("Re-enter your new password:");
+								Optional<String> resultConfirmPass = dialogConfirmPass.showAndWait();
 
-						        if (resultConfirmPass.isPresent()) {
-						            String confirmPass = resultConfirmPass.get();
+								if (resultConfirmPass.isPresent()) {
+									String confirmPass = resultConfirmPass.get();
 
-						            if (newPass.equals(confirmPass)) {
-						                // Passwords match, set the new password
-						                int setNewPass = DatabaseController.setNewPassword(email, newPass);
+									if (newPass.equals(confirmPass)) {
+										// Passwords match, set the new password
+										int setNewPass = DatabaseController.setNewPassword(email, newPass);
 
-						                if (setNewPass == 1) {
-						                    Alert alert = new Alert(AlertType.INFORMATION);
-						                    alert.setTitle("Password Reset Succeeded");
-						                    alert.setHeaderText(null);
-						                    alert.setContentText("Done! Your new password is set. You can sign in now.");
-						                    alert.showAndWait();
-						                } else {
-						                    Alert alert = new Alert(AlertType.ERROR);
-						                    alert.setTitle("Password Reset Failure");
-						                    alert.setHeaderText(null);
-						                    alert.setContentText("Couldn't set new password, please try again.");
-						                    alert.showAndWait();
-						                }
-						            } else {
-						                // Passwords don't match
-						                Alert alert = new Alert(AlertType.ERROR);
-						                alert.setTitle("Password Mismatch");
-						                alert.setHeaderText(null);
-						                alert.setContentText("The entered passwords do not match. Please try again.");
-						                alert.showAndWait();
-						            }
-						        }
-						    }
+										if (setNewPass == 1) {
+											Alert alert = new Alert(AlertType.INFORMATION);
+											alert.setTitle("Password Reset Succeeded");
+											alert.setHeaderText(null);
+											alert.setContentText(
+													"Done! Your new password is set. You can sign in now.");
+											alert.showAndWait();
+										} else {
+											Alert alert = new Alert(AlertType.ERROR);
+											alert.setTitle("Password Reset Failure");
+											alert.setHeaderText(null);
+											alert.setContentText("Couldn't set new password, please try again.");
+											alert.showAndWait();
+										}
+									} else {
+										// Passwords don't match
+										Alert alert = new Alert(AlertType.ERROR);
+										alert.setTitle("Password Mismatch");
+										alert.setHeaderText(null);
+										alert.setContentText("The entered passwords do not match. Please try again.");
+										alert.showAndWait();
+									}
+								}
+							}
 						} else {
-						    Alert alert = new Alert(AlertType.ERROR);
-						    alert.setTitle("Password Reset Failure");
-						    alert.setHeaderText(null);
-						    alert.setContentText("Incorrect, the information provided does not match our database information.");
-						    alert.showAndWait();
+							Alert alert = new Alert(AlertType.ERROR);
+							alert.setTitle("Password Reset Failure");
+							alert.setHeaderText(null);
+							alert.setContentText(
+									"Incorrect, the information provided does not match our database information.");
+							alert.showAndWait();
 						}
-
 
 					}
 
@@ -306,12 +312,14 @@ public class SignInScene extends Application {
 		signInBtn.setTextFill(Color.web("#ffffff"));
 		signInBtn.setFont(Font.font("Roboto Bold", 16.0));
 		signInBtn.setOnAction(e -> {
+			// make required, when log's in, check db if name and surname exist, if not, ask
+			// via dialog and INSERT in db
 			try {
 //				TransactionScene.getInstance().start(primaryStage);
 
 //				//Steps to be taken(email format check, db credentials check, populate login & loggedUser w/ db data and check lastlogin to enter name and surname
-				String email = emailTxtInput.getText();
-				String pass = passwordField.getText();
+				String email = emailInput.getText();
+				String pass = passwordInput.getText();
 
 				// email format check
 				boolean emailCheck = EmailValidator.validate(email);
@@ -326,10 +334,30 @@ public class SignInScene extends Application {
 					System.out.println("Valid email.");
 
 					// check credentials in database
-					if (DatabaseController.checkLoginCredentials(email, pass)) {
+					int userId = DatabaseController.checkLoginCredentials(email, pass);
+					if (userId != 0) {
 
 						loggedUser = LoggedUser.getInstance();
-						Login login = Login.getInstance();
+						
+						Login login = new Login();
+						User user = new User();
+						BankAccount bankAccount = new BankAccount();
+						Statement statement = new Statement();
+						Transfer transfer = new Transfer();
+						Transaction transaction = new Transaction();
+						
+						java.sql.Timestamp td = dbController.getLastLogin(userId);
+						//do with all others, user, bankAccount, statement...
+						
+						login.setLastLogin(td);
+						loggedUser.setLogin(login);
+						loggedUser.setUser(user);
+						loggedUser.setBankAccount(bankAccount);
+						loggedUser.setStatement(statement);
+						loggedUser.setTransfer(transfer);
+						loggedUser.setTransaction(transaction);
+						// instead of setting login var by var, get all vars from login, create new
+						// login using all db data, the same for all other tables.
 
 						// db check last login, if null, name & surname required.
 						// code this /\ on this line here
@@ -352,7 +380,7 @@ public class SignInScene extends Application {
 
 							dbController = DatabaseController.getInstance();
 							// set loggedUser
-							loggedUser.setUser(dbController.getUserByEmail(emailTxtInput.getText()));
+							loggedUser.setUser(dbController.getUserByEmail(emailInput.getText()));
 
 							TransactionScene.getInstance().start(primaryStage);
 						}
@@ -392,8 +420,8 @@ public class SignInScene extends Application {
 			}
 		});
 
-		whiteMiddlePane.getChildren().addAll(welcomeTxt, signInToContinueTxt, emailTxt, emailTxtInput, newPasswordTxt,
-				passwordField, forgotPassBtn, signInBtn, alreadyHaveAccTxt, signUpBtn);
+		whiteMiddlePane.getChildren().addAll(welcomeTxt, signInToContinueTxt, emailTxt, emailInput, passwordTxt,
+				passwordInput, forgotPassBtn, signInBtn, alreadyHaveAccTxt, signUpBtn);
 		anchorPane.getChildren().add(whiteMiddlePane);
 //////////////////////////////white box end//////////////////////////////
 

@@ -97,7 +97,7 @@ public class DbUserSection {
 		return user;
 	}
 
-	public boolean checkLoginCredentials(String email, String password) {
+	public int checkLoginCredentials(String email, String password) {
 		return db.checkLoginCredentials(email, password);
 	}
 
