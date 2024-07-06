@@ -107,6 +107,78 @@ public class DatabaseDAO {
 		return user;
 	}
 
+	public User getUserById(int userId) {
+
+		User user = new User();
+		try {
+			rs = st.executeQuery("SELECT * FROM user WHERE user_id = " + userId + ";");
+			rs.next();
+
+			user = dbUser.getUser(rs);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+
+		return user;
+	}
+
+	/**
+	 * This method retrieves login information. If last_login is null, it sets the
+	 * current time; otherwise, it updates last_login but only after the next login.
+	 * 
+	 * @param userId to get login
+	 * @return login
+	 */
+	public Login getLoginByUserId(int userId) {
+
+		Login login = new Login();
+
+		try {
+			rs = st.executeQuery("SELECT * FROM login WHERE user_id = " + userId + ";");
+			rs.next();
+			Timestamp newTimeStamp = null;
+			try {
+				if (!rs.wasNull()) {
+					login.setLoginId(rs.getInt("login_id"));
+					login.setUserId(rs.getInt("user_id"));
+					login.setPasswordHash(rs.getString("password_hash"));
+
+					Timestamp timeStamp = rs.getTimestamp("last_login");
+					if (timeStamp == null) {
+						newTimeStamp = new java.sql.Timestamp(System.currentTimeMillis());
+						rs = st.executeQuery("INSERT INTO login (last_login) VALUES('" + newTimeStamp + "');");
+						login.setLastLogin(newTimeStamp);
+					} else {
+						// set old value so that user can see when last logged in, then next line
+						// update, when user logs out and logs in, the previous time will show up
+						login.setLastLogin(rs.getTimestamp("last_login"));
+						newTimeStamp = new java.sql.Timestamp(System.currentTimeMillis());
+						st.executeUpdate(
+								"UPDATE login SET last_login = '" + newTimeStamp + "' WHERE user_id = " + userId + ";");
+					}
+
+					System.out.println("login_id: " + login.getLoginId());
+					System.out.println("user_id: " + login.getUserId());
+					System.out.println("password_hash: " + login.getPasswordHash());
+					System.out.println("last_login: " + login.getLastLogin());
+					System.out.println(); // Adds an empty line for better readability
+				}
+
+			} catch (SQLException sqle) {
+				db.exceptionMessages(sqle);
+				sqle.printStackTrace();
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				System.out.println("User with this email does not exist.");
+			}
+
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+
+		return login;
+	}
+
 	/**
 	 * @param email    to check
 	 * @param password to check
@@ -212,6 +284,25 @@ public class DatabaseDAO {
 		return getBankAccountReusableMethod(query);
 	}
 
+	public in.BankAppFXMaven.model.Statement getStatement(int bankAccId) {
+
+		int userId = 0;
+		in.BankAppFXMaven.model.Statement statement = new in.BankAppFXMaven.model.Statement();
+		try {
+			rs = st.executeQuery("SELECT * FROM statement WHERE bank_acc_id = " + bankAccId + ";");
+			rs.next();
+
+			if (!rs.wasNull()) {
+				statement.setStatementID(rs.getInt("statement_id"));
+				statement.setBankAccID(rs.getInt("bank_acc_id"));
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+
+		return statement;
+	}
+
 	/**
 	 * @param query to get the bank account
 	 * @return the bank account
@@ -308,10 +399,10 @@ public class DatabaseDAO {
 	 */
 	public java.sql.Timestamp getLastLogin(int userId) {
 		String query = "SELECT * FROM login WHERE user_id = " + userId + ";";
-		
+
 		Object lastLoginTimeStamp = selectAndGetColumnValue(query, "timestamp", "last_login");
 		java.sql.Timestamp timeStamp = (Timestamp) lastLoginTimeStamp;
-		
+
 		return timeStamp;
 	}
 
@@ -355,10 +446,11 @@ public class DatabaseDAO {
 	}
 
 	/**
-	 * @param query         to execute
-	 * @param rsGetType enter "string" for rs.getString, "int" for rs.getInt,
-	 *                      "double" for rs.getDouble or "timestamp" for rs.getTimestamp 
-	 * @param columnName    column name of database table from query
+	 * @param query      to execute
+	 * @param rsGetType  enter "string" for rs.getString, "int" for rs.getInt,
+	 *                   "double" for rs.getDouble or "timestamp" for
+	 *                   rs.getTimestamp
+	 * @param columnName column name of database table from query
 	 * @throws SQLException
 	 */
 	public Object selectAndGetColumnValue(String query, String rsGetType, String columnName) {

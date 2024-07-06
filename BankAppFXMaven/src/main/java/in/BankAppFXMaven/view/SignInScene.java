@@ -317,6 +317,12 @@ public class SignInScene extends Application {
 			try {
 //				TransactionScene.getInstance().start(primaryStage);
 
+				//Sign-in Steps & checks:
+				//1 - get email from user input, check email format
+				//2 - check email & pass match in db
+				//3 - get all entities loaded
+				//4 - 
+				
 //				//Steps to be taken(email format check, db credentials check, populate login & loggedUser w/ db data and check lastlogin to enter name and surname
 				String email = emailInput.getText();
 				String pass = passwordInput.getText();
@@ -346,10 +352,15 @@ public class SignInScene extends Application {
 						Transfer transfer = new Transfer();
 						Transaction transaction = new Transaction();
 						
-						java.sql.Timestamp td = dbController.getLastLogin(userId);
-						//do with all others, user, bankAccount, statement...
+						java.sql.Timestamp ts = dbController.getLastLogin(userId);
 						
-						login.setLastLogin(td);
+						login = dbController.getLoginByUserId(userId);
+						user = dbController.getUserById(userId);
+						bankAccount = dbController.getUserBankAcc(userId);
+						statement = dbController.getStatement(userId);
+						//do transfer and transaction...
+						
+						login.setLastLogin(ts);
 						loggedUser.setLogin(login);
 						loggedUser.setUser(user);
 						loggedUser.setBankAccount(bankAccount);
