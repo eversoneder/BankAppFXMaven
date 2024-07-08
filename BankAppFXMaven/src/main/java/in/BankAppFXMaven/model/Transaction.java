@@ -32,7 +32,7 @@ public class Transaction {
 		this.bankAccID = bankAccID;
 	}
 	/**
-	 * @return the transactionType
+	 * @return the transactionType (deposit, withdraw, transfer)
 	 */
 	public String getTransactionType() {
 		return transactionType;

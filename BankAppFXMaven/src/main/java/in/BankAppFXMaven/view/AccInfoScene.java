@@ -28,7 +28,7 @@ import javafx.stage.Stage;
 
 public class AccInfoScene extends Application {
 
-	private static TransactionScene transactionSceneSingletonInstance = TransactionScene.getInstance();
+	private static AccountOverviewScene transactionSceneSingletonInstance = AccountOverviewScene.getInstance();
 	private static AccInfoScene AccInfoSceneSingletonInstance;
 	private static DatabaseController dbController = DatabaseController.getInstance();
 	private Stage primaryStage;

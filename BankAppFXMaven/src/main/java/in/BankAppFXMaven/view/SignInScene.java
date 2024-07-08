@@ -317,12 +317,12 @@ public class SignInScene extends Application {
 			try {
 //				TransactionScene.getInstance().start(primaryStage);
 
-				//Sign-in Steps & checks:
-				//1 - get email from user input, check email format
-				//2 - check email & pass match in db
-				//3 - get all entities loaded
-				//4 - 
-				
+				// Sign-in Steps & checks:
+				// 1 - get email from user input, check email format
+				// 2 - check email & pass match in db
+				// 3 - get all entities loaded
+				// 4 -
+
 //				//Steps to be taken(email format check, db credentials check, populate login & loggedUser w/ db data and check lastlogin to enter name and surname
 				String email = emailInput.getText();
 				String pass = passwordInput.getText();
@@ -344,28 +344,31 @@ public class SignInScene extends Application {
 					if (userId != 0) {
 
 						loggedUser = LoggedUser.getInstance();
-						
-						Login login = new Login();
-						User user = new User();
-						BankAccount bankAccount = new BankAccount();
-						Statement statement = new Statement();
-						Transfer transfer = new Transfer();
+
 						Transaction transaction = new Transaction();
-						
+
 						java.sql.Timestamp ts = dbController.getLastLogin(userId);
-						
-						login = dbController.getLoginByUserId(userId);
-						user = dbController.getUserById(userId);
-						bankAccount = dbController.getUserBankAcc(userId);
-						statement = dbController.getStatement(userId);
-						//do transfer and transaction...
-						
+
+						Login login = dbController.getLoginByUserId(userId);
+						User user = dbController.getUserById(userId);
+						BankAccount bankAccount = dbController.getUserBankAcc(userId);
+						Statement statement = dbController.getStatement(userId);
+
+						// Reconsider what is necessary, transfer and transaction tables, get a pen and
+						// brainstorm
+						// how a transfer or transaction is done, when doing deposit, withdraw, how
+						// would this happen in the back-end?
+
+//						Transfer transfer = dbController.getTransfer(userId);
+//						Transaction transaction = dbController.getTransaction(bankAccount.getBankAccID());
+						// do transfer and transaction...
+
 						login.setLastLogin(ts);
 						loggedUser.setLogin(login);
 						loggedUser.setUser(user);
 						loggedUser.setBankAccount(bankAccount);
 						loggedUser.setStatement(statement);
-						loggedUser.setTransfer(transfer);
+//						loggedUser.setTransfer(transfer);
 						loggedUser.setTransaction(transaction);
 						// instead of setting login var by var, get all vars from login, create new
 						// login using all db data, the same for all other tables.
@@ -393,7 +396,7 @@ public class SignInScene extends Application {
 							// set loggedUser
 							loggedUser.setUser(dbController.getUserByEmail(emailInput.getText()));
 
-							TransactionScene.getInstance().start(primaryStage);
+							AccountOverviewScene.getInstance().start(primaryStage);
 						}
 
 					} else {

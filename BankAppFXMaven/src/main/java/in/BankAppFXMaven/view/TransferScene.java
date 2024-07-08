@@ -19,7 +19,7 @@ public class TransferScene extends Application {
 
 	private Stage primaryStage;
 	private static TransferScene transferSceneSingletonInstance;
-	private static TransactionScene transactionsSceneSingletonInstance = TransactionScene.getInstance();
+	private static AccountOverviewScene transactionsSceneSingletonInstance = AccountOverviewScene.getInstance();
 //	private static DatabaseService db = DatabaseService.getInstance();
 
 	private TransferScene() {

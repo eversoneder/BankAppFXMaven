@@ -32,7 +32,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Pair;
 
-public class TransactionScene extends Application {
+public class AccountOverviewScene extends Application {
 
 	private Stage primaryStage;
 
@@ -45,16 +45,16 @@ public class TransactionScene extends Application {
 	private User user;
 	private Login login;
 
-	private static TransactionScene transactionsSceneSingletonInstance;
+	private static AccountOverviewScene accOverviewSceneSingletonInstance;
 
-	public TransactionScene() {
+	public AccountOverviewScene() {
 	}
 
-	public static TransactionScene getInstance() {
-		if (transactionsSceneSingletonInstance == null) {
-			transactionsSceneSingletonInstance = new TransactionScene();
+	public static AccountOverviewScene getInstance() {
+		if (accOverviewSceneSingletonInstance == null) {
+			accOverviewSceneSingletonInstance = new AccountOverviewScene();
 		}
-		return transactionsSceneSingletonInstance;
+		return accOverviewSceneSingletonInstance;
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class TransactionScene extends Application {
 		whiteMiddlePane.setStyle("-fx-background-color: white; -fx-background-radius: 20 20 0 0;");
 
 		// Create the Text nodes
-		Text transactionsTxt = new Text("Transactions");
+		Text transactionsTxt = new Text("Account Overview");
 		transactionsTxt.setFill(Color.web("#f49820"));
 		transactionsTxt.setLayoutX(55.0);
 		transactionsTxt.setLayoutY(51.0);

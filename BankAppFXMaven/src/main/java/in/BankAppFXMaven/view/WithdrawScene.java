@@ -19,7 +19,7 @@ public class WithdrawScene extends Application {
 
 	private Stage primaryStage;
 	private static WithdrawScene withdrawSceneSingletonInstance;
-	private static TransactionScene transactionsSceneSingletonInstance = TransactionScene.getInstance();
+	private static AccountOverviewScene transactionsSceneSingletonInstance = AccountOverviewScene.getInstance();
 //	private static DatabaseService db = DatabaseService.getInstance();
 
 	private WithdrawScene() {

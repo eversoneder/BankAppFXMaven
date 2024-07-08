@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 public class DepositScene extends Application {
 
 	private static DepositScene depositSceneSingletonInstance;
-	private static TransactionScene transactionSceneSingletonInstance = TransactionScene.getInstance();
+	private static AccountOverviewScene transactionSceneSingletonInstance = AccountOverviewScene.getInstance();
 //	private static DatabaseService db = DatabaseService.getInstance();
 	private Stage primaryStage;
 

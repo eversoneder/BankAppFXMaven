@@ -33,7 +33,7 @@ public class BalanceScene extends Application {
 
 	private Stage primaryStage;
 	private static BalanceScene balanceSceneSingletonInstance;
-	private static TransactionScene transactionSceneSingletonInstance = TransactionScene.getInstance();
+	private static AccountOverviewScene transactionSceneSingletonInstance = AccountOverviewScene.getInstance();
 //	private static DatabaseService db = DatabaseService.getInstance();
 	private Dialog<Void> dialog = new Dialog<>();
 	private static ArrayList<TransactionView> transactions = new ArrayList<TransactionView>();
