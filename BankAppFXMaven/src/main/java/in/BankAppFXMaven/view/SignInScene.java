@@ -321,7 +321,7 @@ public class SignInScene extends Application {
 				// 1 - get email from user input, check email format
 				// 2 - check email & pass match in db
 				// 3 - get all entities loaded
-				// 4 -
+				// 4 - send all entities within "LoggedUser" into AccountOverviewScene or send to a setter
 
 //				//Steps to be taken(email format check, db credentials check, populate login & loggedUser w/ db data and check lastlogin to enter name and surname
 				String email = emailInput.getText();

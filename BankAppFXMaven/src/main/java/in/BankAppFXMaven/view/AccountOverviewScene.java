@@ -2,6 +2,7 @@ package in.BankAppFXMaven.view;
 
 import java.util.Optional;
 
+import in.BankAppFXMaven.model.LoggedUser;
 import in.BankAppFXMaven.model.Login;
 import in.BankAppFXMaven.model.User;
 import javafx.application.Application;
@@ -42,8 +43,7 @@ public class AccountOverviewScene extends Application {
 	private static TransferScene transferSceneSingletonInstance = TransferScene.getInstance();
 	private static BalanceScene balanceSceneSingletonInstance = BalanceScene.getInstance();
 	private static AccInfoScene accInfoSceneSingletonInstance = AccInfoScene.getInstance();
-	private User user;
-	private Login login;
+	private LoggedUser loggedUser;
 
 	private static AccountOverviewScene accOverviewSceneSingletonInstance;
 
@@ -446,6 +446,19 @@ public class AccountOverviewScene extends Application {
 		            "Name and Surname have been set.\n Welcome to Econo Bank " + nameSurname.getKey() + " " + nameSurname.getValue() + "!");
 		    confirmationAlert.showAndWait();
 		});
+	}
+	
+	/**
+	 * @return the loggedUser
+	 */
+	public LoggedUser getLoggedUser() {
+		return loggedUser;
+	}
 
+	/**
+	 * @param loggedUser the loggedUser to set
+	 */
+	public void setLoggedUser(LoggedUser loggedUser) {
+		this.loggedUser = loggedUser;
 	}
 }
