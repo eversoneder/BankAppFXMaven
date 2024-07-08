@@ -1,0 +1,64 @@
+CREATE DATABASE `bankappfx` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+USE bankappfx;
+
+CREATE TABLE `user` (
+  `user_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(25) DEFAULT NULL,
+  `surname` varchar(25) DEFAULT NULL,
+  `email` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `login` (
+  `login_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `password_hash` varchar(255) DEFAULT NULL,
+  `last_login` datetime DEFAULT NULL,
+  PRIMARY KEY (`login_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `login_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `bank_account` (
+  `bank_acc_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `bank_acc_number` int DEFAULT NULL,
+  `bank_acc_balance` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`bank_acc_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `bank_account_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `transfer` (
+  `transfer_id` int NOT NULL AUTO_INCREMENT,
+  `from_bank_acc_id` int DEFAULT NULL,
+  `to_bank_acc_id` int DEFAULT NULL,
+  `transfer_amount` decimal(10,2) DEFAULT NULL,
+  `transfer_date` date DEFAULT NULL,
+  PRIMARY KEY (`transfer_id`),
+  KEY `from_bank_acc_id` (`from_bank_acc_id`),
+  KEY `to_bank_acc_id` (`to_bank_acc_id`),
+  CONSTRAINT `transfer_ibfk_1` FOREIGN KEY (`from_bank_acc_id`) REFERENCES `bank_account` (`bank_acc_id`),
+  CONSTRAINT `transfer_ibfk_2` FOREIGN KEY (`to_bank_acc_id`) REFERENCES `bank_account` (`bank_acc_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `transaction` (
+  `transaction_id` int NOT NULL AUTO_INCREMENT,
+  `bank_acc_id` int DEFAULT NULL,
+  `transaction_type` varchar(50) DEFAULT NULL,
+  `transaction_amount` decimal(10,2) DEFAULT NULL,
+  `transaction_date` date DEFAULT NULL,
+  PRIMARY KEY (`transaction_id`),
+  KEY `bank_acc_id` (`bank_acc_id`),
+  CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`bank_acc_id`) REFERENCES `bank_account` (`bank_acc_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `statement` (
+  `statement_id` int NOT NULL AUTO_INCREMENT,
+  `bank_acc_id` int DEFAULT NULL,
+  PRIMARY KEY (`statement_id`),
+  KEY `bank_acc_id` (`bank_acc_id`),
+  CONSTRAINT `statement_ibfk_1` FOREIGN KEY (`bank_acc_id`) REFERENCES `bank_account` (`bank_acc_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
