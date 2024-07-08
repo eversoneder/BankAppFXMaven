@@ -1,11 +1,11 @@
 # Econo Bank App Structure
 
 ## Main Screen
-A welcome page with options to sign in or sign up.
+- A welcome page with options to sign in or sign up.
 <img src="BankAppFXMaven/src/main/resources/img/pagesPNG/MainScene.png" alt="Econo Bank Main Scene" width="400">
 
 ## Sign-Up Page
-Requires three fields for creating an account: email, password, and confirm password.
+- Requires three fields for creating an account: email, password, and confirm password.
 <img src="BankAppFXMaven/src/main/resources/img/pagesPNG/SignUpScene.png" alt="Econo Bank Sign Up Scene" width="400">
 
 ## Sign-In Page
