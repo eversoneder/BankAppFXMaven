@@ -52,13 +52,13 @@ Requires three fields for creating an account: email, password, and confirm pass
 
 ## Login (User Authentication):
 - The Login entity represents user authentication.
-- It has attributes: login_id, user_id, password_hash, and last_login.
+- Attributes: login_id, user_id, password_hash, and last_login.
 - The relationship between Login and User is one-to-one:
  - Each login corresponds to a single user, and vice versa.
 
 ## User:
 - The User entity contains user information.
-- Attributes include: user_id, name, surname, and email (unique).
+- Attributes: user_id, name, surname, and email (unique).
 - The relationship between User and Bank Account is one-to-many:
  - Each user can have multiple bank accounts.
 
@@ -73,8 +73,17 @@ Requires three fields for creating an account: email, password, and confirm pass
  - One-to-One with Statement:
   - A Bank Account has one statement holding it's full history.
 
+## Transfer:
+- The Transfer records only account-to-account transactions.
+- Attributes: transfer_id, from_bank_acc_id, to_bank_acc_id, transfer_amount, and transfer_date.
+- Relationships:
+ - Many-to-One with Bank Account:
+  - Multiple transfers can be associated with one bank account (both outgoing and incoming).
+ - Many-to-One with Transaction:
+  - Multiple transactions contribute to one transfer.
+
 ## Transaction:
-- The Transaction entity records financial operations.
+- The Transaction entity records all financial operations.
 - Attributes: transaction_id, bank_acc_id, transaction_type, transaction_amount, and transaction_date.
 - the 'transaction_type' is used to know if it's a withdraw, deposit or transfer.
 - Relationships:
@@ -87,6 +96,7 @@ Requires three fields for creating an account: email, password, and confirm pass
 
 ## Statement:
 - The Statement entity provides transaction history.
+- Attributes: statement_id, and bank_acc_id.
 - It’s connected to Transaction, showing how transactions form statements.
 - Relationships: 
  - One-to-Many with Transaction:
