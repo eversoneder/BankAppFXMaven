@@ -1,21 +1,20 @@
 # Econo Bank App Structure
 
 ## Main Screen
-<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/MainScene.png" alt="Econo Bank Main Scene" width="400">
 A welcome page with options to sign in or sign up.
+<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/MainScene.png" alt="Econo Bank Main Scene" width="400">
 
 ## Sign-Up Page
-<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/SignUpScene.png" alt="Econo Bank Sign Up Scene" width="400">
 Requires three fields for creating an account: email, password, and confirm password.
+<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/SignUpScene.png" alt="Econo Bank Sign Up Scene" width="400">
 
 ## Sign-In Page
-<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/SignInScene.png" alt="Econo Bank Sign In Scene" width="400">
 - Includes a "forgot password" button.
 - Users must enter their email and bank account number to prove ownership.
 - If the user hasn't provided their name and surname, a required field prompts them to do so.
+<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/SignInScene.png" alt="Econo Bank Sign In Scene" width="400">
 
 ## Account Overview Page
-<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/AccountOverviewScene.png" alt="Econo Bank Account Overview Scene" width="400">
 - Displays a welcome message on the account overview page with the user's name and surname.
 - Buttons for various actions:
   - Withdraw: Specify the withdrawal amount.
@@ -24,28 +23,29 @@ Requires three fields for creating an account: email, password, and confirm pass
   - Balance: Displays total balance and latest transactions.
   - Statement: A scrollable dialog showing all transaction history (email, amount, date).
   - Logout: Clears user data and returns to the main screen.
+<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/AccountOverviewScene.png" alt="Econo Bank Account Overview Scene" width="400">
 
 ## Withdraw Page
-<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/WithdrawScene.png" alt="Econo Bank Withdraw Scene" width="400">
 - Contains an input field for withdrawal amount.
+<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/WithdrawScene.png" alt="Econo Bank Withdraw Scene" width="400">
 
 ## Deposit Page
-<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/DepositScene.png" alt="Econo Bank Deposit Scene" width="400">
 - Includes an input field for deposit amount.
+<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/DepositScene.png" alt="Econo Bank Deposit Scene" width="400">
 
 ## Transfer Page
-<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/TransferScene.png" alt="Econo Bank Transfer Scene" width="400">
 - Requires two fields: amount and recipient's email.
+<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/TransferScene.png" alt="Econo Bank Transfer Scene" width="400">
 
 ## Balance Page
-<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/BalanceScene.png" alt="Econo Bank Balance Scene" width="400">
 - Shows total balance and three latest transactions.
 - "More Transactions" button displays the full statement (scrollable).
+<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/BalanceScene.png" alt="Econo Bank Balance Scene" width="400">
 
 ## Account Information Page
-<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/AccountInfoScene.png" alt="Econo Bank Account Information Scene" width="400">
 - Displays user information: email, account number, name, and surname.
 - Only name, surname, and password fields are editable.
+<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/AccountInfoScene.png" alt="Econo Bank Account Information Scene" width="400">
 
 # Entity Relationship Diagram (ERD)
 <img src="BankAppFXMaven/src/main/resources/img/Econo_Bank_ERD_Entity_Relationship_Diagram.png" alt="Econo Bank Entity Relationship Diagram ERD" width="600">
