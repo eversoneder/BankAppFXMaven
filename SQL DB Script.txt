@@ -6,7 +6,7 @@ CREATE TABLE `user` (
   `user_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(25) DEFAULT NULL,
   `surname` varchar(25) DEFAULT NULL,
-  `email` varchar(50) DEFAULT NULL,
+  `email` varchar(50) NOT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -14,7 +14,7 @@ CREATE TABLE `user` (
 CREATE TABLE `login` (
   `login_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int DEFAULT NULL,
-  `password_hash` varchar(255) DEFAULT NULL,
+  `password_hash` varchar(255) NOT NULL,
   `last_login` datetime DEFAULT NULL,
   PRIMARY KEY (`login_id`),
   KEY `user_id` (`user_id`),
