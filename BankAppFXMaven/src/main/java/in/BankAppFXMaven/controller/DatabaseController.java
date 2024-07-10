@@ -7,6 +7,7 @@ import in.BankAppFXMaven.model.BankAccount;
 import in.BankAppFXMaven.model.DatabaseDAO;
 import in.BankAppFXMaven.model.Login;
 import in.BankAppFXMaven.model.Statement;
+import in.BankAppFXMaven.model.Transaction;
 import in.BankAppFXMaven.model.User;
 import in.BankAppFXMaven.utility.AccountNumberGenerator;
 
@@ -92,8 +93,20 @@ public class DatabaseController {
 		return db.getUserBankAccByUserID(userID);
 	}
 
+	/**
+	 * @param bankAccId to get the statement from
+	 * @return Statement
+	 */
 	public Statement getStatement(int bankAccId) {
 		return db.getStatement(bankAccId);
+	}
+	
+	/**
+	 * @param statement to get all transaction list from statement.getBankAccId()
+	 * @return Transaction ArrayList
+	 */
+	public ArrayList<Transaction> getStatementTransactionList(Statement statement) {
+		return db.getStatementTransactionList(statement);
 	}
 
 	public boolean accNumberExists(int randomNumber) {
@@ -105,8 +118,8 @@ public class DatabaseController {
 		db.createUser(email, password);
 	}
 
-	public void setLastLogin(int userId) {
-		db.setLastLoginNow(userId);
+	public java.sql.Timestamp setLastLoginNow(int userId) {
+		return db.setLastLoginNow(userId);
 	}
 
 	public java.sql.Timestamp getLastLogin(int userId) {

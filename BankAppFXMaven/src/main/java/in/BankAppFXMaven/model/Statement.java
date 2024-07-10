@@ -1,11 +1,13 @@
 package in.BankAppFXMaven.model;
 
+import java.util.ArrayList;
+
 public class Statement {
 
 	private int statementID;
 	private int bankAccID;
-	private String startDate;
-	private String endDate;
+	private ArrayList<Transaction> transactionList = null;
+	
 	/**
 	 * @return the statementID
 	 */
@@ -31,28 +33,15 @@ public class Statement {
 		this.bankAccID = bankAccID;
 	}
 	/**
-	 * @return the startDate
+	 * @return the transactionList
 	 */
-	public String getStartDate() {
-		return startDate;
+	public ArrayList<Transaction> getTransactionList() {
+		return transactionList;
 	}
 	/**
-	 * @param startDate the startDate to set
+	 * @param transactionList the transactionList to set
 	 */
-	public void setStartDate(String startDate) {
-		this.startDate = startDate;
+	public void setTransactionList(ArrayList<Transaction> transactionList) {
+		this.transactionList = transactionList;
 	}
-	/**
-	 * @return the endDate
-	 */
-	public String getEndDate() {
-		return endDate;
-	}
-	/**
-	 * @param endDate the endDate to set
-	 */
-	public void setEndDate(String endDate) {
-		this.endDate = endDate;
-	}
-	
 }

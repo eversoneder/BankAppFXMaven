@@ -284,9 +284,12 @@ public class DatabaseDAO {
 		return getBankAccountReusableMethod(query);
 	}
 
+	/**
+	 * @param bankAccId to get the statement from
+	 * @return Statement
+	 */
 	public in.BankAppFXMaven.model.Statement getStatement(int bankAccId) {
 
-		int userId = 0;
 		in.BankAppFXMaven.model.Statement statement = new in.BankAppFXMaven.model.Statement();
 		try {
 			rs = st.executeQuery("SELECT * FROM statement WHERE bank_acc_id = " + bankAccId + ";");
@@ -301,6 +304,39 @@ public class DatabaseDAO {
 		}
 
 		return statement;
+	}
+
+	/**
+	 * @param statement to get all transaction list from statement.getBankAccId()
+	 * @return Transaction ArrayList
+	 */
+	public ArrayList<Transaction> getStatementTransactionList(in.BankAppFXMaven.model.Statement statement) {
+
+		int bankId = statement.getBankAccID();
+
+		ArrayList<Transaction> statementList = new ArrayList<Transaction>();
+
+		try {
+			rs = st.executeQuery("SELECT * FROM transaction WHERE bank_acc_id = " + bankId + ";");
+			rs.next();
+
+			if (!rs.wasNull()) {
+
+				Transaction transaction = new Transaction();
+
+				transaction.setTransactionID(rs.getInt("transaction_id"));
+				transaction.setBankAccID(rs.getInt("bank_acc_id"));
+				transaction.setTransactionType(rs.getString("transaction_type"));
+				transaction.setTransactionAmount(rs.getDouble("transaction_amount"));
+				transaction.setTransactionDate(rs.getTimestamp("transaction_date"));
+				
+				statementList.add(transaction);
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+
+		return statementList;
 	}
 
 	/**
@@ -409,10 +445,11 @@ public class DatabaseDAO {
 	/**
 	 * @param userId of user to set last_login
 	 */
-	public void setLastLoginNow(int userId) {
+	public java.sql.Timestamp setLastLoginNow(int userId) {
 		Timestamp timeStamp = new java.sql.Timestamp(System.currentTimeMillis());
 		String query = "UPDATE login SET last_login = '" + timeStamp + "' WHERE user_id = " + userId + ";";
 		executeUpdateRS(query);
+		return timeStamp;
 	}
 
 	public boolean accNumberExists(int randomNumber) {

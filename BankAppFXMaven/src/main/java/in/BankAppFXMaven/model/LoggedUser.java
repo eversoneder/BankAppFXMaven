@@ -7,8 +7,6 @@ public class LoggedUser {
 	private Login login;
 	private BankAccount bankAccount;
 	private Statement statement;
-	private Transfer transfer;
-	private Transaction transaction;
 	
 	public static LoggedUser getInstance() {
 		if (loggedUserSingletonInstance == null) {
@@ -72,34 +70,6 @@ public class LoggedUser {
 	 */
 	public void setStatement(Statement statement) {
 		this.statement = statement;
-	}
-
-	/**
-	 * @return the transfer
-	 */
-	public Transfer getTransfer() {
-		return transfer;
-	}
-
-	/**
-	 * @param transfer the transfer to set
-	 */
-	public void setTransfer(Transfer transfer) {
-		this.transfer = transfer;
-	}
-
-	/**
-	 * @return the transaction
-	 */
-	public Transaction getTransaction() {
-		return transaction;
-	}
-
-	/**
-	 * @param transaction the transaction to set
-	 */
-	public void setTransaction(Transaction transaction) {
-		this.transaction = transaction;
 	}
 
 	/**

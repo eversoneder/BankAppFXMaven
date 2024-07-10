@@ -5,7 +5,7 @@ public class Transaction {
 	private int transactionID;
 	private int bankAccID;
 	private String transactionType;
-	private String transactionDate;
+	private java.sql.Timestamp transactionDate;
 	private double transactionAmount;
 	/**
 	 * @return the transactionID
@@ -46,13 +46,13 @@ public class Transaction {
 	/**
 	 * @return the transactionDate
 	 */
-	public String getTransactionDate() {
+	public java.sql.Timestamp getTransactionDate() {
 		return transactionDate;
 	}
 	/**
 	 * @param transactionDate the transactionDate to set
 	 */
-	public void setTransactionDate(String transactionDate) {
+	public void setTransactionDate(java.sql.Timestamp transactionDate) {
 		this.transactionDate = transactionDate;
 	}
 	/**

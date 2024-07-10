@@ -315,7 +315,7 @@ public class SignInScene extends Application {
 			// make required, when log's in, check db if name and surname exist, if not, ask
 			// via dialog and INSERT in db
 			try {
-//				TransactionScene.getInstance().start(primaryStage);
+//				AccountOverview.getInstance().start(primaryStage);
 
 				// Sign-in Steps & checks:
 				// 1 - get email from user input, check email format
@@ -345,56 +345,64 @@ public class SignInScene extends Application {
 
 						loggedUser = LoggedUser.getInstance();
 
-						Transaction transaction = new Transaction();
+						loggedUser.setUser(dbController.getUserById(userId));
+						loggedUser.setLogin(dbController.getLoginByUserId(userId));
+						loggedUser.setBankAccount(dbController.getUserBankAcc(userId));
 
+						Statement statement = dbController.getStatement(loggedUser.getBankAccount().getBankAccID());
+						
+						//set all transaction list (including transfers) as ArrayList<Transaction>
+						statement.setTransactionList(dbController.getStatementTransactionList(statement));
+						loggedUser.setStatement(statement);
+						
+						
+						// get last login date from db
 						java.sql.Timestamp ts = dbController.getLastLogin(userId);
 
-						Login login = dbController.getLoginByUserId(userId);
-						User user = dbController.getUserById(userId);
-						BankAccount bankAccount = dbController.getUserBankAcc(userId);
-						Statement statement = dbController.getStatement(userId);
+						// new account (have never logged in) checking
+						if (ts == null) {
 
-						// Reconsider what is necessary, transfer and transaction tables, get a pen and
-						// brainstorm
-						// how a transfer or transaction is done, when doing deposit, withdraw, how
-						// would this happen in the back-end?
+							// new users have never given their name and surnames, this piece of code force
+							// them to set their name and surname before getting into their Account Overview
+							TextInputDialog dialogNameRequired = new TextInputDialog();
+							dialogNameRequired.setTitle("Name and Surname Required.");
+							dialogNameRequired.setHeaderText("Please enter your Name:");
+							Optional<String> resultName = dialogNameRequired.showAndWait();
 
-//						Transfer transfer = dbController.getTransfer(userId);
-//						Transaction transaction = dbController.getTransaction(bankAccount.getBankAccID());
-						// do transfer and transaction...
+							if (resultName.isPresent()) {
+								String newName = resultName.get();
 
-						login.setLastLogin(ts);
-						loggedUser.setLogin(login);
-						loggedUser.setUser(user);
-						loggedUser.setBankAccount(bankAccount);
-						loggedUser.setStatement(statement);
-//						loggedUser.setTransfer(transfer);
-						loggedUser.setTransaction(transaction);
-						// instead of setting login var by var, get all vars from login, create new
-						// login using all db data, the same for all other tables.
+								TextInputDialog dialogSurnameRequired = new TextInputDialog();
+								dialogSurnameRequired.setTitle("Name and Surname Required.");
+								dialogSurnameRequired.setHeaderText("Please enter your Name:");
+								Optional<String> resultSurname = dialogSurnameRequired.showAndWait();
 
-						// db check last login, if null, name & surname required.
-						// code this /\ on this line here
+								if (resultSurname.isPresent()) {
+									String newSurname = resultSurname.get();
 
-						// last login variable on login class is string, check on how to deal with
-						// retrieving sql data to java class as Date or String
+									Alert alert = new Alert(AlertType.INFORMATION);
+									alert.setTitle("Welcome to Econo Bank!");
+									alert.setHeaderText(null);
+									alert.setContentText(
+											"Your new bank account is ready for use! \nTake advantage of the many Econo Bank features!");
 
-						if (login.getLastLogin() == null) {
-							Alert alert = new Alert(Alert.AlertType.ERROR);
-							alert.setTitle("Required.");
-							alert.setHeaderText(null);
-							alert.setContentText("Please enter your Name and Surname.");
-							alert.showAndWait();
+									// now that new user set name, surname and is logged in, set now's TimeStamp and
+									// set new time to loggedUser
+									java.sql.Timestamp timeStamp = dbController.setLastLoginNow(userId);
+									loggedUser.getLogin().setLastLogin(timeStamp);
+
+									AccountOverviewScene.getInstance().start(primaryStage);
+									alert.showAndWait();
+								}
+							}
+
+							// not a new user (there's a TimeStamp in database)
 						} else {
 
-							// now that email & pass are valid, logged user needs to be populated,
-							// query all entities: user, login, bank_account, statement, transfer &
-							// transaction to be able to have access on next page
-							// query and populate
-
-							dbController = DatabaseController.getInstance();
-							// set loggedUser
-							loggedUser.setUser(dbController.getUserByEmail(emailInput.getText()));
+							// set new TimeStamp to database
+							dbController.setLastLoginNow(userId);
+							// set old last_login so that user can see their previous visit
+							loggedUser.getLogin().setLastLogin(ts);
 
 							AccountOverviewScene.getInstance().start(primaryStage);
 						}
