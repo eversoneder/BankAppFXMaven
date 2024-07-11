@@ -18,12 +18,12 @@ import in.BankAppFXMaven.view.SignUpScene;
 
 public class Main extends Application {
 	
-	private static SignUpScene singUp = SignUpScene.getInstance();
+	private static MainScene mainScene = MainScene.getInstance();
 	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			singUp.start(primaryStage);
+			mainScene.start(primaryStage);
 			
 		} catch(Exception e) {
 			e.printStackTrace();

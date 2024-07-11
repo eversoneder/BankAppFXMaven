@@ -313,17 +313,16 @@ public class SignInScene extends Application {
 		signInBtn.setFont(Font.font("Roboto Bold", 16.0));
 		signInBtn.setOnAction(e -> {
 			// make required, when log's in, check db if name and surname exist, if not, ask
-			// via dialog and INSERT in db
+			// via dialog and UPDATE user_id in db
 			try {
-//				AccountOverview.getInstance().start(primaryStage);
 
 				// Sign-in Steps & checks:
 				// 1 - get email from user input, check email format
 				// 2 - check email & pass match in db
-				// 3 - get all entities loaded
-				// 4 - pre-load all entities to "LoggedUser" (singleton class)
+				// 3 - pre-load all entities to "LoggedUser" (singleton class)
+				// 4 - if new user, set new login last_login date, if not, update it
 
-				String email = emailInput.getText();
+				String email = emailInput.getText().trim();
 				String pass = passwordInput.getText();
 
 				// email format check

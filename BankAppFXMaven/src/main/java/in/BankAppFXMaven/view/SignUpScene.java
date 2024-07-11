@@ -259,6 +259,11 @@ public class SignUpScene extends Application {
 							alert.setHeaderText(null);
 							alert.setContentText("Welcome! Your account has been created! You can now Sign-in.");
 							alert.showAndWait();
+							
+							emailTxtInput.clear();
+							passwordField.clear();
+							passwordConfirm.clear();
+							
 						}
 					}
 				}
