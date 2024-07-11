@@ -216,7 +216,7 @@ public class SignUpScene extends Application {
 			try {
 				// CHECK AND CREATE USER ON DB
 
-				boolean emailCheck = EmailValidator.validate(emailTxtInput.getText());
+				boolean emailCheck = EmailValidator.validate(emailTxtInput.getText().trim());
 
 				if (!emailCheck) {
 					Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -239,7 +239,7 @@ public class SignUpScene extends Application {
 						// check email existence in db
 						DatabaseController db = DatabaseController.getInstance();
 
-						User user = db.getUserByEmail(emailTxtInput.getText());
+						User user = db.getUserByEmail(emailTxtInput.getText().trim());
 						
 						System.out.println("Name: "+user.getName()+".");
 
@@ -253,7 +253,7 @@ public class SignUpScene extends Application {
 							
 							//if null (user does not exist, then create user.
 						} else {
-							db.createUser(emailTxtInput.getText(), passwordField.getText());
+							db.createUser(emailTxtInput.getText().trim(), passwordField.getText());
 							Alert alert = new Alert(Alert.AlertType.INFORMATION);
 							alert.setTitle("Account created.");
 							alert.setHeaderText(null);

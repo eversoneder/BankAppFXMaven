@@ -321,9 +321,8 @@ public class SignInScene extends Application {
 				// 1 - get email from user input, check email format
 				// 2 - check email & pass match in db
 				// 3 - get all entities loaded
-				// 4 - send all entities to "LoggedUser" via setter
+				// 4 - pre-load all entities to "LoggedUser" (singleton class)
 
-//				//Steps to be taken(email format check, db credentials check, populate login & loggedUser w/ db data and check lastlogin to enter name and surname
 				String email = emailInput.getText();
 				String pass = passwordInput.getText();
 
@@ -350,57 +349,38 @@ public class SignInScene extends Application {
 						loggedUser.setBankAccount(dbController.getUserBankAcc(userId));
 
 						Statement statement = dbController.getStatement(loggedUser.getBankAccount().getBankAccID());
-						
-						//set all transaction list (including transfers) as ArrayList<Transaction>
+
+						// set all transaction list (including transfers) as ArrayList<Transaction>
 						statement.setTransactionList(dbController.getStatementTransactionList(statement));
 						loggedUser.setStatement(statement);
-						
-						
+
 						// get last login date from db
 						java.sql.Timestamp ts = dbController.getLastLogin(userId);
 
-						// new account (have never logged in) checking
+						// new account and have never logged in
 						if (ts == null) {
 
 							// new users have never given their name and surnames, this piece of code force
 							// them to set their name and surname before getting into their Account Overview
-							TextInputDialog dialogNameRequired = new TextInputDialog();
-							dialogNameRequired.setTitle("Name and Surname Required.");
-							dialogNameRequired.setHeaderText("Please enter your Name:");
-							Optional<String> resultName = dialogNameRequired.showAndWait();
 
-							if (resultName.isPresent()) {
-								String newName = resultName.get();
+							dbController.showNameSurnameDialogAndSave();
+							AccountOverviewScene.getInstance().start(primaryStage);
 
-								TextInputDialog dialogSurnameRequired = new TextInputDialog();
-								dialogSurnameRequired.setTitle("Name and Surname Required.");
-								dialogSurnameRequired.setHeaderText("Please enter your Name:");
-								Optional<String> resultSurname = dialogSurnameRequired.showAndWait();
-
-								if (resultSurname.isPresent()) {
-									String newSurname = resultSurname.get();
-
-									Alert alert = new Alert(AlertType.INFORMATION);
-									alert.setTitle("Welcome to Econo Bank!");
-									alert.setHeaderText(null);
-									alert.setContentText(
-											"Your new bank account is ready for use! \nTake advantage of the many Econo Bank features!");
-
-									// now that new user set name, surname and is logged in, set now's TimeStamp and
-									// set new time to loggedUser
-									java.sql.Timestamp timeStamp = dbController.setLastLoginNow(userId);
-									loggedUser.getLogin().setLastLogin(timeStamp);
-
-									AccountOverviewScene.getInstance().start(primaryStage);
-									alert.showAndWait();
-								}
-							}
+//
+//									// inside the accountOverview page, after the alert /\
+//									// make a dialog showing user's random bank acc number
+//									// and tell him to grab a paper and note it down in case
+//									// user forgets his password, and don't give share his bank acc number with
+//									// anyone
+//
+//								}
+//							}
 
 							// not a new user (there's a TimeStamp in database)
 						} else {
 
 							// set new TimeStamp to database
-							dbController.setLastLoginNow(userId);
+							dbController.updateLastLoginNow(userId);
 							// set old last_login so that user can see their previous visit
 							loggedUser.getLogin().setLastLogin(ts);
 

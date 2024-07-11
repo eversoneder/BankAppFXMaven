@@ -11,11 +11,26 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Properties;
 
 import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.utility.AccountNumberGenerator;
 import in.BankAppFXMaven.utility.HashingUtility;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Modality;
+import javafx.stage.WindowEvent;
+import javafx.util.Pair;
 
 public class DatabaseDAO {
 	private Connection connection = null;
@@ -92,6 +107,101 @@ public class DatabaseDAO {
 		return userList;
 	}
 
+	public void showNameSurnameDialogAndSave() {
+
+		// Create a boolean flag to track if the save button was clicked
+		final boolean[] saveClicked = { false };
+
+		// Create the custom dialog.
+		Dialog<Pair<String, String>> dialog = new Dialog<>();
+		dialog.initModality(Modality.APPLICATION_MODAL); // Set the dialog to be modal so user can't drag it and use the
+															// other page without giving their name
+		dialog.setTitle("Required");
+		dialog.setHeaderText("Please enter your Name and Surname.");
+
+		// Set the button types.
+		ButtonType loginButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(loginButtonType);
+
+		// Create the name and surname labels and fields.
+		GridPane grid = new GridPane();
+		grid.setAlignment(Pos.CENTER);
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
+
+		TextField nameTextField = new TextField();
+		nameTextField.setPromptText("Name");
+		TextField surnameTextField = new TextField();
+		surnameTextField.setPromptText("Surname");
+
+		grid.add(new Label("Name:"), 0, 0);
+		grid.add(nameTextField, 1, 0);
+		grid.add(new Label("Surname:"), 0, 1);
+		grid.add(surnameTextField, 1, 1);
+
+		// Enable/Disable save button depending on whether a name and surname were
+		// entered.
+		Node saveButton = dialog.getDialogPane().lookupButton(loginButtonType);
+		saveButton.setDisable(true);
+
+		// Do some validation (using the Java 8 lambda syntax).
+		// disable the save button if user haven't input anything or input only blank
+		// space on name field or on surname field
+		nameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			saveButton.setDisable(newValue.trim().isEmpty() || surnameTextField.getText().trim().isEmpty());
+		});
+		surnameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			saveButton.setDisable(newValue.trim().isEmpty() || nameTextField.getText().trim().isEmpty());
+		});
+
+		dialog.getDialogPane().setContent(grid);
+
+		// Request focus on the name field by default.
+		Platform.runLater(() -> nameTextField.requestFocus());
+
+		// Convert the result to a name-surname pair when the save button is clicked.
+		dialog.setResultConverter(dialogButton -> {
+			if (dialogButton == loginButtonType) {
+				saveClicked[0] = true;
+				return new Pair<>(nameTextField.getText(), surnameTextField.getText());
+			}
+			return null;
+		});
+
+		// Add an event filter to consume the close request when the 'X' button is
+		// clicked
+		dialog.getDialogPane().getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, event -> {
+			if (!saveClicked[0]) {
+				event.consume();
+			}
+		});
+
+		Optional<Pair<String, String>> result = dialog.showAndWait();
+
+		result.ifPresent(nameSurname -> {
+
+			LoggedUser loggedUser = LoggedUser.getInstance();
+
+//			User user = new User(); //this 2 commented lines are for junit testing purpose only
+//			loggedUser.setUser(user);
+
+			loggedUser.getUser().setName(nameSurname.getKey().trim());
+			loggedUser.getUser().setSurname(nameSurname.getValue().trim());
+
+			db.executeUpdateRS("UPDATE user SET name = '" + loggedUser.getUser().getName() + "', surname = '"
+					+ loggedUser.getUser().getName() + "' WHERE user_id = " + loggedUser.getUser().getId() + ";");
+
+			Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
+			confirmationAlert.setTitle("Confirmation");
+			confirmationAlert.setHeaderText(null);
+			confirmationAlert.setContentText("Name and Surname have been set.\n Welcome to Econo Bank "
+					+ nameSurname.getKey() + " " + nameSurname.getValue()
+					+ "! Your new bank account is ready for use! \\nTake advantage of the many Econo Bank features!");
+			confirmationAlert.showAndWait();
+		});
+	}
+
 	public User getUserByEmail(String email) {
 
 		User user = new User();
@@ -142,26 +252,13 @@ public class DatabaseDAO {
 					login.setLoginId(rs.getInt("login_id"));
 					login.setUserId(rs.getInt("user_id"));
 					login.setPasswordHash(rs.getString("password_hash"));
-
-					Timestamp timeStamp = rs.getTimestamp("last_login");
-					if (timeStamp == null) {
-						newTimeStamp = new java.sql.Timestamp(System.currentTimeMillis());
-						rs = st.executeQuery("INSERT INTO login (last_login) VALUES('" + newTimeStamp + "');");
-						login.setLastLogin(newTimeStamp);
-					} else {
-						// set old value so that user can see when last logged in, then next line
-						// update, when user logs out and logs in, the previous time will show up
-						login.setLastLogin(rs.getTimestamp("last_login"));
-						newTimeStamp = new java.sql.Timestamp(System.currentTimeMillis());
-						st.executeUpdate(
-								"UPDATE login SET last_login = '" + newTimeStamp + "' WHERE user_id = " + userId + ";");
-					}
+					login.setLastLogin(rs.getTimestamp("last_login"));
 
 					System.out.println("login_id: " + login.getLoginId());
 					System.out.println("user_id: " + login.getUserId());
 					System.out.println("password_hash: " + login.getPasswordHash());
 					System.out.println("last_login: " + login.getLastLogin());
-					System.out.println(); // Adds an empty line for better readability
+					System.out.println();
 				}
 
 			} catch (SQLException sqle) {
@@ -177,6 +274,42 @@ public class DatabaseDAO {
 		}
 
 		return login;
+	}
+
+	/**
+	 * @param userId to set TimeStamp to the brand new account
+	 * @return the TimeStamp that was set in the db
+	 */
+	public java.sql.Timestamp insertNewLastLogin(int userId) {
+
+		java.sql.Timestamp newTimeStamp = new java.sql.Timestamp(System.currentTimeMillis());
+		executeQueryRS("INSERT INTO login (last_login) VALUES('" + newTimeStamp + "');");
+
+		return newTimeStamp;
+	}
+
+	/**
+	 * @param userId to get "last_login" from db
+	 * @return TimeStamp of "last_login"
+	 */
+	public java.sql.Timestamp getLastLogin(int userId) {
+		String query = "SELECT * FROM login WHERE user_id = " + userId + ";";
+
+		Object lastLoginTimeStamp = selectAndGetColumnValue(query, "timestamp", "last_login");
+		java.sql.Timestamp timeStamp = (Timestamp) lastLoginTimeStamp;
+
+		return timeStamp;
+	}
+
+	/**
+	 * @param userId of user to set last_login
+	 * @return TimeStamp updated
+	 */
+	public java.sql.Timestamp updateLastLoginNow(int userId) {
+		Timestamp timeStamp = new java.sql.Timestamp(System.currentTimeMillis());
+		String query = "UPDATE login SET last_login = '" + timeStamp + "' WHERE user_id = " + userId + ";";
+		executeUpdateRS(query);
+		return timeStamp;
 	}
 
 	/**
@@ -329,7 +462,7 @@ public class DatabaseDAO {
 				transaction.setTransactionType(rs.getString("transaction_type"));
 				transaction.setTransactionAmount(rs.getDouble("transaction_amount"));
 				transaction.setTransactionDate(rs.getTimestamp("transaction_date"));
-				
+
 				statementList.add(transaction);
 			}
 		} catch (Exception e) {
@@ -427,29 +560,6 @@ public class DatabaseDAO {
 		}
 
 		return false;
-	}
-
-	/**
-	 * @param userId to get "last_login" from db
-	 * @return Timestamp of "last_login"
-	 */
-	public java.sql.Timestamp getLastLogin(int userId) {
-		String query = "SELECT * FROM login WHERE user_id = " + userId + ";";
-
-		Object lastLoginTimeStamp = selectAndGetColumnValue(query, "timestamp", "last_login");
-		java.sql.Timestamp timeStamp = (Timestamp) lastLoginTimeStamp;
-
-		return timeStamp;
-	}
-
-	/**
-	 * @param userId of user to set last_login
-	 */
-	public java.sql.Timestamp setLastLoginNow(int userId) {
-		Timestamp timeStamp = new java.sql.Timestamp(System.currentTimeMillis());
-		String query = "UPDATE login SET last_login = '" + timeStamp + "' WHERE user_id = " + userId + ";";
-		executeUpdateRS(query);
-		return timeStamp;
 	}
 
 	public boolean accNumberExists(int randomNumber) {

@@ -42,13 +42,15 @@ public class DatabaseController {
 	}
 
 	public User getUserByEmail(String email) {
-		User user = db.getUserByEmail(email);
-		return user;
+		return db.getUserByEmail(email);
 	}
 
 	public User getUserById(int userId) {
-		User user = db.getUserById(userId);
-		return user;
+		return db.getUserById(userId);
+	}
+	
+	public void showNameSurnameDialogAndSave() {
+		db.showNameSurnameDialogAndSave();
 	}
 
 	/**
@@ -59,8 +61,7 @@ public class DatabaseController {
 	 * @return login
 	 */
 	public Login getLoginByUserId(int userId) {
-		Login login = db.getLoginByUserId(userId);
-		return login;
+		return db.getLoginByUserId(userId);
 	}
 
 	/**
@@ -118,10 +119,26 @@ public class DatabaseController {
 		db.createUser(email, password);
 	}
 
-	public java.sql.Timestamp setLastLoginNow(int userId) {
-		return db.setLastLoginNow(userId);
+	/**
+	 * @param userId to set TimeStamp to the brand new account 
+	 * @return the TimeStamp that was set in the db
+	 */
+	public java.sql.Timestamp insertNewLastLogin(int userId){
+		return db.insertNewLastLogin(userId);
+	}
+	
+	/**
+	 * @param userId of user to set last_login
+	 * @return TimeStamp updated
+	 */
+	public java.sql.Timestamp updateLastLoginNow(int userId) {
+		return db.updateLastLoginNow(userId);
 	}
 
+	/**
+	 * @param userId to get "last_login" from db
+	 * @return TimeStamp of "last_login"
+	 */
 	public java.sql.Timestamp getLastLogin(int userId) {
 		return db.getLastLogin(userId);
 	}

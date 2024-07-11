@@ -2,6 +2,7 @@ package in.BankAppFXMaven.view;
 
 import java.util.Optional;
 
+import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.model.LoggedUser;
 import in.BankAppFXMaven.model.Login;
 import in.BankAppFXMaven.model.User;
@@ -43,6 +44,7 @@ public class AccountOverviewScene extends Application {
 	private static TransferScene transferSceneSingletonInstance = TransferScene.getInstance();
 	private static BalanceScene balanceSceneSingletonInstance = BalanceScene.getInstance();
 	private static AccInfoScene accInfoSceneSingletonInstance = AccInfoScene.getInstance();
+	private static DatabaseController dbController;
 	private LoggedUser loggedUser;
 
 	private static AccountOverviewScene accOverviewSceneSingletonInstance;
@@ -62,12 +64,34 @@ public class AccountOverviewScene extends Application {
 		// TODO Auto-generated method stub
 		this.primaryStage = primaryStage;
 
-		//check the last_login
-		
+		// check the last_login
+
 //		if(login.getLastLogin() == null) {
 //			saveUserNameAndSurname();
 //		}
-		
+
+		if (loggedUser.getLogin().getLastLogin() == null) {
+
+			// insert new user's last_login in db with now TimeStamp and also in the
+			// loggedUser
+			java.sql.Timestamp timeStamp = dbController.insertNewLastLogin(loggedUser.getUser().getId());
+			loggedUser.getLogin().setLastLogin(timeStamp);
+
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Password Reset Succeeded");
+			alert.setHeaderText(null);
+			alert.setContentText("Please make sure to securely note down your randomly generated bank account number: '"
+					+ loggedUser.getBankAccount().getBankAccNum()
+					+ "'. In case you forget your password, this account number will be required for password reset. Remember not to share your bank account number with anyone, as it is not necessary for fund transfers within the app. Your unique email address serves as the means to transfer funds between accounts.");
+			alert.showAndWait();
+			// Please make sure to securely note down your randomly generated bank account
+			// number. In case you forget your password, this account number will be
+			// required for password reset. Remember not to share your bank account number
+			// with anyone, as it is not necessary for fund transfers within the app. Your
+			// unique email address serves as the means to transfer funds between accounts.
+
+		}
+
 		transactionSceneViewBuilder();
 	}
 
@@ -179,8 +203,8 @@ public class AccountOverviewScene extends Application {
 		depositBtnView.setPreserveRatio(true);
 
 		Image depositImage = new Image(getClass().getResourceAsStream("/img/btnsPNG/deposit.png"));// this imgs lives
-																										// on BIN
-																										// folder!
+																									// on BIN
+																									// folder!
 		depositBtnView.setImage(depositImage);
 
 		Button depositButton = new Button();
@@ -238,8 +262,8 @@ public class AccountOverviewScene extends Application {
 		balanceBtnView.setPreserveRatio(true);
 
 		Image balanceImage = new Image(getClass().getResourceAsStream("/img/btnsPNG/balance.png"));// this imgs lives
-																										// on BIN
-																										// folder!
+																									// on BIN
+																									// folder!
 		balanceBtnView.setImage(balanceImage);
 
 		Button balanceButton = new Button();
@@ -267,9 +291,9 @@ public class AccountOverviewScene extends Application {
 		statementBtnView.setPreserveRatio(true);
 
 		Image statementImage = new Image(getClass().getResourceAsStream("/img/btnsPNG/statement.png"));// this imgs
-																											// lives
-																											// on BIN
-																											// folder!
+																										// lives
+																										// on BIN
+																										// folder!
 		statementBtnView.setImage(statementImage);
 
 		Button statementButton = new Button();
@@ -310,19 +334,19 @@ public class AccountOverviewScene extends Application {
 		logoutButton.setOnAction(e -> {
 			try {
 				Alert alert = new Alert(AlertType.WARNING);
-			    alert.setTitle("Logging out");
-			    alert.setHeaderText(null);
-			    alert.setContentText("You are about to Log out, are you sure?");
-			    alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.CANCEL);
-			    Optional<ButtonType> result = alert.showAndWait();
+				alert.setTitle("Logging out");
+				alert.setHeaderText(null);
+				alert.setContentText("You are about to Log out, are you sure?");
+				alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.CANCEL);
+				Optional<ButtonType> result = alert.showAndWait();
 
-			    if (result.isPresent() && result.get() == ButtonType.YES) {
-			        // handle the user choosing YES
-			    	signInSceneSingletonInstance.start(primaryStage);
-			    } else {
-			        // handle the user choosing CANCEL or closing the dialog
-			    }
-			    
+				if (result.isPresent() && result.get() == ButtonType.YES) {
+					// handle the user choosing YES
+					signInSceneSingletonInstance.start(primaryStage);
+				} else {
+					// handle the user choosing CANCEL or closing the dialog
+				}
+
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -339,8 +363,8 @@ public class AccountOverviewScene extends Application {
 		accInfoBtnView.setPreserveRatio(true);
 
 		Image accInfoImage = new Image(getClass().getResourceAsStream("/img/btnsPNG/accinfo.png"));// this imgs lives
-																										// on BIN
-																										// folder!
+																									// on BIN
+																									// folder!
 		accInfoBtnView.setImage(accInfoImage);
 
 		Button accInfoButton = new Button();
@@ -368,86 +392,6 @@ public class AccountOverviewScene extends Application {
 		primaryStage.show();
 	}
 
-	public void saveUserNameAndSurname() {
-
-		// Create a boolean flag to track if the save button was clicked
-		final boolean[] saveClicked = {false};
-
-		// Create the custom dialog.
-		Dialog<Pair<String, String>> dialog = new Dialog<>();
-		dialog.initModality(Modality.APPLICATION_MODAL); // Set the dialog to be modal so user can't drag it and use the other page without giving their name
-		dialog.setTitle("Required");
-		dialog.setHeaderText("Please enter your Name and Surname.");
-
-		// Set the button types.
-		ButtonType loginButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().addAll(loginButtonType);
-
-		// Create the name and surname labels and fields.
-		GridPane grid = new GridPane();
-		grid.setAlignment(Pos.CENTER);
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(20, 150, 10, 10));
-
-		TextField nameTextField = new TextField();
-		nameTextField.setPromptText("Name");
-		TextField surnameTextField = new TextField();
-		surnameTextField.setPromptText("Surname");
-
-		grid.add(new Label("Name:"), 0, 0);
-		grid.add(nameTextField, 1, 0);
-		grid.add(new Label("Surname:"), 0, 1);
-		grid.add(surnameTextField, 1, 1);
-
-		// Enable/Disable save button depending on whether a name and surname were entered.
-		Node saveButton = dialog.getDialogPane().lookupButton(loginButtonType);
-		saveButton.setDisable(true);
-
-		// Do some validation (using the Java 8 lambda syntax).
-		nameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-		    saveButton.setDisable(newValue.trim().isEmpty() || surnameTextField.getText().trim().isEmpty());
-		});
-		surnameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-		    saveButton.setDisable(newValue.trim().isEmpty() || nameTextField.getText().trim().isEmpty());
-		});
-
-		dialog.getDialogPane().setContent(grid);
-
-		// Request focus on the name field by default.
-		Platform.runLater(() -> nameTextField.requestFocus());
-
-		// Convert the result to a name-surname pair when the save button is clicked.
-		dialog.setResultConverter(dialogButton -> {
-		    if (dialogButton == loginButtonType) {
-		        saveClicked[0] = true;
-		        return new Pair<>(nameTextField.getText(), surnameTextField.getText());
-		    }
-		    return null;
-		});
-
-		// Add an event filter to consume the close request when the 'X' button is clicked
-		dialog.getDialogPane().getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, event -> {
-		    if (!saveClicked[0]) {
-		        event.consume();
-		    }
-		});
-
-		Optional<Pair<String, String>> result = dialog.showAndWait();
-
-		result.ifPresent(nameSurname -> {
-		    // Save the name and surname
-		    // ...
-
-		    Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
-		    confirmationAlert.setTitle("Confirmation");
-		    confirmationAlert.setHeaderText(null);
-		    confirmationAlert.setContentText(
-		            "Name and Surname have been set.\n Welcome to Econo Bank " + nameSurname.getKey() + " " + nameSurname.getValue() + "!");
-		    confirmationAlert.showAndWait();
-		});
-	}
-	
 	/**
 	 * @return the loggedUser
 	 */
