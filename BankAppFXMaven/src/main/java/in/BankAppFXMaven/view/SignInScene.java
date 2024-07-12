@@ -342,7 +342,8 @@ public class SignInScene extends Application {
 					if (userId != 0) {
 
 						loggedUser = LoggedUser.getInstance();
-
+						dbController = DatabaseController.getInstance();
+						
 						loggedUser.setUser(dbController.getUserById(userId));
 						loggedUser.setLogin(dbController.getLoginByUserId(userId));
 						loggedUser.setBankAccount(dbController.getUserBankAcc(userId));

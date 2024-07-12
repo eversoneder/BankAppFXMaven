@@ -38,12 +38,12 @@ public class AccountOverviewScene extends Application {
 
 	private Stage primaryStage;
 
-	private static SignInScene signInSceneSingletonInstance = SignInScene.getInstance();
-	private static WithdrawScene withdrawSceneSingletonInstance = WithdrawScene.getInstance();
-	private static DepositScene depositSceneSingletonInstance = DepositScene.getInstance();
-	private static TransferScene transferSceneSingletonInstance = TransferScene.getInstance();
-	private static BalanceScene balanceSceneSingletonInstance = BalanceScene.getInstance();
-	private static AccInfoScene accInfoSceneSingletonInstance = AccInfoScene.getInstance();
+	private static SignInScene signInSceneSingletonInstance;
+	private static WithdrawScene withdrawSceneSingletonInstance;
+	private static DepositScene depositSceneSingletonInstance;
+	private static TransferScene transferSceneSingletonInstance;
+	private static BalanceScene balanceSceneSingletonInstance;
+	private static AccInfoScene accInfoSceneSingletonInstance;
 	private static DatabaseController dbController;
 	private LoggedUser loggedUser;
 
@@ -70,6 +70,9 @@ public class AccountOverviewScene extends Application {
 //			saveUserNameAndSurname();
 //		}
 
+		loggedUser = LoggedUser.getInstance();
+		dbController = DatabaseController.getInstance();
+		
 		if (loggedUser.getLogin().getLastLogin() == null) {
 
 			// insert new user's last_login in db with now TimeStamp and also in the
@@ -84,11 +87,6 @@ public class AccountOverviewScene extends Application {
 					+ loggedUser.getBankAccount().getBankAccNum()
 					+ "'. In case you forget your password, this account number will be required for password reset. Remember not to share your bank account number with anyone, as it is not necessary for fund transfers within the app. Your unique email address serves as the means to transfer funds between accounts.");
 			alert.showAndWait();
-			// Please make sure to securely note down your randomly generated bank account
-			// number. In case you forget your password, this account number will be
-			// required for password reset. Remember not to share your bank account number
-			// with anyone, as it is not necessary for fund transfers within the app. Your
-			// unique email address serves as the means to transfer funds between accounts.
 
 		}
 
@@ -157,7 +155,7 @@ public class AccountOverviewScene extends Application {
 		transactionsTxt.setLayoutY(51.0);
 		transactionsTxt.setFont(Font.font("Roboto", FontWeight.BOLD, 34.0));
 
-		Text whatWouldYouLikeToDoTodayTxt = new Text("Hello Everson, what would you like to do today?");
+		Text whatWouldYouLikeToDoTodayTxt = new Text("Hello " + loggedUser.getUser().getName() + ", what would you like to do today?");
 		whatWouldYouLikeToDoTodayTxt.setFill(Color.web("#B3B3B3"));
 		whatWouldYouLikeToDoTodayTxt.setLayoutX(55.0);
 		whatWouldYouLikeToDoTodayTxt.setLayoutY(75.0);
@@ -186,6 +184,7 @@ public class AccountOverviewScene extends Application {
 
 		withdrawButton.setOnAction(e -> {
 			try {
+				withdrawSceneSingletonInstance = WithdrawScene.getInstance();
 				withdrawSceneSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
@@ -215,6 +214,7 @@ public class AccountOverviewScene extends Application {
 
 		depositButton.setOnAction(e -> {
 			try {
+				depositSceneSingletonInstance = DepositScene.getInstance();
 				depositSceneSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
@@ -245,6 +245,7 @@ public class AccountOverviewScene extends Application {
 
 		transferButton.setOnAction(e -> {
 			try {
+				transferSceneSingletonInstance = TransferScene.getInstance();
 				transferSceneSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
@@ -274,6 +275,7 @@ public class AccountOverviewScene extends Application {
 
 		balanceButton.setOnAction(e -> {
 			try {
+				balanceSceneSingletonInstance = BalanceScene.getInstance();
 				balanceSceneSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
@@ -342,6 +344,7 @@ public class AccountOverviewScene extends Application {
 
 				if (result.isPresent() && result.get() == ButtonType.YES) {
 					// handle the user choosing YES
+					signInSceneSingletonInstance = SignInScene.getInstance();
 					signInSceneSingletonInstance.start(primaryStage);
 				} else {
 					// handle the user choosing CANCEL or closing the dialog
@@ -375,6 +378,7 @@ public class AccountOverviewScene extends Application {
 
 		accInfoButton.setOnAction(e -> {
 			try {
+				accInfoSceneSingletonInstance = AccInfoScene.getInstance();
 				accInfoSceneSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();

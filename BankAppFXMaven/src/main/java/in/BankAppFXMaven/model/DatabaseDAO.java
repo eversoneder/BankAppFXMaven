@@ -190,14 +190,14 @@ public class DatabaseDAO {
 			loggedUser.getUser().setSurname(nameSurname.getValue().trim());
 
 			db.executeUpdateRS("UPDATE user SET name = '" + loggedUser.getUser().getName() + "', surname = '"
-					+ loggedUser.getUser().getName() + "' WHERE user_id = " + loggedUser.getUser().getId() + ";");
+					+ loggedUser.getUser().getSurname() + "' WHERE user_id = " + loggedUser.getUser().getId() + ";");
 
 			Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
 			confirmationAlert.setTitle("Confirmation");
 			confirmationAlert.setHeaderText(null);
-			confirmationAlert.setContentText("Name and Surname have been set.\n Welcome to Econo Bank "
+			confirmationAlert.setContentText("Name and Surname have been set.\n\nWelcome to Econo Bank "
 					+ nameSurname.getKey() + " " + nameSurname.getValue()
-					+ "! Your new bank account is ready for use! \\nTake advantage of the many Econo Bank features!");
+					+ "! Your new bank account is ready for use! \nTake advantage of the many Econo Bank features!");
 			confirmationAlert.showAndWait();
 		});
 	}
@@ -219,7 +219,7 @@ public class DatabaseDAO {
 
 	public User getUserById(int userId) {
 
-		User user = new User();
+		User user = null;
 		try {
 			rs = st.executeQuery("SELECT * FROM user WHERE user_id = " + userId + ";");
 			rs.next();
@@ -246,7 +246,7 @@ public class DatabaseDAO {
 		try {
 			rs = st.executeQuery("SELECT * FROM login WHERE user_id = " + userId + ";");
 			rs.next();
-			Timestamp newTimeStamp = null;
+			
 			try {
 				if (!rs.wasNull()) {
 					login.setLoginId(rs.getInt("login_id"));
@@ -283,7 +283,7 @@ public class DatabaseDAO {
 	public java.sql.Timestamp insertNewLastLogin(int userId) {
 
 		java.sql.Timestamp newTimeStamp = new java.sql.Timestamp(System.currentTimeMillis());
-		executeQueryRS("INSERT INTO login (last_login) VALUES('" + newTimeStamp + "');");
+		executeUpdateRS("UPDATE login SET last_login = '" + newTimeStamp + "' WHERE user_id = " + userId + ";");
 
 		return newTimeStamp;
 	}
@@ -328,8 +328,8 @@ public class DatabaseDAO {
 
 		int userId = 0;
 
-		String query = "SELECT * FROM user JOIN login ON user.user_id = login.user_id " + "WHERE user.email = '" + email
-				+ "' " + "AND login.password_hash = " + password + ";";
+		String query = "SELECT * FROM user JOIN login ON user.user_id = login.user_id WHERE user.email = '" + email
+				+ "' " + "AND login.password_hash = '" + password + "';";
 
 		try {
 			rs = st.executeQuery(query);
@@ -337,7 +337,7 @@ public class DatabaseDAO {
 
 			// if query had 1 result, it means the email + password exists
 			if (!rs.wasNull()) {
-				System.out.println("User: " + user.getClass().getName() + " exists.");
+				System.out.println("User exists.");
 
 				// then get user's Id to get all data to load up to sign in
 				userId = rs.getInt("user_id");
@@ -488,10 +488,11 @@ public class DatabaseDAO {
 			if (!rs.wasNull()) {
 
 				ba = new BankAccount();
+				ba.setBankAccID(rs.getInt("bank_acc_id"));
 				ba.setUserID(rs.getInt("user_id"));
 				ba.setBankAccNum(rs.getInt("bank_acc_number"));
 				ba.setBankAccBalance(rs.getDouble("bank_acc_balance"));
-				ba.setBankAccID(rs.getInt("bank_acc_id"));
+				
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
