@@ -4,35 +4,21 @@ import java.util.Optional;
 
 import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.model.LoggedUser;
-import in.BankAppFXMaven.model.Login;
-import in.BankAppFXMaven.model.User;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import javafx.util.Pair;
 
 public class AccountOverviewScene extends Application {
 
@@ -73,7 +59,7 @@ public class AccountOverviewScene extends Application {
 		loggedUser = LoggedUser.getInstance();
 		dbController = DatabaseController.getInstance();
 		
-		if (loggedUser.getLogin().getLastLogin() == null) {
+		if (loggedUser.getLogin().getLastLogin() == null ) {
 
 			// insert new user's last_login in db with now TimeStamp and also in the
 			// loggedUser
@@ -81,13 +67,15 @@ public class AccountOverviewScene extends Application {
 			loggedUser.getLogin().setLastLogin(timeStamp);
 
 			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("Password Reset Succeeded");
+			alert.setTitle("Important Information.");
 			alert.setHeaderText(null);
 			alert.setContentText("Please make sure to securely note down your randomly generated bank account number: '"
 					+ loggedUser.getBankAccount().getBankAccNum()
 					+ "'. In case you forget your password, this account number will be required for password reset. Remember not to share your bank account number with anyone, as it is not necessary for fund transfers within the app. Your unique email address serves as the means to transfer funds between accounts.");
 			alert.showAndWait();
 
+		} else if(loggedUser.getUser().getName() == null || loggedUser.getUser().getSurname() == null) {
+			dbController.showNameSurnameDialogAndSave();
 		}
 
 		transactionSceneViewBuilder();
@@ -306,7 +294,7 @@ public class AccountOverviewScene extends Application {
 
 		statementButton.setOnAction(e -> {
 			try {
-				BalanceScene.getAllTransactions();
+				BalanceScene.showStatementDialog();
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

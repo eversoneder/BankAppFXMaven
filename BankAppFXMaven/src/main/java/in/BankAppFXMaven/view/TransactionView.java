@@ -1,12 +1,16 @@
 package in.BankAppFXMaven.view;
 
+import java.time.LocalDate;
+
 public class TransactionView {
     private String email;
     private Double amount;
+    private String date;
 
-    public TransactionView(String email, Double amount) {
+    public TransactionView(String email, Double amount, String date) {
         this.email = email;
         this.amount = amount;
+        this.date = date;
     }
 
     public String getEmail() {
@@ -23,5 +27,13 @@ public class TransactionView {
 
     public void setAmount(Double amount) {
         this.amount = amount;
+    }
+    
+    public void setDate(String date) {
+    	this .date = date;
+    }
+    
+    public String getDate() {
+    	return date;
     }
 }

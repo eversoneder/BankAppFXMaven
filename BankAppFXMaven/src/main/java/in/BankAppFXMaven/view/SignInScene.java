@@ -2,13 +2,8 @@ package in.BankAppFXMaven.view;
 
 import java.util.Optional;
 import in.BankAppFXMaven.controller.DatabaseController;
-import in.BankAppFXMaven.model.BankAccount;
 import in.BankAppFXMaven.model.LoggedUser;
-import in.BankAppFXMaven.model.Login;
 import in.BankAppFXMaven.model.Statement;
-import in.BankAppFXMaven.model.Transaction;
-import in.BankAppFXMaven.model.Transfer;
-import in.BankAppFXMaven.model.User;
 import in.BankAppFXMaven.utility.EmailValidator;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -320,7 +315,7 @@ public class SignInScene extends Application {
 				// 1 - get email from user input, check email format
 				// 2 - check email & pass match in db
 				// 3 - pre-load all entities to "LoggedUser" (singleton class)
-				// 4 - if new user, set new login last_login date, if not, update it
+				// 4 - if new user, set last_login date and get/set name&surname, else update it
 
 				String email = emailInput.getText().trim();
 				String pass = passwordInput.getText();
@@ -343,7 +338,7 @@ public class SignInScene extends Application {
 
 						loggedUser = LoggedUser.getInstance();
 						dbController = DatabaseController.getInstance();
-						
+
 						loggedUser.setUser(dbController.getUserById(userId));
 						loggedUser.setLogin(dbController.getLoginByUserId(userId));
 						loggedUser.setBankAccount(dbController.getUserBankAcc(userId));
@@ -365,16 +360,6 @@ public class SignInScene extends Application {
 
 							dbController.showNameSurnameDialogAndSave();
 							AccountOverviewScene.getInstance().start(primaryStage);
-
-//
-//									// inside the accountOverview page, after the alert /\
-//									// make a dialog showing user's random bank acc number
-//									// and tell him to grab a paper and note it down in case
-//									// user forgets his password, and don't give share his bank acc number with
-//									// anyone
-//
-//								}
-//							}
 
 							// not a new user (there's a TimeStamp in database)
 						} else {

@@ -11,19 +11,21 @@ import in.BankAppFXMaven.utility.HashingUtility;
 import javafx.application.Application;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import in.BankAppFXMaven.view.BalanceScene;
 import in.BankAppFXMaven.view.MainScene;
 import in.BankAppFXMaven.view.SignInScene;
 import in.BankAppFXMaven.view.SignUpScene;
 
 public class Main extends Application {
 	
-	private static MainScene mainScene = MainScene.getInstance();
+	private static BalanceScene balanceScene = BalanceScene.getInstance();
 	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			mainScene.start(primaryStage);
+			balanceScene.start(primaryStage);
 			
 		} catch(Exception e) {
 			e.printStackTrace();

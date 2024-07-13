@@ -1,8 +1,13 @@
 package in.BankAppFXMaven.view;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
+import in.BankAppFXMaven.controller.DatabaseController;
+import in.BankAppFXMaven.model.BankAccount;
+import in.BankAppFXMaven.model.LoggedUser;
 import in.BankAppFXMaven.model.Transaction;
+import in.BankAppFXMaven.utility.TimeStampToYear;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -33,16 +38,16 @@ public class BalanceScene extends Application {
 
 	private Stage primaryStage;
 	private static BalanceScene balanceSceneSingletonInstance;
-	private static AccountOverviewScene transactionSceneSingletonInstance = AccountOverviewScene.getInstance();
-//	private static DatabaseService db = DatabaseService.getInstance();
-	private Dialog<Void> dialog = new Dialog<>();
+	private static AccountOverviewScene transactionSceneSingletonInstance;
+	private static DatabaseController dbController;
 	private static ArrayList<TransactionView> transactions = new ArrayList<TransactionView>();
+	private LoggedUser loggedUser;
 
 	private BalanceScene() {
 	}
 
 	public static BalanceScene getInstance() {
-		if (balanceSceneSingletonInstance == null) {
+		if (balanceSceneSingletonInstance == null) { 
 			balanceSceneSingletonInstance = new BalanceScene();
 		}
 		return balanceSceneSingletonInstance;
@@ -53,6 +58,7 @@ public class BalanceScene extends Application {
 		// TODO Auto-generated method stub
 		this.primaryStage = primaryStage;
 
+		
 		balanceSceneViewBuilder();
 	}
 
@@ -100,6 +106,7 @@ public class BalanceScene extends Application {
 
 		backButton.setOnAction(e -> {
 			try {
+				transactionSceneSingletonInstance = AccountOverviewScene.getInstance();
 				transactionSceneSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
@@ -174,7 +181,15 @@ public class BalanceScene extends Application {
 		greyBalanceStrip.setPrefWidth(500.0);
 		greyBalanceStrip.setStyle("-fx-background-color: #E6E6E6;");
 
-		Text balanceTxt = new Text("€" + "4150.90");
+		loggedUser = LoggedUser.getInstance();
+		BankAccount ba = new BankAccount();
+		ba.setBankAccBalance(4957.60);
+		loggedUser.setBankAccount(ba);
+		
+		double balance = loggedUser.getBankAccount().getBankAccBalance();
+		String balanceToString = String.format("%.2f", balance);
+		
+		Text balanceTxt = new Text("€" + balanceToString);
 		balanceTxt.setFill(Color.web("#666666"));
 		balanceTxt.setFont(Font.font("Roboto", FontWeight.BOLD, 34.0));
 
@@ -195,24 +210,49 @@ public class BalanceScene extends Application {
 
 		// Sample data
 		// mudar e fazer email + amount 1 objeto soh.
-		String[] emails = { "AlbertoOswaldo92@gmail.com", "user2@example.com", "user3@example.com", "user4@example.com",
-				"user5@example.com", "AlbertoOswaldo93@gmail.com", "user6@example.com", "user7@example.com",
-				"user8@example.com", "AlbertoOswaldo94@gmail.com", "user9@example.com", "user10@example.com",
-				"user11@example.com", "user12@example.com", "AlbertoOswaldo95@gmail.com"};
-		double[] amounts = { 90.00, 50.00, -200.50, -75.90, 80.00, 29.40, -59.80, -20.00, 250.90, 90.00, 50.00, -200.50,
-				-75.90, 80.00, 29.40};
+		
+		
+		String[] sender = { "AlbertoOswaldo92@gmail.com", "user2@example.com", "user3@example.com", "user4@example.com",
+				"user5@example.com"};
+		double[] amounts = { 90.00, 50.00, -200.50, -75.90, 80.00};
+		
+		java.sql.Timestamp newTimeStamp = new java.sql.Timestamp(System.currentTimeMillis());
+		
+		String date1 = TimeStampToYear.timeStampToYearString(newTimeStamp);
+		
+		//timeStampToYearString receives LocalDate and return String
+		String date2 = TimeStampToYear.addDaysToDate(newTimeStamp, 2).toString();
+		String date3 = TimeStampToYear.addDaysToDate(newTimeStamp, 3).toString();
+		String date4 = TimeStampToYear.addDaysToDate(newTimeStamp, 5).toString();
+		String date5 = TimeStampToYear.addDaysToDate(newTimeStamp, 7).toString();
+		
+		
+//		LocalDate date5 = newTimeStamp.toLocalDateTime().toLocalDate().plusDays(7);
+		
+//		LocalDate[] dates = {date1, date2, date3, date4, date5};
+		
+		String[] datesString = {date1, date2, date3, date4, date5};
+		
+		//get data from db
+		ArrayList<Transaction> dbTransactions = getTransactions();
 
-		for (int i = 0; i < emails.length; i++) {
-			TransactionView t = new TransactionView(emails[i], amounts[i]);
+		for (int i = 0; i < sender.length; i++) {
+			
+			if(dbTransactions.get(i).getBankAccID() == loggedUser.getBankAccount().getBankAccID()) {
+				String transactionType = dbTransactions.get(i).getTransactionType();
+			}
+			
+			TransactionView t = new TransactionView(sender[i], dbTransactions.get(i).getTransactionAmount(), datesString[i]);
+//			TransactionView t = new TransactionView(sender[i], amounts[i], dates[i]);
 			transactions.add(t);
 		}
 
-		// show the last 3 transactions
+		// dialog structure, show the last 3 transactions
 		for (int i = transactions.size() - 3; i < transactions.size(); i++) {
 
 			// HBox that will contain only last 3 transactions
 			HBox transactionsHBox = new HBox();
-			transactionsHBox.setSpacing(60); // Space between email and amount
+			transactionsHBox.setSpacing(60); // Space between email, amount and dates
 
 			Text emailText = new Text(transactions.get(i).getEmail());
 			emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
@@ -224,12 +264,17 @@ public class BalanceScene extends Application {
 			} else {
 				amountText.setFill(Color.GREEN);
 			}
-
-			Region spacer = new Region();
-			HBox.setHgrow(spacer, Priority.ALWAYS);
+			
+			Text transactionDate = new Text(transactions.get(i).getDate().toString());
+			transactionDate.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
+			
+			Region spacer1 = new Region();
+			Region spacer2 = new Region();
+			HBox.setHgrow(spacer1, Priority.ALWAYS);
+			HBox.setHgrow(spacer2, Priority.ALWAYS);
 
 			// Add email and amount to the transaction HBox
-			transactionsHBox.getChildren().addAll(emailText, spacer, amountText);
+			transactionsHBox.getChildren().addAll(emailText, spacer1, transactionDate, spacer2, amountText);
 
 			// Add the transaction to the transactions list
 			transactionsList.getChildren().add(transactionsHBox);
@@ -237,8 +282,6 @@ public class BalanceScene extends Application {
 
 		transactionsList.setLayoutX(55);
 		transactionsList.setLayoutY(315.0);
-
-		// give all transactions to Method that creates it
 
 		whiteMiddlePane.getChildren().add(transactionsList);
 
@@ -255,6 +298,7 @@ public class BalanceScene extends Application {
 		backBtn.setFont(Font.font("Roboto Bold", 16.0));
 		backBtn.setOnAction(e -> {
 			try {
+				transactionSceneSingletonInstance = AccountOverviewScene.getInstance();
 				transactionSceneSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
@@ -273,7 +317,7 @@ public class BalanceScene extends Application {
 		moreTransactionsBtn.setOnAction(e -> {
 			try {
 				// make dialog show when clicked this button
-				BalanceScene.getAllTransactions();
+				BalanceScene.showStatementDialog();
 
 			} catch (Exception e2) {
 				e2.printStackTrace();
@@ -291,7 +335,7 @@ public class BalanceScene extends Application {
 		primaryStage.show();
 	}
 
-	public static void getAllTransactions() {
+	public static void showStatementDialog() {
 		// Create a new Dialog
 		Dialog<Void> dialog = new Dialog<>();
 		dialog.setTitle("All Transactions");
@@ -361,6 +405,11 @@ public class BalanceScene extends Application {
 
 		// Show the dialog
 		dialog.showAndWait();
+	}
+	
+	public ArrayList<Transaction> getTransactions() {
+		ArrayList<Transaction> transactions = dbController.getStatementTransactionList(loggedUser.getStatement());
+		return transactions;
 	}
 
 }

@@ -37,9 +37,9 @@ public class DatabaseDAO {
 	private Statement st = null;
 	private ResultSet rs = null;
 
-	private String url;
-	private String user;
-	private String password;
+	private static String url;
+	private static String user;
+	private static String password;
 
 	private static DatabaseDAO db;
 	private DbUserSection dbUser = DbUserSection.getInstance();
