@@ -47,7 +47,7 @@ CREATE TABLE `transfer` (
 CREATE TABLE `transaction` (
   `transaction_id` int NOT NULL AUTO_INCREMENT,
   `bank_acc_id` int DEFAULT NULL,
-  `transaction_type` varchar(50) DEFAULT NULL,
+  `transaction_type` varchar(10) DEFAULT NULL,
   `transaction_amount` decimal(10,2) DEFAULT NULL,
   `transaction_date` date DEFAULT NULL,
   PRIMARY KEY (`transaction_id`),
