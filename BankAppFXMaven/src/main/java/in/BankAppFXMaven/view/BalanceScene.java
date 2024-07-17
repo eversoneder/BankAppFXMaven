@@ -7,6 +7,8 @@ import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.model.BankAccount;
 import in.BankAppFXMaven.model.LoggedUser;
 import in.BankAppFXMaven.model.Transaction;
+import in.BankAppFXMaven.model.Transfer;
+import in.BankAppFXMaven.model.User;
 import in.BankAppFXMaven.utility.TimeStampToYear;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -22,6 +24,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -40,14 +43,13 @@ public class BalanceScene extends Application {
 	private static BalanceScene balanceSceneSingletonInstance;
 	private static AccountOverviewScene transactionSceneSingletonInstance;
 	private static DatabaseController dbController;
-	private static ArrayList<TransactionView> transactions = new ArrayList<TransactionView>();
 	private LoggedUser loggedUser;
 
 	private BalanceScene() {
 	}
 
 	public static BalanceScene getInstance() {
-		if (balanceSceneSingletonInstance == null) { 
+		if (balanceSceneSingletonInstance == null) {
 			balanceSceneSingletonInstance = new BalanceScene();
 		}
 		return balanceSceneSingletonInstance;
@@ -58,7 +60,6 @@ public class BalanceScene extends Application {
 		// TODO Auto-generated method stub
 		this.primaryStage = primaryStage;
 
-		
 		balanceSceneViewBuilder();
 	}
 
@@ -182,13 +183,15 @@ public class BalanceScene extends Application {
 		greyBalanceStrip.setStyle("-fx-background-color: #E6E6E6;");
 
 		loggedUser = LoggedUser.getInstance();
-		BankAccount ba = new BankAccount();
-		ba.setBankAccBalance(4957.60);
-		loggedUser.setBankAccount(ba);
-		
+
+		// for testing
+//		BankAccount ba = new BankAccount();
+//		ba.setBankAccBalance(4957.60);
+//		loggedUser.setBankAccount(ba);
+
 		double balance = loggedUser.getBankAccount().getBankAccBalance();
 		String balanceToString = String.format("%.2f", balance);
-		
+
 		Text balanceTxt = new Text("€" + balanceToString);
 		balanceTxt.setFill(Color.web("#666666"));
 		balanceTxt.setFont(Font.font("Roboto", FontWeight.BOLD, 34.0));
@@ -210,43 +213,134 @@ public class BalanceScene extends Application {
 
 		// Sample data
 		// mudar e fazer email + amount 1 objeto soh.
-		
-		
-		String[] sender = { "AlbertoOswaldo92@gmail.com", "user2@example.com", "user3@example.com", "user4@example.com",
-				"user5@example.com"};
-		double[] amounts = { 90.00, 50.00, -200.50, -75.90, 80.00};
-		
-		java.sql.Timestamp newTimeStamp = new java.sql.Timestamp(System.currentTimeMillis());
-		
-		String date1 = TimeStampToYear.timeStampToYearString(newTimeStamp);
-		
-		//timeStampToYearString receives LocalDate and return String
-		String date2 = TimeStampToYear.addDaysToDate(newTimeStamp, 2).toString();
-		String date3 = TimeStampToYear.addDaysToDate(newTimeStamp, 3).toString();
-		String date4 = TimeStampToYear.addDaysToDate(newTimeStamp, 5).toString();
-		String date5 = TimeStampToYear.addDaysToDate(newTimeStamp, 7).toString();
-		
-		
-//		LocalDate date5 = newTimeStamp.toLocalDateTime().toLocalDate().plusDays(7);
-		
-//		LocalDate[] dates = {date1, date2, date3, date4, date5};
-		
-		String[] datesString = {date1, date2, date3, date4, date5};
-		
-		//get data from db
-		ArrayList<Transaction> dbTransactions = getTransactions();
 
-		for (int i = 0; i < sender.length; i++) {
-			
-			if(dbTransactions.get(i).getBankAccID() == loggedUser.getBankAccount().getBankAccID()) {
-				String transactionType = dbTransactions.get(i).getTransactionType();
+		// transaction_type -> withdraw || deposit == "You withdrew"/ "You deposited"
+		// transaction_type -> transfer == if + sender's email + "transferred to you" ||
+		// if - "You transferred"
+
+		// hard code for testing
+//		String[] sender = { "AlbertoOswaldo92@gmail.com", "user2@example.com", "user3@example.com", "user4@example.com",
+//				"user5@example.com" };
+//
+//		// amount would be transaction.transaction_amount
+//		double[] amount = { 90.00, 50.00, -200.50, -75.90, 80.00 };
+//
+//		// testing with hard coded date
+//		java.sql.Timestamp newTimeStamp = new java.sql.Timestamp(System.currentTimeMillis());
+//
+//		String date1 = TimeStampToYear.timeStampToYearString(newTimeStamp);
+//		// timeStampToYearString receives LocalDate and return String
+//		String date2 = TimeStampToYear.addDaysToDate(newTimeStamp, 2).toString();
+//		String date3 = TimeStampToYear.addDaysToDate(newTimeStamp, 3).toString();
+//		String date4 = TimeStampToYear.addDaysToDate(newTimeStamp, 5).toString();
+//		String date5 = TimeStampToYear.addDaysToDate(newTimeStamp, 7).toString();
+//
+//		String[] date = { date1, date2, date3, date4, date5 };
+
+		// sender, date, amount
+		// transaction.bank_acc_id, transaction.transaction_date,
+		// transaction.transaction_amount
+
+		// get data from db to pass to TransactionView
+		ArrayList<Transaction> dbTransactions = dbController.getStatementTransactionList(loggedUser.getStatement());
+
+		// TransactionView that will appear in the dialog
+		ArrayList<TransactionView> transactions = new ArrayList<TransactionView>();
+
+		// setting up the "sender" message, date and date to dialog
+		for (int i = 0; i < dbTransactions.size(); i++) {
+
+			double doubleAmount = dbTransactions.get(i).getTransactionAmount();
+			String date = TimeStampToYear.timeStampToLocalDateString(dbTransactions.get(i).getTransactionDate());
+			String currentSender = null;
+
+			// get transactionType (deposit, withdraw or transfer)
+			String transactionType = dbTransactions.get(i).getTransactionType();
+
+			// sender/receiver msg say "you deposited" or "you withdrew"
+			switch (transactionType) {
+			case "deposit":
+				// make this sender's msg be "You deposited"
+				currentSender = "You deposited";
+				break;
+			case "withdraw":
+				// make this sender's msg be "You withdrew"
+				currentSender = "You withdrew";
+				break;
+
+			// get data through db transfer.to_bank_acc_id = loggedUserId & time
+			case "transfer":
+
+				// get specific transfer to get sender's email (using id & date)
+				int userId = loggedUser.getUser().getId();
+				java.sql.Timestamp timeStampDate = dbTransactions.get(i).getTransactionDate();
+
+				// get 'from_bank_acc_id' out of this to discover sender's email
+
+				// if You transferred money to other account = negative transaction
+				if (dbTransactions.get(i).getTransactionAmount() < 0) {
+
+					// get data from receiver through db transfer.to_bank_acc_id = userId & time
+					Transfer transfer = dbController.getSpecificReceiverTransfer(userId, timeStampDate);
+
+					int receiverID = transfer.getFromBankAcc();
+					User receiverUser = dbController.getUserById(receiverID);
+					String receiverEmail = receiverUser.getEmail();
+
+					currentSender = "You transferred to " + receiverEmail + ".";// get recipient's email
+
+				} else {
+					// get data from sender through db transfer.from_bank_acc_id = userId & time
+					Transfer transfer = dbController.getSpecificSenderTransfer(userId, timeStampDate);
+
+					int senderID = transfer.getFromBankAcc();
+					User senderUser = dbController.getUserById(senderID);
+					String senderEmail = senderUser.getEmail();
+
+					currentSender = "You got a transfer from " + senderEmail + ".";
+
+					// test
+//					dbTransactions.get(i).getBankAccID() == loggedUser.getBankAccount().getBankAccID()
+				}
+				break;
 			}
-			
-			TransactionView t = new TransactionView(sender[i], dbTransactions.get(i).getTransactionAmount(), datesString[i]);
+
+			TransactionView t = new TransactionView(currentSender, date, doubleAmount);
 //			TransactionView t = new TransactionView(sender[i], amounts[i], dates[i]);
 			transactions.add(t);
 		}
 
+		
+//		GridPane transactionGrid = new GridPane();
+//	    transactionGrid.setHgap(10); // Adjust spacing as needed
+//
+//		Text emailText = new Text(transactions.get(i).getEmail());
+//		emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
+//		emailText.setWrappingWidth(250);
+//
+//		Text amountText = new Text(String.format("%,.2f", transactions.get(i).getAmount()));
+//		amountText.setFont(Font.font("Roboto", FontWeight.BOLD, 16.0));
+//		amountText.setWrappingWidth(100);
+//		amountText.setTextAlignment(TextAlignment.RIGHT); // Align amount to the right
+//		
+//		if (transactions.get(i).getAmount() < 0) {
+//			amountText.setFill(Color.RED);
+//		} else {
+//			amountText.setFill(Color.GREEN);
+//		}
+//
+//		Text dateText = new Text(transactions.get(i).getDate()); // Add date here
+//		dateText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
+//		dateText.setWrappingWidth(100);
+//		dateText.setTextAlignment(TextAlignment.RIGHT);
+//		
+//		transactionGrid.add(emailText, 0, 0);
+//	    transactionGrid.add(amountText, 1, 0);
+//	    transactionGrid.add(dateText, 2, 0);
+//	    
+//		// Add the transaction to the transactions list
+//		allTransactionsList.getChildren().add(transactionGrid);
+//		
 		// dialog structure, show the last 3 transactions
 		for (int i = transactions.size() - 3; i < transactions.size(); i++) {
 
@@ -255,19 +349,19 @@ public class BalanceScene extends Application {
 			transactionsHBox.setSpacing(60); // Space between email, amount and dates
 
 			Text emailText = new Text(transactions.get(i).getEmail());
-			emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
+			emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 14.0));
 
 			Text amountText = new Text(String.format("%,.2f", transactions.get(i).getAmount()));
-			amountText.setFont(Font.font("Roboto", FontWeight.BOLD, 16.0));
+			amountText.setFont(Font.font("Roboto", FontWeight.BOLD, 14.0));
 			if (transactions.get(i).getAmount() < 0) {
 				amountText.setFill(Color.RED);
 			} else {
 				amountText.setFill(Color.GREEN);
 			}
-			
+
 			Text transactionDate = new Text(transactions.get(i).getDate().toString());
-			transactionDate.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
-			
+			transactionDate.setFont(Font.font("Roboto", FontWeight.NORMAL, 14.0));
+
 			Region spacer1 = new Region();
 			Region spacer2 = new Region();
 			HBox.setHgrow(spacer1, Priority.ALWAYS);
@@ -317,7 +411,7 @@ public class BalanceScene extends Application {
 		moreTransactionsBtn.setOnAction(e -> {
 			try {
 				// make dialog show when clicked this button
-				BalanceScene.showStatementDialog();
+				BalanceScene.showStatementDialog(transactions);
 
 			} catch (Exception e2) {
 				e2.printStackTrace();
@@ -335,7 +429,13 @@ public class BalanceScene extends Application {
 		primaryStage.show();
 	}
 
-	public static void showStatementDialog() {
+	/**
+	 * Method used for the structure to display statement via "More transactions"
+	 * or Account Overview's "Statement" buttons
+	 * 
+	 * @param transactions to be displayed on the dialog
+	 */
+	public static void showStatementDialog(ArrayList<TransactionView> transactions) {
 		// Create a new Dialog
 		Dialog<Void> dialog = new Dialog<>();
 		dialog.setTitle("All Transactions");
@@ -347,34 +447,41 @@ public class BalanceScene extends Application {
 
 		// Add all transactions to the VBox
 		for (int i = 0; i < transactions.size(); i++) {
-			HBox transactionsHBox = new HBox();
-			transactionsHBox.setSpacing(60); // Space between email and amount
+			GridPane transactionGrid = new GridPane();
+		    transactionGrid.setHgap(10); // Adjust spacing as needed
 
 			Text emailText = new Text(transactions.get(i).getEmail());
 			emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
+			emailText.setWrappingWidth(250);
 
 			Text amountText = new Text(String.format("%,.2f", transactions.get(i).getAmount()));
 			amountText.setFont(Font.font("Roboto", FontWeight.BOLD, 16.0));
+			amountText.setWrappingWidth(100);
+			amountText.setTextAlignment(TextAlignment.RIGHT); // Align amount to the right
+			
 			if (transactions.get(i).getAmount() < 0) {
 				amountText.setFill(Color.RED);
 			} else {
 				amountText.setFill(Color.GREEN);
 			}
 
-			Region spacer = new Region();
-			HBox.setHgrow(spacer, Priority.ALWAYS);
-
-			// Add email and amount to the transaction HBox
-			transactionsHBox.getChildren().addAll(emailText, spacer, amountText);
-
+			Text dateText = new Text(transactions.get(i).getDate()); // Add date here
+			dateText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
+			dateText.setWrappingWidth(100);
+			dateText.setTextAlignment(TextAlignment.RIGHT);
+			
+			transactionGrid.add(emailText, 0, 0);
+		    transactionGrid.add(amountText, 1, 0);
+		    transactionGrid.add(dateText, 2, 0);
+		    
 			// Add the transaction to the transactions list
-			allTransactionsList.getChildren().add(transactionsHBox);
+			allTransactionsList.getChildren().add(transactionGrid);
 		}
 
 		// Create a ScrollPane and add the VBox to it
 		ScrollPane scrollPane = new ScrollPane(allTransactionsList);
 		dialog.getDialogPane().setPrefHeight(300);
-		dialog.getDialogPane().setPrefWidth(440.0);
+		dialog.getDialogPane().setPrefWidth(530.0);
 		dialog.setResizable(true);
 
 		// Add the ScrollPane to the Dialog
@@ -406,10 +513,4 @@ public class BalanceScene extends Application {
 		// Show the dialog
 		dialog.showAndWait();
 	}
-	
-	public ArrayList<Transaction> getTransactions() {
-		ArrayList<Transaction> transactions = dbController.getStatementTransactionList(loggedUser.getStatement());
-		return transactions;
-	}
-
 }

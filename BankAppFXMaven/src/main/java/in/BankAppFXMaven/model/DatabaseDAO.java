@@ -246,7 +246,7 @@ public class DatabaseDAO {
 		try {
 			rs = st.executeQuery("SELECT * FROM login WHERE user_id = " + userId + ";");
 			rs.next();
-			
+
 			try {
 				if (!rs.wasNull()) {
 					login.setLoginId(rs.getInt("login_id"));
@@ -492,7 +492,7 @@ public class DatabaseDAO {
 				ba.setUserID(rs.getInt("user_id"));
 				ba.setBankAccNum(rs.getInt("bank_acc_number"));
 				ba.setBankAccBalance(rs.getDouble("bank_acc_balance"));
-				
+
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -692,5 +692,84 @@ public class DatabaseDAO {
 			System.out.println("Error: " + sqle.getErrorCode());
 			sqle = sqle.getNextException();
 		}
+	}
+
+	/**
+	 * @param userId of receiving bank holder
+	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
+	 * @return specific dated transfer from userId
+	 */
+	public Transfer getSpecificReceiverTransfer(int userId, Timestamp timeStampDate) {
+
+		String query = "SELECT * FROM transfer WHERE to_bank_acc_id = " + userId + " AND transfer_date = '"
+				+ timeStampDate + "';";
+
+		ResultSet rs = executeQueryRS(query);
+		return reusableTransferDAO(rs).get(0);
+	}
+	
+	/**
+	 * @param userId of sent bank holder
+	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
+	 * @return specific dated transfer from userId
+	 */
+	public Transfer getSpecificSenderTransfer(int userId, Timestamp timeStampDate) {
+
+		String query = "SELECT * FROM transfer WHERE from_bank_acc_id = " + userId + " AND transfer_date = '"
+				+ timeStampDate + "';";
+
+		ResultSet rs = executeQueryRS(query);
+		return reusableTransferDAO(rs).get(0);
+	}
+	
+	/**
+	 * @param userId from bank account who received
+	 * @return ArrayList of transfers from UserId
+	 */
+	public ArrayList<Transfer> getTransfersReceived(int userId) {
+
+		String query = "SELECT * FROM transfer WHERE to_bank_acc_id = " + userId + ";";
+		ResultSet rs = executeQueryRS(query);
+		return reusableTransferDAO(rs);
+	}
+	
+	/**
+	 * @param userId from bank account who sent
+	 * @return ArrayList of transfers from UserId
+	 */
+	public ArrayList<Transfer> getTransfersSent(int userId) {
+
+		String query = "SELECT * FROM transfer WHERE from_bank_acc_id = " + userId + ";";
+		ResultSet rs = executeQueryRS(query);
+		return reusableTransferDAO(rs);
+	}
+	
+	/**
+	 * Reusable method to get transfer table depending on ResultSet/Query
+	 * 
+	 * @param rs ready executed query on ResultSet
+	 * @return ArrayList of Transfer
+	 */
+	public ArrayList<Transfer> reusableTransferDAO(ResultSet rs) {
+
+		ArrayList<Transfer> transfers = new ArrayList<Transfer>();
+		try {
+			if (!rs.wasNull()) {
+
+				Transfer transfer = new Transfer();
+				transfer.setTransferID(rs.getInt("transfer_id"));
+				transfer.setFromBankAcc(rs.getInt("from_bank_acc_id"));
+				transfer.setToBankAcc(rs.getInt("to_bank_acc_id"));
+				transfer.setTransferAmount(rs.getDouble("transfer_amount"));
+				transfer.setTransferDate(rs.getTimestamp("transfer_date"));
+				transfers.add(transfer);
+			}
+
+		} catch (SQLException sqle) {
+			db.exceptionMessages(sqle);
+			sqle.printStackTrace();
+			System.out.println("Transfer couldn't be retrieved from db.");
+		}
+		return transfers;
 	}
 }

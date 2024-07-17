@@ -294,7 +294,7 @@ public class AccountOverviewScene extends Application {
 
 		statementButton.setOnAction(e -> {
 			try {
-				BalanceScene.showStatementDialog();
+//				BalanceScene.showStatementDialog();
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

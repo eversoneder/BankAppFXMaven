@@ -1,6 +1,6 @@
 package in.BankAppFXMaven.model;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class Transfer {
 
@@ -8,7 +8,7 @@ public class Transfer {
 	private int fromBankAcc;
 	private int toBankAcc;
 	private double transferAmount;
-	private Date date;
+	private Timestamp transferDate;
 	/**
 	 * @return the transferID
 	 */
@@ -58,15 +58,15 @@ public class Transfer {
 		this.transferAmount = transferAmount;
 	}
 	/**
-	 * @return the date
+	 * @return the TimeStamp
 	 */
-	public Date getDate() {
-		return date;
+	public Timestamp getTransferDate() {
+		return transferDate;
 	}
 	/**
-	 * @param date the date to set
+	 * @param TimeStamp the TimeStamp to set
 	 */
-	public void setDate(Date date) {
-		this.date = date;
+	public void setTransferDate(Timestamp date) {
+		this.transferDate = date;
 	}
 }

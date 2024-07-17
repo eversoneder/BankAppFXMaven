@@ -1,6 +1,7 @@
 package in.BankAppFXMaven.controller;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import in.BankAppFXMaven.model.BankAccount;
@@ -8,6 +9,7 @@ import in.BankAppFXMaven.model.DatabaseDAO;
 import in.BankAppFXMaven.model.Login;
 import in.BankAppFXMaven.model.Statement;
 import in.BankAppFXMaven.model.Transaction;
+import in.BankAppFXMaven.model.Transfer;
 import in.BankAppFXMaven.model.User;
 import in.BankAppFXMaven.utility.AccountNumberGenerator;
 
@@ -146,4 +148,39 @@ public class DatabaseController {
 	public boolean emailExists(String email) {
 		return db.emailExists(email);
 	}
+
+	/**
+	 * @param userId of receiving bank holder
+	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
+	 * @return specific dated transfer from userId
+	 */
+	public Transfer getSpecificReceiverTransfer(int userId, Timestamp timeStampDate) {
+		return db.getSpecificReceiverTransfer(userId, timeStampDate);
+	}
+	
+	/**
+	 * @param userId of sent bank holder
+	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
+	 * @return specific dated transfer from userId
+	 */
+	public Transfer getSpecificSenderTransfer(int userId, Timestamp timeStampDate) {
+		return db.getSpecificSenderTransfer(userId, timeStampDate);
+	}
+	
+	/**
+	 * @param userId from bank account who sent
+	 * @return ArrayList of transfers from UserId
+	 */
+	public ArrayList<Transfer> getTransfersSent(int userId) {
+		return db.getTransfersSent(userId);
+	}
+	
+	/**
+	 * @param userId from bank account who received
+	 * @return ArrayList of transfers from UserId
+	 */
+	public ArrayList<Transfer> getTransfersReceived(int userId) {
+		return db.getTransfersSent(userId);
+	}
+	
 }
