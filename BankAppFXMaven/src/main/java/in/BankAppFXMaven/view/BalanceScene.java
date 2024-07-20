@@ -44,6 +44,9 @@ public class BalanceScene extends Application {
 	private static AccountOverviewScene transactionSceneSingletonInstance;
 	private static DatabaseController dbController;
 	private LoggedUser loggedUser;
+	
+	// TransactionView that will appear in the dialog
+	private ArrayList<TransactionView> transactions = new ArrayList<TransactionView>();
 
 	private BalanceScene() {
 	}
@@ -241,76 +244,75 @@ public class BalanceScene extends Application {
 		// transaction.bank_acc_id, transaction.transaction_date,
 		// transaction.transaction_amount
 
-		// get data from db to pass to TransactionView
-		ArrayList<Transaction> dbTransactions = dbController.getStatementTransactionList(loggedUser.getStatement());
+//		// get data from db to pass to TransactionView
+//		ArrayList<Transaction> dbTransactions = dbController.getStatementTransactionList(loggedUser.getStatement());
+//
+//		// TransactionView that will appear in the dialog
+//		ArrayList<TransactionView> transactions = new ArrayList<TransactionView>();
+//
+//		// setting up the "sender" message, date and date to dialog
+//		for (int i = 0; i < dbTransactions.size(); i++) {
+//
+//			double doubleAmount = dbTransactions.get(i).getTransactionAmount();
+//			String date = TimeStampToYear.timeStampToLocalDateString(dbTransactions.get(i).getTransactionDate());
+//			String currentSender = null;
+//
+//			// get transactionType (deposit, withdraw or transfer)
+//			String transactionType = dbTransactions.get(i).getTransactionType();
+//
+//			// sender/receiver msg say "you deposited" or "you withdrew"
+//			switch (transactionType) {
+//			case "deposit":
+//				// make this sender's msg be "You deposited"
+//				currentSender = "You deposited";
+//				break;
+//			case "withdraw":
+//				// make this sender's msg be "You withdrew"
+//				currentSender = "You withdrew";
+//				break;
+//
+//			// get data through db transfer.to_bank_acc_id = loggedUserId & time
+//			case "transfer":
+//
+//				// get specific transfer to get sender's email (using id & date)
+//				int userId = loggedUser.getUser().getId();
+//				java.sql.Timestamp timeStampDate = dbTransactions.get(i).getTransactionDate();
+//
+//				// get 'from_bank_acc_id' out of this to discover sender's email
+//
+//				// if You transferred money to other account = negative transaction
+//				if (dbTransactions.get(i).getTransactionAmount() < 0) {
+//
+//					// get data from receiver through db transfer.to_bank_acc_id = userId & time
+//					Transfer transfer = dbController.getSpecificReceiverTransfer(userId, timeStampDate);
+//
+//					int receiverID = transfer.getFromBankAcc();
+//					User receiverUser = dbController.getUserById(receiverID);
+//					String receiverEmail = receiverUser.getEmail();
+//
+//					currentSender = "You transferred to " + receiverEmail + ".";// get recipient's email
+//
+//				} else {
+//					// get data from sender through db transfer.from_bank_acc_id = userId & time
+//					Transfer transfer = dbController.getSpecificSenderTransfer(userId, timeStampDate);
+//
+//					int senderID = transfer.getFromBankAcc();
+//					User senderUser = dbController.getUserById(senderID);
+//					String senderEmail = senderUser.getEmail();
+//
+//					currentSender = "You got a transfer from " + senderEmail + ".";
+//
+//					// test
+////					dbTransactions.get(i).getBankAccID() == loggedUser.getBankAccount().getBankAccID()
+//				}
+//				break;
+//			}
+//
+//			TransactionView t = new TransactionView(currentSender, date, doubleAmount);
+////			TransactionView t = new TransactionView(sender[i], amounts[i], dates[i]);
+//			transactions.add(t);
+//		}
 
-		// TransactionView that will appear in the dialog
-		ArrayList<TransactionView> transactions = new ArrayList<TransactionView>();
-
-		// setting up the "sender" message, date and date to dialog
-		for (int i = 0; i < dbTransactions.size(); i++) {
-
-			double doubleAmount = dbTransactions.get(i).getTransactionAmount();
-			String date = TimeStampToYear.timeStampToLocalDateString(dbTransactions.get(i).getTransactionDate());
-			String currentSender = null;
-
-			// get transactionType (deposit, withdraw or transfer)
-			String transactionType = dbTransactions.get(i).getTransactionType();
-
-			// sender/receiver msg say "you deposited" or "you withdrew"
-			switch (transactionType) {
-			case "deposit":
-				// make this sender's msg be "You deposited"
-				currentSender = "You deposited";
-				break;
-			case "withdraw":
-				// make this sender's msg be "You withdrew"
-				currentSender = "You withdrew";
-				break;
-
-			// get data through db transfer.to_bank_acc_id = loggedUserId & time
-			case "transfer":
-
-				// get specific transfer to get sender's email (using id & date)
-				int userId = loggedUser.getUser().getId();
-				java.sql.Timestamp timeStampDate = dbTransactions.get(i).getTransactionDate();
-
-				// get 'from_bank_acc_id' out of this to discover sender's email
-
-				// if You transferred money to other account = negative transaction
-				if (dbTransactions.get(i).getTransactionAmount() < 0) {
-
-					// get data from receiver through db transfer.to_bank_acc_id = userId & time
-					Transfer transfer = dbController.getSpecificReceiverTransfer(userId, timeStampDate);
-
-					int receiverID = transfer.getFromBankAcc();
-					User receiverUser = dbController.getUserById(receiverID);
-					String receiverEmail = receiverUser.getEmail();
-
-					currentSender = "You transferred to " + receiverEmail + ".";// get recipient's email
-
-				} else {
-					// get data from sender through db transfer.from_bank_acc_id = userId & time
-					Transfer transfer = dbController.getSpecificSenderTransfer(userId, timeStampDate);
-
-					int senderID = transfer.getFromBankAcc();
-					User senderUser = dbController.getUserById(senderID);
-					String senderEmail = senderUser.getEmail();
-
-					currentSender = "You got a transfer from " + senderEmail + ".";
-
-					// test
-//					dbTransactions.get(i).getBankAccID() == loggedUser.getBankAccount().getBankAccID()
-				}
-				break;
-			}
-
-			TransactionView t = new TransactionView(currentSender, date, doubleAmount);
-//			TransactionView t = new TransactionView(sender[i], amounts[i], dates[i]);
-			transactions.add(t);
-		}
-
-		
 //		GridPane transactionGrid = new GridPane();
 //	    transactionGrid.setHgap(10); // Adjust spacing as needed
 //
@@ -340,6 +342,8 @@ public class BalanceScene extends Application {
 //	    
 //		// Add the transaction to the transactions list
 //		allTransactionsList.getChildren().add(transactionGrid);
+
+		transactions = switchCaseTransactionType(transactions);
 //		
 		// dialog structure, show the last 3 transactions
 		for (int i = transactions.size() - 3; i < transactions.size(); i++) {
@@ -411,7 +415,7 @@ public class BalanceScene extends Application {
 		moreTransactionsBtn.setOnAction(e -> {
 			try {
 				// make dialog show when clicked this button
-				BalanceScene.showStatementDialog(transactions);
+				showStatementDialog(transactions);
 
 			} catch (Exception e2) {
 				e2.printStackTrace();
@@ -429,13 +433,85 @@ public class BalanceScene extends Application {
 		primaryStage.show();
 	}
 
+	public ArrayList<TransactionView> switchCaseTransactionType(ArrayList<TransactionView> transactions) {
+
+		// get data from db to pass to TransactionView
+		ArrayList<Transaction> dbTransactions = dbController.getStatementTransactionList(loggedUser.getStatement());
+
+		// setting up the "sender" message, date and date to dialog
+		for (int i = 0; i < dbTransactions.size(); i++) {
+
+			double doubleAmount = dbTransactions.get(i).getTransactionAmount();
+			String date = TimeStampToYear.timeStampToLocalDateString(dbTransactions.get(i).getTransactionDate());
+			String currentSender = "";
+
+			// get transactionType (deposit, withdraw or transfer)
+			String transactionType = dbTransactions.get(i).getTransactionType();
+
+			// sender/receiver msg say "you deposited" or "you withdrew"
+			switch (transactionType) {
+			case "deposit":
+				// make this sender's msg be "You deposited"
+				currentSender = "You deposited";
+				break;
+			case "withdraw":
+				// make this sender's msg be "You withdrew"
+				currentSender = "You withdrew";
+				break;
+
+			// get data through db transfer.to_bank_acc_id = loggedUserId & time
+			case "transfer":
+
+				// get specific transfer to get sender's email (using id & date)
+				int userId = loggedUser.getUser().getId();
+				java.sql.Timestamp timeStampDate = dbTransactions.get(i).getTransactionDate();
+
+				// get 'from_bank_acc_id' out of this to discover sender's email
+				// if You transferred money to other account = negative transaction
+				if (dbTransactions.get(i).getTransactionAmount() < 0) {
+
+					// get data from receiver since I know I sent transfer.from_bank_acc_id = userId
+					// & time(get to)
+					Transfer transfer = dbController.getSpecificReceiverTransfer(userId, timeStampDate);
+
+					int receiverID = transfer.getToBankAcc();
+					User receiverUser = dbController.getUserById(receiverID);
+					String receiverEmail = receiverUser.getEmail();
+
+					currentSender = "You transferred to " + receiverEmail + ".";// get recipient's email
+
+				} else {
+					// get data from sender since I know I received transfer.to_bank_acc_id = userId
+					// & time(get from)
+					Transfer transfer = dbController.getSpecificSenderTransfer(userId, timeStampDate);
+
+					int senderID = transfer.getFromBankAcc();
+					User senderUser = dbController.getUserById(senderID);
+					String senderEmail = senderUser.getEmail();
+
+					currentSender = "Transfer received from" + senderEmail + ".";
+
+					// test
+//							dbTransactions.get(i).getBankAccID() == loggedUser.getBankAccount().getBankAccID()
+				}
+				break;
+			}
+
+			TransactionView t = new TransactionView(currentSender, date, doubleAmount);
+//					TransactionView t = new TransactionView(sender[i], amounts[i], dates[i]);
+			transactions.add(t);
+		}
+
+		return transactions;
+	}
+
 	/**
-	 * Method used for the structure to display statement via "More transactions"
-	 * or Account Overview's "Statement" buttons
+	 * Method used for the structure to display statement via "More transactions" or
+	 * Account Overview's "Statement" buttons
 	 * 
 	 * @param transactions to be displayed on the dialog
 	 */
-	public static void showStatementDialog(ArrayList<TransactionView> transactions) {
+	public void showStatementDialog(ArrayList<TransactionView> transactions) {
 		// Create a new Dialog
 		Dialog<Void> dialog = new Dialog<>();
 		dialog.setTitle("All Transactions");
@@ -448,7 +524,7 @@ public class BalanceScene extends Application {
 		// Add all transactions to the VBox
 		for (int i = 0; i < transactions.size(); i++) {
 			GridPane transactionGrid = new GridPane();
-		    transactionGrid.setHgap(10); // Adjust spacing as needed
+			transactionGrid.setHgap(10); // Adjust spacing as needed
 
 			Text emailText = new Text(transactions.get(i).getEmail());
 			emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
@@ -458,22 +534,25 @@ public class BalanceScene extends Application {
 			amountText.setFont(Font.font("Roboto", FontWeight.BOLD, 16.0));
 			amountText.setWrappingWidth(100);
 			amountText.setTextAlignment(TextAlignment.RIGHT); // Align amount to the right
-			
+
 			if (transactions.get(i).getAmount() < 0) {
 				amountText.setFill(Color.RED);
 			} else {
 				amountText.setFill(Color.GREEN);
 			}
 
+			transactions = switchCaseTransactionType(transactions);
+			// trasactionType
+
 			Text dateText = new Text(transactions.get(i).getDate()); // Add date here
 			dateText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
 			dateText.setWrappingWidth(100);
 			dateText.setTextAlignment(TextAlignment.RIGHT);
-			
+
 			transactionGrid.add(emailText, 0, 0);
-		    transactionGrid.add(amountText, 1, 0);
-		    transactionGrid.add(dateText, 2, 0);
-		    
+			transactionGrid.add(amountText, 1, 0);
+			transactionGrid.add(dateText, 2, 0);
+
 			// Add the transaction to the transactions list
 			allTransactionsList.getChildren().add(transactionGrid);
 		}

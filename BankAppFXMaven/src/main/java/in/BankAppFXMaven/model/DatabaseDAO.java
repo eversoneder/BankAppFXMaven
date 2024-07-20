@@ -695,25 +695,14 @@ public class DatabaseDAO {
 	}
 
 	/**
-	 * @param userId of receiving bank holder
+	 * You SENT cash and want to get history of who received at this specific
+	 * date.(get to_bank_acc_id)
+	 * 
+	 * @param userId        of receiving bank holder
 	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
 	 * @return specific dated transfer from userId
 	 */
 	public Transfer getSpecificReceiverTransfer(int userId, Timestamp timeStampDate) {
-
-		String query = "SELECT * FROM transfer WHERE to_bank_acc_id = " + userId + " AND transfer_date = '"
-				+ timeStampDate + "';";
-
-		ResultSet rs = executeQueryRS(query);
-		return reusableTransferDAO(rs).get(0);
-	}
-	
-	/**
-	 * @param userId of sent bank holder
-	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
-	 * @return specific dated transfer from userId
-	 */
-	public Transfer getSpecificSenderTransfer(int userId, Timestamp timeStampDate) {
 
 		String query = "SELECT * FROM transfer WHERE from_bank_acc_id = " + userId + " AND transfer_date = '"
 				+ timeStampDate + "';";
@@ -721,7 +710,24 @@ public class DatabaseDAO {
 		ResultSet rs = executeQueryRS(query);
 		return reusableTransferDAO(rs).get(0);
 	}
-	
+
+	/**
+	 * You RECEIVED cash and want to know who sent you at this specific date.(get
+	 * from_bank_acc_id)
+	 * 
+	 * @param userId        of sent bank holder
+	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
+	 * @return specific dated transfer from userId
+	 */
+	public Transfer getSpecificSenderTransfer(int userId, Timestamp timeStampDate) {
+
+		String query = "SELECT * FROM transfer WHERE to_bank_acc_id = " + userId + " AND transfer_date = '"
+				+ timeStampDate + "';";
+
+		ResultSet rs = executeQueryRS(query);
+		return reusableTransferDAO(rs).get(0);
+	}
+
 	/**
 	 * @param userId from bank account who received
 	 * @return ArrayList of transfers from UserId
@@ -732,7 +738,7 @@ public class DatabaseDAO {
 		ResultSet rs = executeQueryRS(query);
 		return reusableTransferDAO(rs);
 	}
-	
+
 	/**
 	 * @param userId from bank account who sent
 	 * @return ArrayList of transfers from UserId
@@ -743,7 +749,7 @@ public class DatabaseDAO {
 		ResultSet rs = executeQueryRS(query);
 		return reusableTransferDAO(rs);
 	}
-	
+
 	/**
 	 * Reusable method to get transfer table depending on ResultSet/Query
 	 * 

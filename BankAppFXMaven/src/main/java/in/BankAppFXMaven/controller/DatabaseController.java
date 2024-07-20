@@ -150,7 +150,10 @@ public class DatabaseController {
 	}
 
 	/**
-	 * @param userId of receiving bank holder
+	 * You SENT cash and want to get history of who received at this specific
+	 * date.(get to_bank_acc_id)
+	 * 
+	 * @param userId        of receiving bank holder
 	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
 	 * @return specific dated transfer from userId
 	 */
@@ -159,7 +162,10 @@ public class DatabaseController {
 	}
 	
 	/**
-	 * @param userId of sent bank holder
+	 * You RECEIVED cash and want to know who sent you at this specific date.(get
+	 * from_bank_acc_id)
+	 * 
+	 * @param userId        of sent bank holder
 	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
 	 * @return specific dated transfer from userId
 	 */

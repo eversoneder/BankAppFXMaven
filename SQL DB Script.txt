@@ -49,11 +49,11 @@ CREATE TABLE `transaction` (
   `bank_acc_id` int DEFAULT NULL,
   `transaction_type` varchar(10) DEFAULT NULL,
   `transaction_amount` decimal(10,2) DEFAULT NULL,
-  `transaction_date` date DEFAULT NULL,
+  `transaction_date` datetime DEFAULT NULL,
   PRIMARY KEY (`transaction_id`),
   KEY `bank_acc_id` (`bank_acc_id`),
   CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`bank_acc_id`) REFERENCES `bank_account` (`bank_acc_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `statement` (
   `statement_id` int NOT NULL AUTO_INCREMENT,
