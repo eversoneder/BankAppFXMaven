@@ -23,12 +23,12 @@ import in.BankAppFXMaven.view.TransactionView;
 
 public class Main extends Application {
 	
-	private static BalanceScene balanceScene = BalanceScene.getInstance();
+	private static MainScene mainScene = MainScene.getInstance();
 	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-//			balanceScene.start(primaryStage);
+			mainScene.start(primaryStage);
 			
 			
 			//hard code for testing
