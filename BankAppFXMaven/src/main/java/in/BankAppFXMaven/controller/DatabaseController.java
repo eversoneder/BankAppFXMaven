@@ -50,7 +50,7 @@ public class DatabaseController {
 	public User getUserById(int userId) {
 		return db.getUserById(userId);
 	}
-	
+
 	public void showNameSurnameDialogAndSave() {
 		db.showNameSurnameDialogAndSave();
 	}
@@ -103,7 +103,7 @@ public class DatabaseController {
 	public Statement getStatement(int bankAccId) {
 		return db.getStatement(bankAccId);
 	}
-	
+
 	/**
 	 * @param statement to get all transaction list from statement.getBankAccId()
 	 * @return Transaction ArrayList
@@ -122,13 +122,13 @@ public class DatabaseController {
 	}
 
 	/**
-	 * @param userId to set TimeStamp to the brand new account 
+	 * @param userId to set TimeStamp to the brand new account
 	 * @return the TimeStamp that was set in the db
 	 */
-	public java.sql.Timestamp insertNewLastLogin(int userId){
+	public java.sql.Timestamp insertNewLastLogin(int userId) {
 		return db.insertNewLastLogin(userId);
 	}
-	
+
 	/**
 	 * @param userId of user to set last_login
 	 * @return TimeStamp updated
@@ -160,7 +160,7 @@ public class DatabaseController {
 	public Transfer getSpecificReceiverTransfer(int userId, Timestamp timeStampDate) {
 		return db.getSpecificReceiverTransfer(userId, timeStampDate);
 	}
-	
+
 	/**
 	 * You RECEIVED cash and want to know who sent you at this specific date.(get
 	 * from_bank_acc_id)
@@ -172,7 +172,7 @@ public class DatabaseController {
 	public Transfer getSpecificSenderTransfer(int userId, Timestamp timeStampDate) {
 		return db.getSpecificSenderTransfer(userId, timeStampDate);
 	}
-	
+
 	/**
 	 * @param userId from bank account who sent
 	 * @return ArrayList of transfers from UserId
@@ -180,7 +180,7 @@ public class DatabaseController {
 	public ArrayList<Transfer> getTransfersSent(int userId) {
 		return db.getTransfersSent(userId);
 	}
-	
+
 	/**
 	 * @param userId from bank account who received
 	 * @return ArrayList of transfers from UserId
@@ -188,5 +188,12 @@ public class DatabaseController {
 	public ArrayList<Transfer> getTransfersReceived(int userId) {
 		return db.getTransfersSent(userId);
 	}
-	
+
+	/**
+	 * @param amount to withdraw
+	 * @return 1 if successful, 0 if unsuccessful
+	 */
+	public int withdrawAmount(double amount) {
+		return db.withdrawAmount(amount);
+	}
 }

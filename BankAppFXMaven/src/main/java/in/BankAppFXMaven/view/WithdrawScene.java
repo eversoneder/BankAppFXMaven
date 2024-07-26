@@ -1,7 +1,10 @@
 package in.BankAppFXMaven.view;
 
+import in.BankAppFXMaven.controller.DatabaseController;
+import in.BankAppFXMaven.model.LoggedUser;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -19,7 +22,7 @@ public class WithdrawScene extends Application {
 
 	private Stage primaryStage;
 	private static WithdrawScene withdrawSceneSingletonInstance;
-	private static AccountOverviewScene transactionsSceneSingletonInstance = AccountOverviewScene.getInstance();
+	private static AccountOverviewScene accOverviewSingletonInstance;
 //	private static DatabaseService db = DatabaseService.getInstance();
 
 	private WithdrawScene() {
@@ -83,7 +86,8 @@ public class WithdrawScene extends Application {
 
 		backButton.setOnAction(e -> {
 			try {
-				transactionsSceneSingletonInstance.start(primaryStage);
+				accOverviewSingletonInstance = AccountOverviewScene.getInstance();
+				accOverviewSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -179,7 +183,7 @@ public class WithdrawScene extends Application {
 		cancelBtn.setFont(Font.font("Roboto Bold", 16.0));
 		cancelBtn.setOnAction(e -> {
 			try {
-				transactionsSceneSingletonInstance.start(primaryStage);
+				accOverviewSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -196,6 +200,41 @@ public class WithdrawScene extends Application {
 		confirmBtn.setFont(Font.font("Roboto Bold", 16.0));
 		confirmBtn.setOnAction(e -> {
 			try {
+				
+				LoggedUser loggedUser = LoggedUser.getInstance();
+				double currentBalance = loggedUser.getBankAccount().getBankAccBalance();
+				double withdrawInput = Double.parseDouble(withdrawTxtInput.getText());
+				
+				if(withdrawInput <= currentBalance) {
+					
+					//get input amount and take away from db
+					
+					DatabaseController dbController = DatabaseController.getInstance();
+					
+					
+					//fazer validacao no input double format
+					
+					int withdrawResponse = dbController.withdrawAmount(withdrawInput);
+					
+					if(withdrawResponse == 1) {
+						//message display success withdrawal
+						
+					} else {
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle("Couldn't withdraw.");
+						alert.setHeaderText(null);
+						alert.setContentText("Error while Withdrawing, please try again.");
+						alert.showAndWait();
+					}
+					//load again bank account and update loggedUser's balance
+					
+				} else {
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Not enough funds");
+					alert.setHeaderText(null);
+					alert.setContentText("Balance is lower than the withdraw amount, enter a lower amount.");
+					alert.showAndWait();
+				}
 				// CHECK IF AMOUNT IS AVAILABLE IN BALANCE ON DB
 
 //				boolean amountCheck = db.checkBalanceAvailability(withdrawTxtInput.getText());
