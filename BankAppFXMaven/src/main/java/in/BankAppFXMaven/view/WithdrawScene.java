@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -148,8 +149,7 @@ public class WithdrawScene extends Application {
 		withdrawIconImageView.setPreserveRatio(true);
 
 		// Set the image for the ImageView
-		Image withdrawIconImage = new Image(
-				getClass().getResource("/img/withdraw-icon-grey-lg.png").toExternalForm());
+		Image withdrawIconImage = new Image(getClass().getResource("/img/withdraw-icon-grey-lg.png").toExternalForm());
 		withdrawIconImageView.setImage(withdrawIconImage);
 
 		// Add the ImageView to the AnchorPane
@@ -200,41 +200,70 @@ public class WithdrawScene extends Application {
 		confirmBtn.setFont(Font.font("Roboto Bold", 16.0));
 		confirmBtn.setOnAction(e -> {
 			try {
-				
+
 				LoggedUser loggedUser = LoggedUser.getInstance();
 				double currentBalance = loggedUser.getBankAccount().getBankAccBalance();
-				double withdrawInput = Double.parseDouble(withdrawTxtInput.getText());
-				
-				if(withdrawInput <= currentBalance) {
-					
-					//get input amount and take away from db
-					
-					DatabaseController dbController = DatabaseController.getInstance();
-					
-					
-					//fazer validacao no input double format
-					
-					int withdrawResponse = dbController.withdrawAmount(withdrawInput);
-					
-					if(withdrawResponse == 1) {
-						//message display success withdrawal
-						
+
+				// number format validation
+				try {
+					// get input amount
+					double withdrawInput = Double.parseDouble(withdrawTxtInput.getText());
+
+					if (withdrawInput <= currentBalance) {
+
+						DatabaseController dbController = DatabaseController.getInstance();
+
+						// subtract from user's balance
+						int withdrawResponse = dbController.withdrawAmount(withdrawInput);
+
+						if (withdrawResponse == 1) {
+							// message display success withdrawal
+							Alert alert = new Alert(AlertType.INFORMATION);
+							alert.setTitle("Withdraw Succeeded");
+							alert.setHeaderText(null);
+							alert.setContentText("You withdrew €" + withdrawInput + " from your bank account.");
+							alert.showAndWait();
+
+							// update local bank account to upload
+							double balanceBeforeWithdrawal = loggedUser.getBankAccount().getBankAccBalance();
+							// set subtracted balance
+							loggedUser.getBankAccount().setBankAccBalance(balanceBeforeWithdrawal - withdrawInput);
+
+							// upload again bank to show updated balance
+//							dbController.updateBankAccBalance(loggedUser.getBankAccount(), loggedUser.getUser().getId());
+							
+							// download updated bank account
+							loggedUser.setBankAccount(dbController.getUserBankAcc(loggedUser.getUser().getId()));
+
+							// update transaction also
+
+						} else {
+							Alert alert = new Alert(Alert.AlertType.ERROR);
+							alert.setTitle("Couldn't withdraw.");
+							alert.setHeaderText(null);
+							alert.setContentText("Error while Withdrawing, please try again.");
+							alert.showAndWait();
+						}
+						// load again bank account and update loggedUser's balance
+
 					} else {
 						Alert alert = new Alert(Alert.AlertType.ERROR);
-						alert.setTitle("Couldn't withdraw.");
+						alert.setTitle("Not enough funds");
 						alert.setHeaderText(null);
-						alert.setContentText("Error while Withdrawing, please try again.");
+						alert.setContentText("Balance is lower than the withdraw amount, enter a lower amount.");
 						alert.showAndWait();
 					}
-					//load again bank account and update loggedUser's balance
-					
-				} else {
+				} catch (Exception e1) {
+
 					Alert alert = new Alert(Alert.AlertType.ERROR);
-					alert.setTitle("Not enough funds");
+					alert.setTitle("Amount format error.");
 					alert.setHeaderText(null);
-					alert.setContentText("Balance is lower than the withdraw amount, enter a lower amount.");
+					alert.setContentText("Enter amount as number format like '80' or '80.80'");
 					alert.showAndWait();
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
+
 				// CHECK IF AMOUNT IS AVAILABLE IN BALANCE ON DB
 
 //				boolean amountCheck = db.checkBalanceAvailability(withdrawTxtInput.getText());
