@@ -294,7 +294,9 @@ public class AccountOverviewScene extends Application {
 
 		statementButton.setOnAction(e -> {
 			try {
-//				BalanceScene.showStatementDialog();
+				loggedUser = LoggedUser.getInstance();
+				balanceSceneSingletonInstance = BalanceScene.getInstance();
+				balanceSceneSingletonInstance.showStatementDialog();
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

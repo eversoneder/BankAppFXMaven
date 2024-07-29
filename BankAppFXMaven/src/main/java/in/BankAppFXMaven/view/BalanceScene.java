@@ -314,6 +314,7 @@ public class BalanceScene extends Application {
 	public ArrayList<TransactionView> sortTransactionTypeSenderMessage(ArrayList<TransactionView> transactions) {
 
 		// get data from db to pass to TransactionView
+		loggedUser = LoggedUser.getInstance();
 		dbController = DatabaseController.getInstance();
 		ArrayList<Transaction> dbTransactions = dbController.getStatementTransactionList(loggedUser.getStatement());
 
