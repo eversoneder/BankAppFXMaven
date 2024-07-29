@@ -1,7 +1,11 @@
 package in.BankAppFXMaven.view;
 
+import java.sql.Timestamp;
+
 import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.model.LoggedUser;
+import in.BankAppFXMaven.model.Statement;
+import in.BankAppFXMaven.model.Transaction;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -23,7 +27,7 @@ public class WithdrawScene extends Application {
 
 	private Stage primaryStage;
 	private static WithdrawScene withdrawSceneSingletonInstance;
-	private static AccountOverviewScene accOverviewSingletonInstance;
+	private static AccountOverviewScene accOverviewSingletonInstance = AccountOverviewScene.getInstance();
 //	private static DatabaseService db = DatabaseService.getInstance();
 
 	private WithdrawScene() {
@@ -172,16 +176,16 @@ public class WithdrawScene extends Application {
 
 		whiteMiddlePane.getChildren().addAll(withdrawAmountTxt, withdrawTxtInput);
 
-		Button cancelBtn = new Button("Cancel");
-		cancelBtn.setLayoutX(90.0);
-		cancelBtn.setLayoutY(370.0);
-		cancelBtn.setPrefHeight(30.0);
-		cancelBtn.setPrefWidth(140.0);
-		cancelBtn.setStyle("-fx-background-color: #B3B3B3; -fx-background-radius: 8px; -fx-cursor: hand;");
-		cancelBtn.setTextAlignment(TextAlignment.CENTER);
-		cancelBtn.setTextFill(Color.web("#ffffff"));
-		cancelBtn.setFont(Font.font("Roboto Bold", 16.0));
-		cancelBtn.setOnAction(e -> {
+		Button backBtn = new Button("Back");
+		backBtn.setLayoutX(90.0);
+		backBtn.setLayoutY(370.0);
+		backBtn.setPrefHeight(30.0);
+		backBtn.setPrefWidth(140.0);
+		backBtn.setStyle("-fx-background-color: #B3B3B3; -fx-background-radius: 8px; -fx-cursor: hand;");
+		backBtn.setTextAlignment(TextAlignment.CENTER);
+		backBtn.setTextFill(Color.web("#ffffff"));
+		backBtn.setFont(Font.font("Roboto Bold", 16.0));
+		backBtn.setOnAction(e -> {
 			try {
 				accOverviewSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
@@ -209,39 +213,52 @@ public class WithdrawScene extends Application {
 					// get input amount
 					double withdrawInput = Double.parseDouble(withdrawTxtInput.getText());
 
+					//if user have enough to withdraw
 					if (withdrawInput <= currentBalance) {
 
 						DatabaseController dbController = DatabaseController.getInstance();
 
-						// subtract from user's balance
-						int withdrawResponse = dbController.withdrawAmount(withdrawInput);
+						// make the withdraw and subtract from user's balance
+						int withdrawalResponse = dbController.updateAccountBalance(-withdrawInput);
 
-						if (withdrawResponse == 1) {
+						//successful withdrawal case
+						if (withdrawalResponse == 1) {
 							// message display success withdrawal
 							Alert alert = new Alert(AlertType.INFORMATION);
 							alert.setTitle("Withdraw Succeeded");
 							alert.setHeaderText(null);
 							alert.setContentText("You withdrew €" + withdrawInput + " from your bank account.");
 							alert.showAndWait();
-
-							// update local bank account to upload
-							double balanceBeforeWithdrawal = loggedUser.getBankAccount().getBankAccBalance();
-							// set subtracted balance
-							loggedUser.getBankAccount().setBankAccBalance(balanceBeforeWithdrawal - withdrawInput);
-
-							// upload again bank to show updated balance
-//							dbController.updateBankAccBalance(loggedUser.getBankAccount(), loggedUser.getUser().getId());
 							
-							// download updated bank account
+							//now also add the transaction database entry
+							Timestamp timeStamp = new java.sql.Timestamp(System.currentTimeMillis());
+							
+							Transaction newWithdrawalTransaction = new Transaction(loggedUser.getBankAccount().getBankAccID(), "withdraw", timeStamp, -withdrawInput);
+							
+							//upload transaction to database
+							int transactionResponse = dbController.addNewTransaction(newWithdrawalTransaction);
+							
+							if(transactionResponse == 0) {
+								System.out.println("Couldn't add transaction entry to database.");
+							}
+							
+							//load again the updated data from database to local, both account balance and transaction list
+							
+							//download bank account after withdrawal
 							loggedUser.setBankAccount(dbController.getUserBankAcc(loggedUser.getUser().getId()));
-
-							// update transaction also
-
+							
+							//download transaction after withdrawal
+							Statement statement = loggedUser.getStatement();
+							statement.setTransactionList(dbController.getStatementTransactionList(statement));
+							loggedUser.setStatement(statement);
+							
+							withdrawTxtInput.clear();
+							
 						} else {
 							Alert alert = new Alert(Alert.AlertType.ERROR);
 							alert.setTitle("Couldn't withdraw.");
 							alert.setHeaderText(null);
-							alert.setContentText("Error while Withdrawing, please try again.");
+							alert.setContentText("Error while withdrawing.");
 							alert.showAndWait();
 						}
 						// load again bank account and update loggedUser's balance
@@ -258,7 +275,7 @@ public class WithdrawScene extends Application {
 					Alert alert = new Alert(Alert.AlertType.ERROR);
 					alert.setTitle("Amount format error.");
 					alert.setHeaderText(null);
-					alert.setContentText("Enter amount as number format like '80' or '80.80'");
+					alert.setContentText("Enter amount as number format like '80' or '80.80'.");
 					alert.showAndWait();
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -282,7 +299,7 @@ public class WithdrawScene extends Application {
 			}
 		});
 
-		whiteMiddlePane.getChildren().addAll(cancelBtn, confirmBtn);
+		whiteMiddlePane.getChildren().addAll(backBtn, confirmBtn);
 
 		anchorPane.getChildren().add(whiteMiddlePane);
 

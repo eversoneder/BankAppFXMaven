@@ -7,6 +7,17 @@ public class Transaction {
 	private String transactionType;
 	private java.sql.Timestamp transactionDate;
 	private double transactionAmount;
+	
+	public Transaction() {
+		
+	}
+	
+	public Transaction(int bankId, String transactionType, java.sql.Timestamp transactionDate, double transactionAmount) {
+		this.bankAccID = bankId;
+		this.transactionType = transactionType;
+		this.transactionDate = transactionDate;
+		this.transactionAmount = transactionAmount;
+	}
 	/**
 	 * @return the transactionID
 	 */

@@ -240,7 +240,7 @@ public class BalanceScene extends Application {
 			transactionDate.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
 
 			// Add email and amount to the transaction HBox
-			transactionsHBox.getChildren().addAll(emailText, transactionDate, amountText);
+			transactionsHBox.getChildren().addAll(emailText, amountText, transactionDate);
 
 			// Add the transaction to the transactions list
 			transactionsList.getChildren().add(transactionsHBox);

@@ -6,6 +6,7 @@ import in.BankAppFXMaven.model.LoggedUser;
 import in.BankAppFXMaven.model.Statement;
 import in.BankAppFXMaven.utility.EmailValidator;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -15,6 +16,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -385,7 +388,19 @@ public class SignInScene extends Application {
 				e2.printStackTrace();
 			}
 		});
-
+		
+		//Enter key to log in
+		EventHandler<KeyEvent> enterKeyHandler = event -> {
+		    if (event.getCode() == KeyCode.ENTER) {
+		        if (!emailInput.getText().isEmpty() && !passwordInput.getText().isEmpty()) {
+		            signInBtn.fire();
+		        }
+		    }
+		};
+		
+		emailInput.setOnKeyPressed(enterKeyHandler);
+		passwordInput.setOnKeyPressed(enterKeyHandler);
+		
 		Text alreadyHaveAccTxt = new Text("Don't have an account yet?");
 		alreadyHaveAccTxt.setFill(Color.web("#B3B3B3"));
 		alreadyHaveAccTxt.setLayoutX(100.0);

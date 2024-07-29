@@ -193,7 +193,13 @@ public class DatabaseController {
 	 * @param amount to withdraw
 	 * @return 1 if successful, 0 if unsuccessful
 	 */
-	public int withdrawAmount(double amount) {
-		return db.withdrawAmount(amount);
+	public int updateAccountBalance(double amount) {
+		return db.updateAccountBalance(amount);
 	}
+	
+	public int addNewTransaction(Transaction transaction) {
+		return db.addNewTransaction(transaction);
+	}
+	
+	
 }

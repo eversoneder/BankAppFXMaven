@@ -778,21 +778,36 @@ public class DatabaseDAO {
 		}
 		return transfers;
 	}
-	
+
 	/**
 	 * @param amount to withdraw
 	 * @return 1 if successful, 0 if unsuccessful
 	 */
-	public int withdrawAmount (double amount) {
-		
+	public int updateAccountBalance(double amount) {
+
 		LoggedUser loggedUser = LoggedUser.getInstance();
 		double userBalance = loggedUser.getBankAccount().getBankAccBalance();
+
+		double newBalance = userBalance + amount;
+
+		int updateResponse = db.executeUpdateRS("UPDATE bank_account SET bank_acc_balance = " + newBalance
+				+ " WHERE user_id = " + loggedUser.getUser().getId() + ";");
+
+		if (updateResponse == 1) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	public int addNewTransaction(Transaction transaction) {
+
+		int updateResponse = db.executeUpdateRS(
+				"INSERT INTO transaction (bank_acc_id, transaction_type, transaction_amount, transaction_date) VALUES ("
+						+ transaction.getBankAccID() + ", '" + transaction.getTransactionType() + "', "
+						+ transaction.getTransactionAmount() + ", '" + transaction.getTransactionDate() + "');");
 		
-		double newBalance = userBalance - amount;
-		
-		int updateResponse = db.executeUpdateRS("UPDATE bank_account SET bank_acc_balance = " + newBalance + " WHERE user_id = " + loggedUser.getUser().getId() + ";");
-		
-		if(updateResponse == 1) {
+		if (updateResponse == 1) {
 			return 1;
 		} else {
 			return 0;
