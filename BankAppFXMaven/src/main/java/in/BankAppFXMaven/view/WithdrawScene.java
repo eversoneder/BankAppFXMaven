@@ -28,7 +28,6 @@ public class WithdrawScene extends Application {
 	private Stage primaryStage;
 	private static WithdrawScene withdrawSceneSingletonInstance;
 	private static AccountOverviewScene accOverviewSingletonInstance = AccountOverviewScene.getInstance();
-//	private static DatabaseService db = DatabaseService.getInstance();
 
 	private WithdrawScene() {
 	}
@@ -213,7 +212,7 @@ public class WithdrawScene extends Application {
 					// get input amount
 					double withdrawInput = Double.parseDouble(withdrawTxtInput.getText());
 
-					//if user have enough to withdraw
+					// if user have enough to withdraw
 					if (withdrawInput <= currentBalance) {
 
 						DatabaseController dbController = DatabaseController.getInstance();
@@ -221,7 +220,7 @@ public class WithdrawScene extends Application {
 						// make the withdraw and subtract from user's balance
 						int withdrawalResponse = dbController.updateAccountBalance(-withdrawInput);
 
-						//successful withdrawal case
+						// successful withdrawal case
 						if (withdrawalResponse == 1) {
 							// message display success withdrawal
 							Alert alert = new Alert(AlertType.INFORMATION);
@@ -229,31 +228,33 @@ public class WithdrawScene extends Application {
 							alert.setHeaderText(null);
 							alert.setContentText("You withdrew €" + withdrawInput + " from your bank account.");
 							alert.showAndWait();
-							
-							//now also add the transaction database entry
+
+							// now also add the transaction database entry
 							Timestamp timeStamp = new java.sql.Timestamp(System.currentTimeMillis());
-							
-							Transaction newWithdrawalTransaction = new Transaction(loggedUser.getBankAccount().getBankAccID(), "withdraw", timeStamp, -withdrawInput);
-							
-							//upload transaction to database
+
+							Transaction newWithdrawalTransaction = new Transaction(
+									loggedUser.getBankAccount().getBankAccID(), "withdraw", timeStamp, -withdrawInput);
+
+							// upload transaction to database
 							int transactionResponse = dbController.addNewTransaction(newWithdrawalTransaction);
-							
-							if(transactionResponse == 0) {
+
+							if (transactionResponse == 0) {
 								System.out.println("Couldn't add transaction entry to database.");
 							}
-							
-							//load again the updated data from database to local, both account balance and transaction list
-							
-							//download bank account after withdrawal
+
+							// load again the updated data from database to local, both account balance and
+							// transaction list
+
+							// download bank account after withdrawal
 							loggedUser.setBankAccount(dbController.getUserBankAcc(loggedUser.getUser().getId()));
-							
-							//download transaction after withdrawal
+
+							// download transaction after withdrawal
 							Statement statement = loggedUser.getStatement();
 							statement.setTransactionList(dbController.getStatementTransactionList(statement));
 							loggedUser.setStatement(statement);
-							
+
 							withdrawTxtInput.clear();
-							
+
 						} else {
 							Alert alert = new Alert(Alert.AlertType.ERROR);
 							alert.setTitle("Couldn't withdraw.");
@@ -281,19 +282,6 @@ public class WithdrawScene extends Application {
 					e1.printStackTrace();
 				}
 
-				// CHECK IF AMOUNT IS AVAILABLE IN BALANCE ON DB
-
-//				boolean amountCheck = db.checkBalanceAvailability(withdrawTxtInput.getText());
-//
-//				if (!amountCheck) {
-//					Alert alert = new Alert(Alert.AlertType.ERROR);
-//					alert.setTitle("Insufficient Funds.");
-//					alert.setHeaderText(null);
-//					alert.setContentText("Not enough balance, please enter a lower amount.");
-//					alert.showAndWait();
-//				} else {
-//					System.out.println("Valid withdrawal.");
-//				}
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}

@@ -209,8 +209,9 @@ public class BalanceScene extends Application {
 //00000000000000000000000000000000000000000000000000000000000000000
 
 		VBox transactionsList = new VBox();
+		transactionsList.setPadding(new Insets(10, 10, 10, 10)); // Padding for texts
 		transactionsList.setSpacing(5); // Space between each transaction
-
+		
 		// TransactionView that will appear in the BalanceScene & dialog
 		ArrayList<TransactionView> transactions = new ArrayList<TransactionView>();
 		transactions = sortTransactionTypeSenderMessage(transactions);
@@ -221,29 +222,38 @@ public class BalanceScene extends Application {
 		// BalanceScene structure, show the last 3 transactions
 		for (int i = startIndex; i < numTransactions; i++) {
 
-			// HBox that will contain only last 3 transactions
-			HBox transactionsHBox = new HBox();
-			transactionsHBox.setSpacing(60); // Space between email, amount and dates
+			// GridPane that will contain only last 3 transactions
+			GridPane transactionGrid = new GridPane();
+			transactionGrid.setHgap(10);
 
 			Text emailText = new Text(transactions.get(i).getEmail());
 			emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
+			emailText.setWrappingWidth(150);
+			emailText.setTextAlignment(TextAlignment.LEFT);
 
 			Text amountText = new Text(String.format("%,.2f", transactions.get(i).getAmount()));
 			amountText.setFont(Font.font("Roboto", FontWeight.BOLD, 16.0));
+			amountText.setWrappingWidth(100);
+			amountText.setTextAlignment(TextAlignment.RIGHT);
+			
 			if (transactions.get(i).getAmount() < 0) {
 				amountText.setFill(Color.RED);
 			} else {
 				amountText.setFill(Color.GREEN);
 			}
 
-			Text transactionDate = new Text(transactions.get(i).getDate().toString());
+			Text transactionDate = new Text(transactions.get(i).getDate());
 			transactionDate.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
-
-			// Add email and amount to the transaction HBox
-			transactionsHBox.getChildren().addAll(emailText, amountText, transactionDate);
+			transactionDate.setWrappingWidth(100);
+			transactionDate.setTextAlignment(TextAlignment.RIGHT);
+			
+			transactionGrid.add(emailText, 0 , 0);
+			transactionGrid.add(amountText, 1 , 0);
+			transactionGrid.add(transactionDate, 2 , 0);
+			
 
 			// Add the transaction to the transactions list
-			transactionsList.getChildren().add(transactionsHBox);
+			transactionsList.getChildren().add(transactionGrid);
 		}
 
 		transactionsList.setLayoutX(55);
@@ -397,7 +407,7 @@ public class BalanceScene extends Application {
 		// Add all transactions to the VBox
 		for (int i = 0; i < transactions.size(); i++) {
 			GridPane transactionGrid = new GridPane();
-			transactionGrid.setHgap(10); // Adjust spacing as needed
+			transactionGrid.setHgap(10);
 
 			Text emailText = new Text(transactions.get(i).getEmail());
 			emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
@@ -406,7 +416,7 @@ public class BalanceScene extends Application {
 			Text amountText = new Text(String.format("%,.2f", transactions.get(i).getAmount()));
 			amountText.setFont(Font.font("Roboto", FontWeight.BOLD, 16.0));
 			amountText.setWrappingWidth(100);
-			amountText.setTextAlignment(TextAlignment.RIGHT); // Align amount to the right
+//			amountText.setTextAlignment(TextAlignment.RIGHT); // Align amount to the right
 
 			if (transactions.get(i).getAmount() < 0) {
 				amountText.setFill(Color.RED);
@@ -414,7 +424,7 @@ public class BalanceScene extends Application {
 				amountText.setFill(Color.GREEN);
 			}
 
-			Text dateText = new Text(transactions.get(i).getDate()); // Add date here
+			Text dateText = new Text(transactions.get(i).getDate());
 			dateText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
 			dateText.setWrappingWidth(100);
 			dateText.setTextAlignment(TextAlignment.RIGHT);

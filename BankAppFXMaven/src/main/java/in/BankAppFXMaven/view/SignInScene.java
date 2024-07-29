@@ -13,6 +13,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -184,6 +185,18 @@ public class SignInScene extends Application {
 		passwordInput.setPrefWidth(380.0);
 		passwordInput.setPromptText("Enter your password");
 		passwordInput.setFont(Font.font("Roboto Regular", 16.0));
+
+		int maxLength = 30;
+
+		// Create a Text Formatter for the email input
+		TextFormatter<String> emailFormatter = new TextFormatter<>(
+				change -> change.getControlNewText().length() <= maxLength ? change : null);
+		emailInput.setTextFormatter(emailFormatter);
+
+		// Create a Text Formatter for the password input
+		TextFormatter<String> passwordFormatter = new TextFormatter<>(
+				change -> change.getControlNewText().length() <= maxLength ? change : null);
+		passwordInput.setTextFormatter(passwordFormatter);
 
 		// Create Sign in Button
 		Button forgotPassBtn = new Button("Forgot password?");
@@ -388,19 +401,19 @@ public class SignInScene extends Application {
 				e2.printStackTrace();
 			}
 		});
-		
-		//Enter key to log in
+
+		// Enter key to log in
 		EventHandler<KeyEvent> enterKeyHandler = event -> {
-		    if (event.getCode() == KeyCode.ENTER) {
-		        if (!emailInput.getText().isEmpty() && !passwordInput.getText().isEmpty()) {
-		            signInBtn.fire();
-		        }
-		    }
+			if (event.getCode() == KeyCode.ENTER) {
+				if (!emailInput.getText().isEmpty() && !passwordInput.getText().isEmpty()) {
+					signInBtn.fire();
+				}
+			}
 		};
-		
+
 		emailInput.setOnKeyPressed(enterKeyHandler);
 		passwordInput.setOnKeyPressed(enterKeyHandler);
-		
+
 		Text alreadyHaveAccTxt = new Text("Don't have an account yet?");
 		alreadyHaveAccTxt.setFill(Color.web("#B3B3B3"));
 		alreadyHaveAccTxt.setLayoutX(100.0);

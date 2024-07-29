@@ -449,22 +449,22 @@ public class DatabaseDAO {
 
 		ArrayList<Transaction> statementList = new ArrayList<Transaction>();
 
+		rs = executeQueryRS("SELECT * FROM transaction WHERE bank_acc_id = " + bankId + ";");
+
 		try {
-			rs = st.executeQuery("SELECT * FROM transaction WHERE bank_acc_id = " + bankId + ";");
-			rs.next();
+			do {
+				if (!rs.wasNull()) {
 
-			if (!rs.wasNull()) {
+					Transaction transaction = new Transaction();
+					transaction.setTransactionID(rs.getInt("transaction_id"));
+					transaction.setBankAccID(rs.getInt("bank_acc_id"));
+					transaction.setTransactionType(rs.getString("transaction_type"));
+					transaction.setTransactionAmount(rs.getDouble("transaction_amount"));
+					transaction.setTransactionDate(rs.getTimestamp("transaction_date"));
 
-				Transaction transaction = new Transaction();
-
-				transaction.setTransactionID(rs.getInt("transaction_id"));
-				transaction.setBankAccID(rs.getInt("bank_acc_id"));
-				transaction.setTransactionType(rs.getString("transaction_type"));
-				transaction.setTransactionAmount(rs.getDouble("transaction_amount"));
-				transaction.setTransactionDate(rs.getTimestamp("transaction_date"));
-
-				statementList.add(transaction);
-			}
+					statementList.add(transaction);
+				}
+			} while (rs.next());
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -806,7 +806,7 @@ public class DatabaseDAO {
 				"INSERT INTO transaction (bank_acc_id, transaction_type, transaction_amount, transaction_date) VALUES ("
 						+ transaction.getBankAccID() + ", '" + transaction.getTransactionType() + "', "
 						+ transaction.getTransactionAmount() + ", '" + transaction.getTransactionDate() + "');");
-		
+
 		if (updateResponse == 1) {
 			return 1;
 		} else {

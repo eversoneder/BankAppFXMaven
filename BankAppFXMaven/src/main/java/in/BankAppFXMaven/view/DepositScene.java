@@ -1,9 +1,17 @@
 package in.BankAppFXMaven.view;
 
+import java.sql.Timestamp;
+
+import in.BankAppFXMaven.controller.DatabaseController;
+import in.BankAppFXMaven.model.LoggedUser;
+import in.BankAppFXMaven.model.Statement;
+import in.BankAppFXMaven.model.Transaction;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -18,8 +26,7 @@ import javafx.stage.Stage;
 public class DepositScene extends Application {
 
 	private static DepositScene depositSceneSingletonInstance;
-	private static AccountOverviewScene transactionSceneSingletonInstance = AccountOverviewScene.getInstance();
-//	private static DatabaseService db = DatabaseService.getInstance();
+	private static AccountOverviewScene accOverviewSceneSingletonInstance = AccountOverviewScene.getInstance();
 	private Stage primaryStage;
 
 	private DepositScene() {
@@ -84,7 +91,7 @@ public class DepositScene extends Application {
 
 		backButton.setOnAction(e -> {
 			try {
-				transactionSceneSingletonInstance.start(primaryStage);
+				accOverviewSceneSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -180,7 +187,7 @@ public class DepositScene extends Application {
 		cancelBtn.setFont(Font.font("Roboto Bold", 16.0));
 		cancelBtn.setOnAction(e -> {
 			try {
-				transactionSceneSingletonInstance.start(primaryStage);
+				accOverviewSceneSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -197,19 +204,71 @@ public class DepositScene extends Application {
 		confirmBtn.setFont(Font.font("Roboto Bold", 16.0));
 		confirmBtn.setOnAction(e -> {
 			try {
-				//CHECK IF AMOUNT IS AVAILABLE IN BALANCE ON DB
 				
-//				boolean amountCheck = db.checkBalanceAvailability(depositTxtInput.getText());
-//				
-//				if (!amountCheck) {
-//				    Alert alert = new Alert(Alert.AlertType.ERROR);
-//				    alert.setTitle("Insufficient Funds.");
-//				    alert.setHeaderText(null);
-//				    alert.setContentText("Not enough balance, please enter a lower amount.");
-//					alert.showAndWait();
-//				} else {
-//					System.out.println("Valid withdrawal.");
-//				}
+				LoggedUser loggedUser = LoggedUser.getInstance();
+				
+				// number format validation
+				try {
+					// get input amount
+					double depositInput = Double.parseDouble(depositTxtInput.getText());
+					DatabaseController dbController = DatabaseController.getInstance();
+					
+					// make the deposit and add to user's balance
+					int depositResponse = dbController.updateAccountBalance(depositInput);
+					
+					//successful deposit case
+					if (depositResponse == 1) {
+						// message display success deposit
+						Alert alert = new Alert(AlertType.INFORMATION);
+						alert.setTitle("Deposit Succeeded");
+						alert.setHeaderText(null);
+						alert.setContentText("You deposited €" + depositInput + " to your bank account.");
+						alert.showAndWait();
+						
+						//now also add the transaction database entry
+						Timestamp timeStamp = new java.sql.Timestamp(System.currentTimeMillis());
+						
+						Transaction newDepositTransaction = new Transaction(loggedUser.getBankAccount().getBankAccID(), "deposit", timeStamp, depositInput);
+						
+						//upload transaction to database
+						int transactionResponse = dbController.addNewTransaction(newDepositTransaction);
+						
+						if(transactionResponse == 0) {
+							System.out.println("Couldn't add transaction entry to database.");
+						}
+						
+						//load again the updated data from database to local, both account balance and transaction list
+						
+						//download bank account after withdrawal
+						loggedUser.setBankAccount(dbController.getUserBankAcc(loggedUser.getUser().getId()));
+						
+						//download transaction after withdrawal
+						Statement statement = loggedUser.getStatement();
+						statement.setTransactionList(dbController.getStatementTransactionList(statement));
+						loggedUser.setStatement(statement);
+						
+						depositTxtInput.clear();
+						
+					} else {
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle("Couldn't deposit.");
+						alert.setHeaderText(null);
+						alert.setContentText("Error while depositing.");
+						alert.showAndWait();
+					}
+					
+
+				} catch (Exception e1) {
+
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Amount format error.");
+					alert.setHeaderText(null);
+					alert.setContentText("Enter amount as number format like '80' or '80.80'.");
+					alert.showAndWait();
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}
