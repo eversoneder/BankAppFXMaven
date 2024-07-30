@@ -334,6 +334,8 @@ public class AccountOverviewScene extends Application {
 
 				if (result.isPresent() && result.get() == ButtonType.YES) {
 					// handle the user choosing YES
+					
+					loggedUser.clearUserInfo();
 					signInSceneSingletonInstance = SignInScene.getInstance();
 					signInSceneSingletonInstance.start(primaryStage);
 				} else {

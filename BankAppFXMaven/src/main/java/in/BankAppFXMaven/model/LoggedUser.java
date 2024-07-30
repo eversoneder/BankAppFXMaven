@@ -7,30 +7,29 @@ public class LoggedUser {
 	private Login login;
 	private BankAccount bankAccount;
 	private Statement statement;
-	
+
 	public static LoggedUser getInstance() {
 		if (loggedUserSingletonInstance == null) {
 			loggedUserSingletonInstance = new LoggedUser();
 		}
 		return loggedUserSingletonInstance;
 	}
-	
+
 	/**
 	 * Private constructor to prevent external instantiation
 	 */
-    private LoggedUser() {
-    }
+	private LoggedUser() {
+	}
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+	public void setUser(User user) {
+		this.user = user;
+	}
 
-    public User getUser() {
-        return this.user;
-    }
-	
-    
-    /**
+	public User getUser() {
+		return this.user;
+	}
+
+	/**
 	 * @return the login
 	 */
 	public Login getLogin() {
@@ -73,9 +72,15 @@ public class LoggedUser {
 	}
 
 	/**
-     * Clear the user information at log out
-     */
-    public void clearUserInfo() {
-        LoggedUser.loggedUserSingletonInstance = null;
-    }
+	 * Clear the user information at log out
+	 */
+	public void clearUserInfo() {
+		if (loggedUserSingletonInstance != null) {
+			loggedUserSingletonInstance.user = null;
+			loggedUserSingletonInstance.login = null;
+			loggedUserSingletonInstance.bankAccount = null;
+			loggedUserSingletonInstance.statement = null;
+			loggedUserSingletonInstance = null;
+		}
+	}
 }
