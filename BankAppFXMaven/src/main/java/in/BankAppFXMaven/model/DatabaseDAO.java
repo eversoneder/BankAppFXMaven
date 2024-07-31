@@ -374,22 +374,51 @@ public class DatabaseDAO {
 	}
 
 	/**
-	 * @param email    to get user Id to update user's password
-	 * @param password new password to set
+	 * @param email       to get user Id to update user's password
+	 * @param newPassword new password to set
 	 * @return 1 if new password was set, 0 if not set
 	 */
-	public int setNewPassword(String email, String password) {
+	public int setNewPassword(String email, String newPassword) {
+
 		String queryGetId = "SELECT * FROM user WHERE email = '" + email + "';";
+
 		int userId = getUserId(queryGetId);
 
-		try {
-			password = HashingUtility.hashPassword(password);
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		if (userId == 0) {
+			System.out.println("Failed to get user's id. Password not edited.");
+		} else {
+			try {
+				newPassword = HashingUtility.hashPassword(newPassword);
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-		String query = "UPDATE login SET password_hash = '" + password + "' WHERE user_id = " + userId + ";";
+			String query = "UPDATE login SET password_hash = '" + newPassword + "' WHERE user_id = " + userId + ";";
+			return executeUpdateRS(query);
+		}
+		return 0;
+	}
+
+	/**
+	 * @param userId      of user who will get new name
+	 * @param userNewName to replace old name
+	 * @return 1 if successful, 0 if unsuccessful
+	 */
+	public int setNewName(int userId, String userNewName) {
+
+		String query = "UPDATE user SET name = '" + userNewName + "' WHERE user_id = " + userId + ";";
+		return executeUpdateRS(query);
+	}
+
+	/**
+	 * @param userId      of user who will get new surname
+	 * @param userNewSurname to replace old surname
+	 * @return 1 if successful, 0 if unsuccessful
+	 */
+	public int setNewSurname(int userId, String userNewSurname) {
+
+		String query = "UPDATE user SET surname = '" + userNewSurname + "' WHERE user_id = " + userId + ";";
 		return executeUpdateRS(query);
 	}
 

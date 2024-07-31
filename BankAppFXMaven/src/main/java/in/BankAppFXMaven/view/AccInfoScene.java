@@ -1,10 +1,12 @@
 package in.BankAppFXMaven.view;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.model.LoggedUser;
 import in.BankAppFXMaven.model.User;
+import in.BankAppFXMaven.utility.HashingUtility;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -28,21 +30,16 @@ import javafx.stage.Stage;
 
 public class AccInfoScene extends Application {
 
-	private static AccountOverviewScene transactionSceneSingletonInstance = AccountOverviewScene.getInstance();
+	private static AccountOverviewScene accOverviewSceneSingletonInstance = AccountOverviewScene.getInstance();
 	private static AccInfoScene AccInfoSceneSingletonInstance;
 	private static DatabaseController dbController = DatabaseController.getInstance();
 	private Stage primaryStage;
 	private TextField nameField;
 	private TextField surnameField;
 	private TextField passwordField;
-	private User user;
-	private LoggedUser loggedUser = LoggedUser.getInstance();
+	private LoggedUser loggedUser;
 
 	private AccInfoScene() {
-	}
-
-	public void setUser(User user) {
-		this.user = user;
 	}
 
 	public static AccInfoScene getInstance() {
@@ -56,7 +53,8 @@ public class AccInfoScene extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
 		this.primaryStage = primaryStage;
-
+		loggedUser = LoggedUser.getInstance();
+		
 		AccInfoSceneViewBuilder();
 	}
 
@@ -103,7 +101,7 @@ public class AccInfoScene extends Application {
 
 		backButton.setOnAction(e -> {
 			try {
-				transactionSceneSingletonInstance.start(primaryStage);
+				accOverviewSceneSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -166,11 +164,6 @@ public class AccInfoScene extends Application {
 		emailTxtField.setLayoutY(120.0);
 		emailTxtField.setPrefHeight(30.0);
 		emailTxtField.setPrefWidth(380.0);
-		emailTxtField.setText(user.getEmail());
-		User userTest = new User();
-		
-		
-		//OR
 		emailTxtField.setText(loggedUser.getUser().getEmail());
 		emailTxtField.setFont(Font.font("Roboto Regular", 16.0));
 		emailTxtField.setEditable(false); // Making the TextField non-editable
@@ -209,13 +202,13 @@ public class AccInfoScene extends Application {
 		nameField.setLayoutY(260.0);
 		nameField.setPrefHeight(30.0);
 		nameField.setPrefWidth(180.0);
-		nameField.setText("Everson");
+		nameField.setText(loggedUser.getUser().getName());
 		nameField.setFont(Font.font("Roboto Regular", 16.0));
 		nameField.setEditable(false); // Making the TextField non-editable
 		nameField.setMouseTransparent(true); // Making the TextField to not respond to mouse clicks
 		nameField.setFocusTraversable(false); // Prevent the TextField from being focused
 		nameField.setStyle(
-				"-fx-text-inner-color: grey; -fx-background-color: #f0f0f0; -fx-border-color: #D6D6D6; -fx-border-radius: 3;");
+				"-fx-text-inner-color: grey; -fx-background-color: #ffffff; -fx-border-color: #D6D6D6; -fx-border-radius: 3;");
 
 		// Create the ImageView
 		ImageView nameEditView = new ImageView();
@@ -255,6 +248,18 @@ public class AccInfoScene extends Application {
 				if (result.isPresent() && result.get() == ButtonType.APPLY) {
 
 					nameField.setText(nameEditingField.getText());
+
+//					 save name locally
+					loggedUser.getUser().setName(nameEditingField.getText());
+
+					// save user's name change to database
+					dbController.setNewName(loggedUser.getUser().getId(), nameEditingField.getText());
+
+					Alert nameChangedAlert = new Alert(AlertType.INFORMATION);
+					nameChangedAlert.setTitle("Name Changed.");
+					nameChangedAlert.setHeaderText(null);
+					nameChangedAlert.setContentText("New Name changed in the database!");
+					nameChangedAlert.showAndWait();
 				} else {
 				}
 
@@ -275,13 +280,13 @@ public class AccInfoScene extends Application {
 		surnameField.setLayoutY(260.0);
 		surnameField.setPrefHeight(30.0);
 		surnameField.setPrefWidth(180.0);
-		surnameField.setText("Spinola");
+		surnameField.setText(loggedUser.getUser().getSurname());
 		surnameField.setFont(Font.font("Roboto Regular", 16.0));
 		surnameField.setEditable(false); // Making the TextField non-editable
 		surnameField.setMouseTransparent(true); // Making the TextField to not respond to mouse clicks
 		surnameField.setFocusTraversable(false); // Prevent the TextField from being focused
 		surnameField.setStyle(
-				"-fx-text-inner-color: grey; -fx-background-color: #f0f0f0; -fx-border-color: #D6D6D6; -fx-border-radius: 3;");
+				"-fx-text-inner-color: grey; -fx-background-color: #ffffff; -fx-border-color: #D6D6D6; -fx-border-radius: 3;");
 
 		// Create the ImageView
 		ImageView surnameEditView = new ImageView();
@@ -322,6 +327,18 @@ public class AccInfoScene extends Application {
 				if (result.isPresent() && result.get() == ButtonType.APPLY) {
 
 					surnameField.setText(surnameEditingField.getText());
+
+//					 save surname locally
+					loggedUser.getUser().setSurname(surnameEditingField.getText());
+
+					// save user's surname change to database
+					dbController.setNewSurname(loggedUser.getUser().getId(), surnameEditingField.getText());
+
+					Alert surnameChangedAlert = new Alert(AlertType.INFORMATION);
+					surnameChangedAlert.setTitle("Surname Changed.");
+					surnameChangedAlert.setHeaderText(null);
+					surnameChangedAlert.setContentText("New Surname changed in the database!");
+					surnameChangedAlert.showAndWait();
 				} else {
 				}
 
@@ -348,7 +365,7 @@ public class AccInfoScene extends Application {
 		passwordField.setMouseTransparent(true); // Making the TextField to not respond to mouse clicks
 		passwordField.setFocusTraversable(false); // Prevent the TextField from being focused
 		passwordField.setStyle(
-				"-fx-text-inner-color: grey; -fx-background-color: #f0f0f0; -fx-border-color: #D6D6D6; -fx-border-radius: 3;");
+				"-fx-text-inner-color: grey; -fx-background-color: #ffffff; -fx-border-color: #D6D6D6; -fx-border-radius: 3;");
 
 		// Create the ImageView
 		ImageView passwordEditView = new ImageView();
@@ -370,7 +387,7 @@ public class AccInfoScene extends Application {
 		passwordEditButton.setOnAction(e -> {
 			try {
 
-				String currentPass = "test";
+				String currentPass = loggedUser.getLogin().getPasswordHash();
 
 				Alert alert = new Alert(AlertType.INFORMATION);
 				alert.setTitle("Edit Password");
@@ -420,8 +437,20 @@ public class AccInfoScene extends Application {
 				do {
 					result = alert.showAndWait();
 
+					// check if user has entered something before hitting apply
 					if (result.isPresent() && result.get() == ButtonType.APPLY) {
-						if (passwordCurrentEditingField.getText().equals(currentPass)) {
+						
+						//hash inputed current pass, to be able to compare to currentPass from db
+						String hashedPasswordCurrentEditingField = passwordCurrentEditingField.getText();
+						
+						try {
+							hashedPasswordCurrentEditingField = HashingUtility.hashPassword(hashedPasswordCurrentEditingField);
+						} catch (NoSuchAlgorithmException e5) {
+							// TODO Auto-generated catch block
+							e5.printStackTrace();
+						}
+						
+						if (hashedPasswordCurrentEditingField.equals(currentPass)) {
 
 							// Check if the new password and confirm password fields match
 							if (passwordNewEditingField.getText().equals(passwordNewConfirmEditingField.getText())) {
@@ -429,12 +458,28 @@ public class AccInfoScene extends Application {
 								// Save the new password here
 								String newPassword = passwordNewEditingField.getText();
 
+								System.out.println("New password: " + newPassword + ". Without hashing.");
+
+								try {
+									newPassword = HashingUtility.hashPassword(newPassword);
+								} catch (NoSuchAlgorithmException e3) {
+									// TODO Auto-generated catch block
+									e3.printStackTrace();
+								}
+								// local hashed pass
+								loggedUser.getLogin().setPasswordHash(newPassword);
+
+								System.out.println(
+										"New password: " + loggedUser.getLogin().getPasswordHash() + ". hashed.\n");
+
+								// save new password to database
+								dbController.setNewPassword(loggedUser.getUser().getEmail(), passwordNewEditingField.getText());
+
 								Alert passChangedAlert = new Alert(AlertType.INFORMATION);
 								passChangedAlert.setTitle("Password Changed.");
 								passChangedAlert.setHeaderText(null);
-								passChangedAlert.setContentText("New password changed!");
+								passChangedAlert.setContentText("New password changed in the database!");
 								passChangedAlert.showAndWait();
-								// TODO: Add your save password logic here
 
 							} else {
 								Alert errorAlert = new Alert(AlertType.ERROR);
@@ -452,6 +497,8 @@ public class AccInfoScene extends Application {
 							errorAlert.setContentText("The current password does not match.");
 							errorAlert.showAndWait();
 						}
+						//testing
+						System.out.println("Current pass 'db': " + currentPass + " \nCurrent pass input: " + passwordCurrentEditingField.getText() + " \nCurrent pass input hashed: " + hashedPasswordCurrentEditingField + " \nPassword field 1: " + passwordNewEditingField.getText() + " \nPassword field 2: "+passwordNewConfirmEditingField.getText()+".\n");
 					}
 				} while (result.isPresent() && result.get() == ButtonType.APPLY && !correctPassword);
 
@@ -464,18 +511,18 @@ public class AccInfoScene extends Application {
 		whiteMiddlePane.getChildren().addAll(emailTxt, emailTxtField, accNumTxt, accNumTxtField, nameTxt, nameField,
 				surnameTxt, surnameField, passwordTxt, passwordField);
 
-		Button cancelBtn = new Button("Cancel");
-		cancelBtn.setLayoutX(90.0);
-		cancelBtn.setLayoutY(385.0);
-		cancelBtn.setPrefHeight(30.0);
-		cancelBtn.setPrefWidth(140.0);
-		cancelBtn.setStyle("-fx-background-color: #B3B3B3; -fx-background-radius: 8px; -fx-cursor: hand;");
-		cancelBtn.setTextAlignment(TextAlignment.CENTER);
-		cancelBtn.setTextFill(Color.web("#ffffff"));
-		cancelBtn.setFont(Font.font("Roboto Bold", 16.0));
-		cancelBtn.setOnAction(e -> {
+		Button backBtn = new Button("Back");
+		backBtn.setLayoutX(172.0);
+		backBtn.setLayoutY(385.0);
+		backBtn.setPrefHeight(30.0);
+		backBtn.setPrefWidth(140.0);
+		backBtn.setStyle("-fx-background-color: #B3B3B3; -fx-background-radius: 8px; -fx-cursor: hand;");
+		backBtn.setTextAlignment(TextAlignment.CENTER);
+		backBtn.setTextFill(Color.web("#ffffff"));
+		backBtn.setFont(Font.font("Roboto Bold", 16.0));
+		backBtn.setOnAction(e -> {
 			try {
-				transactionSceneSingletonInstance.start(primaryStage);
+				accOverviewSceneSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -492,7 +539,7 @@ public class AccInfoScene extends Application {
 		saveBtn.setFont(Font.font("Roboto Bold", 16.0));
 		saveBtn.setOnAction(e -> {
 			try {
-				
+
 				Alert passChangedAlert = new Alert(AlertType.INFORMATION);
 				passChangedAlert.setTitle("Password Changed.");
 				passChangedAlert.setHeaderText(null);
@@ -516,7 +563,7 @@ public class AccInfoScene extends Application {
 			}
 		});
 
-		whiteMiddlePane.getChildren().addAll(cancelBtn, saveBtn);
+		whiteMiddlePane.getChildren().addAll(backBtn);
 
 		anchorPane.getChildren().add(whiteMiddlePane);
 

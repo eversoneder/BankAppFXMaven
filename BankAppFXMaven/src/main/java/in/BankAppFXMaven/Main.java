@@ -1,5 +1,6 @@
 package in.BankAppFXMaven;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
@@ -29,6 +30,17 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			mainScene.start(primaryStage);
+			
+//			String a = "2";
+//			
+//			try {
+//				a = HashingUtility.hashPassword(a);
+//			} catch (NoSuchAlgorithmException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			
+//			System.out.println(a);
 			
 			
 			//hard code for testing

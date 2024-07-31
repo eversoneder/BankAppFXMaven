@@ -84,8 +84,31 @@ public class DatabaseController {
 		return db.checkEmailAndBankAcc(email, bankAcc);
 	}
 
-	public static int setNewPassword(String email, String password) {
-		return db.setNewPassword(email, password);
+	/**
+	 * @param email    to get user Id to update user's password
+	 * @param newPassword new password to set
+	 * @return 1 if new password was set, 0 if not set
+	 */
+	public int setNewPassword(String email, String newPassword) {
+		return db.setNewPassword(email, newPassword);
+	}
+	
+	/**
+	 * @param userId of user who will get new name
+	 * @param userNewName to replace old name
+	 * @return 1 if successful, 0 if unsuccessful
+	 */
+	public int setNewName(int userId, String userNewName) {
+		return db.setNewName(userId, userNewName);
+	}
+	
+	/**
+	 * @param userId      of user who will get new surname
+	 * @param userNewSurname to replace old surname
+	 * @return 1 if successful, 0 if unsuccessful
+	 */
+	public int setNewSurname(int userId, String userNewSurname) {
+		return db.setNewSurname(userId, userNewSurname);
 	}
 
 	/**

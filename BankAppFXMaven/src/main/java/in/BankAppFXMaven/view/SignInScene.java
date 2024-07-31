@@ -270,7 +270,7 @@ public class SignInScene extends Application {
 
 									if (newPass.equals(confirmPass)) {
 										// Passwords match, set the new password
-										int setNewPass = DatabaseController.setNewPassword(email, newPass);
+										int setNewPass = dbController.setNewPassword(email, newPass);
 
 										if (setNewPass == 1) {
 											Alert alert = new Alert(AlertType.INFORMATION);
@@ -355,6 +355,7 @@ public class SignInScene extends Application {
 						loggedUser = LoggedUser.getInstance();
 						dbController = DatabaseController.getInstance();
 
+//						loggedUser.setUser(dbController.getUserByEmail(email));
 						loggedUser.setUser(dbController.getUserById(userId));
 						loggedUser.setLogin(dbController.getLoginByUserId(userId));
 						loggedUser.setBankAccount(dbController.getUserBankAcc(userId));
@@ -402,7 +403,7 @@ public class SignInScene extends Application {
 			}
 		});
 
-		// Enter key to log in
+		// 'Enter' key to log in
 		EventHandler<KeyEvent> enterKeyHandler = event -> {
 			if (event.getCode() == KeyCode.ENTER) {
 				if (!emailInput.getText().isEmpty() && !passwordInput.getText().isEmpty()) {
