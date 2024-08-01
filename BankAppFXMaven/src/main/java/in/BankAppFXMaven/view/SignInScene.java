@@ -34,7 +34,7 @@ public class SignInScene extends Application {
 
 	private static SignInScene signInSceneSingletonInstance;
 	private static DatabaseController dbController;
-	private LoggedUser loggedUser;
+	private static LoggedUser loggedUser;
 
 	private SignInScene() {
 	}

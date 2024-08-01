@@ -1,7 +1,12 @@
 package in.BankAppFXMaven.view;
 
+import in.BankAppFXMaven.controller.DatabaseController;
+import in.BankAppFXMaven.model.BankAccount;
+import in.BankAppFXMaven.model.LoggedUser;
+import in.BankAppFXMaven.model.User;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -20,7 +25,8 @@ public class TransferScene extends Application {
 	private Stage primaryStage;
 	private static TransferScene transferSceneSingletonInstance;
 	private static AccountOverviewScene transactionsSceneSingletonInstance = AccountOverviewScene.getInstance();
-//	private static DatabaseService db = DatabaseService.getInstance();
+	private static DatabaseController dbController;
+	private static LoggedUser loggedUser;
 
 	private TransferScene() {
 	}
@@ -36,6 +42,8 @@ public class TransferScene extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
 		this.primaryStage = primaryStage;
+
+		loggedUser = LoggedUser.getInstance();
 
 		transferSceneViewBuilder();
 	}
@@ -145,13 +153,12 @@ public class TransferScene extends Application {
 		transferIconImageView.setPreserveRatio(true);
 
 		// Set the image for the ImageView
-		Image withdrawIconImage = new Image(
-				getClass().getResource("/img/transfer-icon-grey-lg.png").toExternalForm());
+		Image withdrawIconImage = new Image(getClass().getResource("/img/transfer-icon-grey-lg.png").toExternalForm());
 		transferIconImageView.setImage(withdrawIconImage);
 
 		// Add the ImageView to the AnchorPane
 		whiteMiddlePane.getChildren().add(transferIconImageView);
-		
+
 		Text toTxt = new Text("To:");
 		toTxt.setFill(Color.web("#B3B3B3"));
 		toTxt.setLayoutX(55.0);
@@ -166,7 +173,7 @@ public class TransferScene extends Application {
 		toTxtInput.setPrefWidth(380.0);
 		toTxtInput.setPromptText("Enter the recipient's email.");
 		toTxtInput.setFont(Font.font("Roboto Regular", 16.0));
-		
+
 		Text transferAmountTxt = new Text("Transfer Amount");
 		transferAmountTxt.setFill(Color.web("#B3B3B3"));
 		transferAmountTxt.setLayoutX(55.0);
@@ -183,7 +190,60 @@ public class TransferScene extends Application {
 		transferAmountTxtInput.setFont(Font.font("Roboto Regular", 16.0));
 
 		whiteMiddlePane.getChildren().addAll(toTxt, toTxtInput, transferAmountTxt, transferAmountTxtInput);
-		
+
+		Button confirmBtn = new Button("Confirm");
+		confirmBtn.setLayoutX(255.0);
+		confirmBtn.setLayoutY(400.0);
+		confirmBtn.setPrefHeight(30.0);
+		confirmBtn.setPrefWidth(140.0);
+		confirmBtn.setStyle("-fx-background-color: #F28E1F; -fx-background-radius: 8px; -fx-cursor: hand;");
+		confirmBtn.setTextAlignment(TextAlignment.CENTER);
+		confirmBtn.setTextFill(Color.web("#ffffff"));
+		confirmBtn.setFont(Font.font("Roboto Bold", 16.0));
+		confirmBtn.setOnAction(e -> {
+			try {
+				// CHECK IF AMOUNT IS AVAILABLE IN BALANCE ON DB
+
+				double currentBalance = loggedUser.getBankAccount().getBankAccBalance();
+
+				double transferAmountInput = Double.parseDouble(transferAmountTxtInput.getText());
+
+				// have money
+				if (transferAmountInput < currentBalance) {
+
+					// get recipient and check if valid email
+					String recipientEmail = toTxtInput.getText();
+
+					// get user by email
+					User recipientUser = dbController.getUserByEmail(recipientEmail);
+
+					if (recipientUser != null) {
+
+						// get bank of this user and transfer to his balance
+						BankAccount RecipientBankAcc = dbController.getUserBankAcc(recipientUser.getId());
+						
+
+					} else {
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle("User error.");
+						alert.setHeaderText(null);
+						alert.setContentText("User with this email does not exist. Try again please.");
+						alert.showAndWait();
+					}
+
+				} else {
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Insufficient Funds.");
+					alert.setHeaderText(null);
+					alert.setContentText("Insufficient Funds, not enough balance.");
+					alert.showAndWait();
+				}
+
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		});
+
 		Button cancelBtn = new Button("Cancel");
 		cancelBtn.setLayoutX(90.0);
 		cancelBtn.setLayoutY(400.0);
@@ -201,37 +261,8 @@ public class TransferScene extends Application {
 			}
 		});
 
-		Button confirmBtn = new Button("Confirm");
-		confirmBtn.setLayoutX(255.0);
-		confirmBtn.setLayoutY(400.0);
-		confirmBtn.setPrefHeight(30.0);
-		confirmBtn.setPrefWidth(140.0);
-		confirmBtn.setStyle("-fx-background-color: #F28E1F; -fx-background-radius: 8px; -fx-cursor: hand;");
-		confirmBtn.setTextAlignment(TextAlignment.CENTER);
-		confirmBtn.setTextFill(Color.web("#ffffff"));
-		confirmBtn.setFont(Font.font("Roboto Bold", 16.0));
-		confirmBtn.setOnAction(e -> {
-			try {
-				// CHECK IF AMOUNT IS AVAILABLE IN BALANCE ON DB
-
-//				boolean amountCheck = db.checkBalanceAvailability(transferAmountTxtInput.getText());
-//
-//				if (!amountCheck) {
-//					Alert alert = new Alert(Alert.AlertType.ERROR);
-//					alert.setTitle("Insufficient Funds.");
-//					alert.setHeaderText(null);
-//					alert.setContentText("Not enough balance, please enter a lower amount.");
-//					alert.showAndWait();
-//				} else {
-//					System.out.println("Valid withdrawal.");
-//				}
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}
-		});
-
 		whiteMiddlePane.getChildren().addAll(cancelBtn, confirmBtn);
-		
+
 		anchorPane.getChildren().add(whiteMiddlePane);
 
 		Scene scene = new Scene(anchorPane);

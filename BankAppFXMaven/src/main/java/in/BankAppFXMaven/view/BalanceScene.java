@@ -43,7 +43,7 @@ public class BalanceScene extends Application {
 	private static BalanceScene balanceSceneSingletonInstance;
 	private static AccountOverviewScene transactionSceneSingletonInstance;
 	private static DatabaseController dbController;
-	private LoggedUser loggedUser;
+	private static LoggedUser loggedUser;
 
 	private BalanceScene() {
 	}

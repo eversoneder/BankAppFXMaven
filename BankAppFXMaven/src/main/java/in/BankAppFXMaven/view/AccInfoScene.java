@@ -37,7 +37,7 @@ public class AccInfoScene extends Application {
 	private TextField nameField;
 	private TextField surnameField;
 	private TextField passwordField;
-	private LoggedUser loggedUser;
+	private static LoggedUser loggedUser;
 
 	private AccInfoScene() {
 	}
