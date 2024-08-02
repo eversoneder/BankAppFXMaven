@@ -214,7 +214,7 @@ public class DepositScene extends Application {
 					DatabaseController dbController = DatabaseController.getInstance();
 					
 					// make the deposit and add to user's balance
-					int depositResponse = dbController.updateAccountBalance(depositInput);
+					int depositResponse = dbController.updateAccountBalance(depositInput, loggedUser.getUser());
 					
 					//successful deposit case
 					if (depositResponse == 1) {
@@ -240,7 +240,7 @@ public class DepositScene extends Application {
 						//load again the updated data from database to local, both account balance and transaction list
 						
 						//download bank account after withdrawal
-						loggedUser.setBankAccount(dbController.getUserBankAcc(loggedUser.getUser().getId()));
+						loggedUser.setBankAccount(dbController.getBankAccByUserID(loggedUser.getUser().getId()));
 						
 						//download transaction after withdrawal
 						Statement statement = loggedUser.getStatement();

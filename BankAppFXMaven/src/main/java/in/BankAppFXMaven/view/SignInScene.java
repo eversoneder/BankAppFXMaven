@@ -358,7 +358,7 @@ public class SignInScene extends Application {
 //						loggedUser.setUser(dbController.getUserByEmail(email));
 						loggedUser.setUser(dbController.getUserById(userId));
 						loggedUser.setLogin(dbController.getLoginByUserId(userId));
-						loggedUser.setBankAccount(dbController.getUserBankAcc(userId));
+						loggedUser.setBankAccount(dbController.getBankAccByUserID(userId));
 
 						Statement statement = dbController.getStatement(loggedUser.getBankAccount().getBankAccID());
 

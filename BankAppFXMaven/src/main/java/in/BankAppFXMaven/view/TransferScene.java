@@ -220,8 +220,44 @@ public class TransferScene extends Application {
 					if (recipientUser != null) {
 
 						// get bank of this user and transfer to his balance
-						BankAccount RecipientBankAcc = dbController.getUserBankAcc(recipientUser.getId());
-						
+						BankAccount RecipientBankAcc = dbController.getBankAccByUserID(recipientUser.getId());
+
+						LoggedUser.getInstance().getBankAccount();
+
+						int transfererResponse = dbController.updateAccountBalance(-transferAmountInput,
+								loggedUser.getUser());
+						//do db transaction entry of /\
+
+						if (transfererResponse == 1) {
+							int recipientResponse = dbController.updateAccountBalance(transferAmountInput,
+									recipientUser);
+							//do db transaction entry of /\
+
+							if (recipientResponse == 1) {
+								
+								toTxtInput.clear();
+								
+								Alert alert = new Alert(Alert.AlertType.INFORMATION);
+								alert.setTitle("Transference successful.");
+								alert.setHeaderText(null);
+								alert.setContentText("Transference successfull. You have transered €"
+										+ transferAmountInput + " to " + recipientEmail + ".");
+								alert.showAndWait();
+
+							} else {
+								Alert alert = new Alert(Alert.AlertType.ERROR);
+								alert.setTitle("Transfer error.");
+								alert.setHeaderText(null);
+								alert.setContentText("Error while updating recipient account.");
+								alert.showAndWait();
+							}
+						} else {
+							Alert alert = new Alert(Alert.AlertType.ERROR);
+							alert.setTitle("Transfer error.");
+							alert.setHeaderText(null);
+							alert.setContentText("Error while updating transferer account.");
+							alert.showAndWait();
+						}
 
 					} else {
 						Alert alert = new Alert(Alert.AlertType.ERROR);

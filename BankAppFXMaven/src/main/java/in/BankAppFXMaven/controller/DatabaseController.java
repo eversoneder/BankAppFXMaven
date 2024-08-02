@@ -115,8 +115,8 @@ public class DatabaseController {
 	 * @param user to get the bank acc from db
 	 * @return bank account of the parameter user
 	 */
-	public BankAccount getUserBankAcc(int userID) {
-		return db.getUserBankAccByUserID(userID);
+	public BankAccount getBankAccByUserID(int userID) {
+		return db.getBankAccByUserID(userID);
 	}
 
 	/**
@@ -214,10 +214,11 @@ public class DatabaseController {
 
 	/**
 	 * @param amount to withdraw
+	 * @param user to get it's balance updated
 	 * @return 1 if successful, 0 if unsuccessful
 	 */
-	public int updateAccountBalance(double amount) {
-		return db.updateAccountBalance(amount);
+	public int updateAccountBalance(double amount, User user) {
+		return db.updateAccountBalance(amount, user);
 	}
 	
 	public int addNewTransaction(Transaction transaction) {

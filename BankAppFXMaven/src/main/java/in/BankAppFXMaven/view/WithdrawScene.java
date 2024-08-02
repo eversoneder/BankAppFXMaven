@@ -218,7 +218,7 @@ public class WithdrawScene extends Application {
 						DatabaseController dbController = DatabaseController.getInstance();
 
 						// make the withdraw and subtract from user's balance
-						int withdrawalResponse = dbController.updateAccountBalance(-withdrawInput);
+						int withdrawalResponse = dbController.updateAccountBalance(-withdrawInput, loggedUser.getUser());
 
 						// successful withdrawal case
 						if (withdrawalResponse == 1) {
@@ -246,7 +246,7 @@ public class WithdrawScene extends Application {
 							// transaction list
 
 							// download bank account after withdrawal
-							loggedUser.setBankAccount(dbController.getUserBankAcc(loggedUser.getUser().getId()));
+							loggedUser.setBankAccount(dbController.getBankAccByUserID(loggedUser.getUser().getId()));
 
 							// download transaction after withdrawal
 							Statement statement = loggedUser.getStatement();

@@ -441,7 +441,7 @@ public class DatabaseDAO {
 	 * @param user to get the bank account from
 	 * @return bank account from user
 	 */
-	public BankAccount getUserBankAccByUserID(int userID) {
+	public BankAccount getBankAccByUserID(int userID) {
 		String query = "SELECT * FROM bankappfx.bank_account WHERE user_id = " + userID + ";";
 		return getBankAccountReusableMethod(query);
 	}
@@ -810,17 +810,18 @@ public class DatabaseDAO {
 
 	/**
 	 * @param amount to withdraw
+	 * @param user to get it's balance updated
 	 * @return 1 if successful, 0 if unsuccessful
 	 */
-	public int updateAccountBalance(double amount) {
+	public int updateAccountBalance(double amount, User user) {
 
-		LoggedUser loggedUser = LoggedUser.getInstance();
-		double userBalance = loggedUser.getBankAccount().getBankAccBalance();
+		BankAccount userBankAcc = getBankAccByUserID(user.getId());
+		double userBalance = userBankAcc.getBankAccBalance();
 
 		double newBalance = userBalance + amount;
 
 		int updateResponse = db.executeUpdateRS("UPDATE bank_account SET bank_acc_balance = " + newBalance
-				+ " WHERE user_id = " + loggedUser.getUser().getId() + ";");
+				+ " WHERE user_id = " + user.getId() + ";");
 
 		if (updateResponse == 1) {
 			return 1;
