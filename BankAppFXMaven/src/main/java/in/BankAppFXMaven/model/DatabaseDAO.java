@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Properties;
@@ -204,7 +205,7 @@ public class DatabaseDAO {
 
 	public User getUserByEmail(String email) {
 
-		User user = new User();
+		User user = null;
 		try {
 			rs = st.executeQuery("SELECT * FROM user WHERE email = '" + email + "';");
 			rs.next();
@@ -412,7 +413,7 @@ public class DatabaseDAO {
 	}
 
 	/**
-	 * @param userId      of user who will get new surname
+	 * @param userId         of user who will get new surname
 	 * @param userNewSurname to replace old surname
 	 * @return 1 if successful, 0 if unsuccessful
 	 */
@@ -494,11 +495,57 @@ public class DatabaseDAO {
 					statementList.add(transaction);
 				}
 			} while (rs.next());
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
 
 		return statementList;
+	}
+
+	/**
+	 * @param fromBankAccId to get transaction from
+	 * @param timeStampDate to get specific transaction
+	 * @return specific transaction
+	 */
+	public Transaction getTransaction(int fromBankAccId, Timestamp timeStampDate) {
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String formattedDate = sdf.format(timeStampDate);
+		
+		Transaction transaction = null;
+		String query = "SELECT * FROM transaction WHERE bank_acc_id = " + fromBankAccId
+				+ " AND transaction_date = '" + formattedDate + "';";
+
+		rs = executeQueryRS(query);
+
+		try {
+			if (!rs.wasNull()) {
+				transaction = new Transaction();
+				transaction.setTransactionID(rs.getInt("transaction_id"));
+				transaction.setBankAccID(rs.getInt("bank_acc_id"));
+				transaction.setTransactionType(rs.getString("transaction_type"));
+				transaction.setTransactionAmount(rs.getDouble("transaction_amount"));
+				transaction.setTransactionDate(rs.getTimestamp("transaction_date"));
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return transaction;
+	}
+
+	/**
+	 * @param newTransfer to insert to database
+	 * @return 1 if successful, 0 if not successful
+	 */
+	public int addNewTransfer(Transfer newTransfer) {
+
+		String query = "INSERT INTO transfer (transaction_id, from_bank_acc_id, to_bank_acc_id) VALUES ("
+				+ newTransfer.getTransactionID() + ", " + newTransfer.getFromBankAcc() + ", "
+				+ newTransfer.getToBankAcc() + ");";
+
+		int response = executeUpdateRS(query);
+		
+		return response;
 	}
 
 	/**
@@ -793,10 +840,9 @@ public class DatabaseDAO {
 
 				Transfer transfer = new Transfer();
 				transfer.setTransferID(rs.getInt("transfer_id"));
+				transfer.setTransactionID(rs.getInt("transaction_id"));
 				transfer.setFromBankAcc(rs.getInt("from_bank_acc_id"));
 				transfer.setToBankAcc(rs.getInt("to_bank_acc_id"));
-				transfer.setTransferAmount(rs.getDouble("transfer_amount"));
-				transfer.setTransferDate(rs.getTimestamp("transfer_date"));
 				transfers.add(transfer);
 			}
 
@@ -810,7 +856,7 @@ public class DatabaseDAO {
 
 	/**
 	 * @param amount to withdraw
-	 * @param user to get it's balance updated
+	 * @param user   to get it's balance updated
 	 * @return 1 if successful, 0 if unsuccessful
 	 */
 	public int updateAccountBalance(double amount, User user) {
@@ -820,8 +866,8 @@ public class DatabaseDAO {
 
 		double newBalance = userBalance + amount;
 
-		int updateResponse = db.executeUpdateRS("UPDATE bank_account SET bank_acc_balance = " + newBalance
-				+ " WHERE user_id = " + user.getId() + ";");
+		int updateResponse = db.executeUpdateRS(
+				"UPDATE bank_account SET bank_acc_balance = " + newBalance + " WHERE user_id = " + user.getId() + ";");
 
 		if (updateResponse == 1) {
 			return 1;
@@ -831,11 +877,14 @@ public class DatabaseDAO {
 	}
 
 	public int addNewTransaction(Transaction transaction) {
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String formattedDate = sdf.format(transaction.getTransactionDate());
 
 		int updateResponse = db.executeUpdateRS(
 				"INSERT INTO transaction (bank_acc_id, transaction_type, transaction_amount, transaction_date) VALUES ("
 						+ transaction.getBankAccID() + ", '" + transaction.getTransactionType() + "', "
-						+ transaction.getTransactionAmount() + ", '" + transaction.getTransactionDate() + "');");
+						+ transaction.getTransactionAmount() + ", '" + formattedDate + "');");
 
 		if (updateResponse == 1) {
 			return 1;

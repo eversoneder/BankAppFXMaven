@@ -1,8 +1,16 @@
 package in.BankAppFXMaven.view;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.model.BankAccount;
 import in.BankAppFXMaven.model.LoggedUser;
+import in.BankAppFXMaven.model.Statement;
+import in.BankAppFXMaven.model.Transaction;
+import in.BankAppFXMaven.model.Transfer;
 import in.BankAppFXMaven.model.User;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -213,6 +221,7 @@ public class TransferScene extends Application {
 
 					// get recipient and check if valid email
 					String recipientEmail = toTxtInput.getText();
+					dbController = DatabaseController.getInstance();
 
 					// get user by email
 					User recipientUser = dbController.getUserByEmail(recipientEmail);
@@ -224,25 +233,84 @@ public class TransferScene extends Application {
 
 						LoggedUser.getInstance().getBankAccount();
 
-						int transfererResponse = dbController.updateAccountBalance(-transferAmountInput,
+						// subtract from sender in the database
+						int senderResponse = dbController.updateAccountBalance(-transferAmountInput,
 								loggedUser.getUser());
-						//do db transaction entry of /\
+						// do db transaction entry of /\
+						// add to db transfer
 
-						if (transfererResponse == 1) {
+						if (senderResponse == 1) {
+							// add to recipient in the database
 							int recipientResponse = dbController.updateAccountBalance(transferAmountInput,
 									recipientUser);
-							//do db transaction entry of /\
 
 							if (recipientResponse == 1) {
+
+								Timestamp timeStamp = new java.sql.Timestamp(System.currentTimeMillis());
+
+//								timeStamp = convertTimeStampToCorrectFormat(timeStamp);
+
+								// create 2 transaction entries, 1 negative and 1 positive, to show each user
+								Transaction newSenderTransaction = new Transaction(
+										loggedUser.getBankAccount().getBankAccID(), "transfer", timeStamp,
+										-transferAmountInput);
+								Transaction newReceiverTransaction = new Transaction(RecipientBankAcc.getBankAccID(),
+										"transfer", timeStamp, transferAmountInput);
+
+								// upload sender & receiver transaction to database
+								int transactionResponse1 = dbController.addNewTransaction(newSenderTransaction);
+								int transactionResponse2 = dbController.addNewTransaction(newReceiverTransaction);
+
+								if (transactionResponse1 == 0) {
+									System.out.println("Couldn't add transaction entry to database.");
+								}
+								if (transactionResponse2 == 0) {
+									System.out.println("Couldn't add transaction entry to database.");
+								}
+
+								// download updated bank account after transfer
+								loggedUser
+										.setBankAccount(dbController.getBankAccByUserID(loggedUser.getUser().getId()));
+
+								// download updated transaction after transfer
+								Statement statement = loggedUser.getStatement();
+								statement.setTransactionList(dbController.getStatementTransactionList(statement));
+								loggedUser.setStatement(statement);
+
+								// get transaction where from_bank_acc_id is
+								// loggedUser.getBankAccount().getBankAccID() and date is timeStamp
+								Transaction doneSenderTransaction = dbController
+										.getTransaction(loggedUser.getBankAccount().getBankAccID(), timeStamp);
 								
-								toTxtInput.clear();
+								// get transactionId to add to new db transfer entry
+								Transfer newSenderTransfer = new Transfer(doneSenderTransaction.getTransactionID(),
+										loggedUser.getBankAccount().getBankAccID(), RecipientBankAcc.getBankAccID());
 								
-								Alert alert = new Alert(Alert.AlertType.INFORMATION);
-								alert.setTitle("Transference successful.");
-								alert.setHeaderText(null);
-								alert.setContentText("Transference successfull. You have transered €"
-										+ transferAmountInput + " to " + recipientEmail + ".");
-								alert.showAndWait();
+								
+								Transaction doneReceiverTransaction = dbController
+										.getTransaction(RecipientBankAcc.getBankAccID(), timeStamp);
+								
+								
+								Transfer newReceiverTransfer = new Transfer(doneReceiverTransaction.getTransactionID(),
+										loggedUser.getBankAccount().getBankAccID(), RecipientBankAcc.getBankAccID());
+								
+								
+								// add transfers entries of the transactions of this specific date
+								int transferSenderResponse = dbController.addNewTransfer(newSenderTransfer);
+								int transferReceiverResponse = dbController.addNewTransfer(newReceiverTransfer);
+
+								if (transferSenderResponse == 1 && transferReceiverResponse == 1) {
+									// clear the transfer amount input and show success dialog
+									toTxtInput.clear();
+									transferAmountTxtInput.clear();
+
+									Alert alert = new Alert(Alert.AlertType.INFORMATION);
+									alert.setTitle("Transference successful.");
+									alert.setHeaderText(null);
+									alert.setContentText("Transference successfull. You have transered €"
+											+ transferAmountInput + " to " + recipientEmail + ".");
+									alert.showAndWait();
+								}
 
 							} else {
 								Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -308,4 +376,33 @@ public class TransferScene extends Application {
 		primaryStage.show();
 	}
 
+//	/**
+//	 * Java creates the Timestamp as "2024-08-03 10:04:36.59" (Counting
+//	 * milliseconds) this method converts not to have milliseconds since it's this
+//	 * way that the MySql gets stored, not to have error when trying to retrieve
+//	 * with milliseconds
+//	 * 
+//	 * @return formatted Timestamp
+//	 */
+//	public Timestamp convertTimeStampToCorrectFormat(Timestamp timestamp) {
+//		// Format the timestamp to the desired format
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		String formattedDate = sdf.format(timestamp);
+//
+//		return timestamp = convertStringToTimestamp(formattedDate);
+//	}
+//
+//	public static Timestamp convertStringToTimestamp(String dateString) {
+//		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		try {
+//			// Parse the input string to a java.util.Date object
+//			java.util.Date parsedDate = dateFormat.parse(dateString);
+//			// Convert java.util.Date to java.sql.Timestamp
+//			return new Timestamp(parsedDate.getTime());
+//		} catch (ParseException e) {
+//			e.printStackTrace();
+//			System.out.println("Couldn't parse the date string.");
+//			return null;
+//		}
+//	}
 }

@@ -134,6 +134,19 @@ public class DatabaseController {
 	public ArrayList<Transaction> getStatementTransactionList(Statement statement) {
 		return db.getStatementTransactionList(statement);
 	}
+	
+	public int addNewTransfer (Transfer newTransfer) {
+		return db.addNewTransfer(newTransfer);
+	}
+	
+	/**
+	 * @param fromBankAccId to get transaction from
+	 * @param timeStampDate to get specific transaction
+	 * @return specific transaction
+	 */
+	public Transaction getTransaction(int fromBankAccId, Timestamp timeStampDate) {
+		return db.getTransaction(fromBankAccId, timeStampDate);
+	}
 
 	public boolean accNumberExists(int randomNumber) {
 		// TODO Auto-generated method stub

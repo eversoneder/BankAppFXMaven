@@ -1,14 +1,20 @@
 package in.BankAppFXMaven.model;
 
-import java.sql.Timestamp;
-
 public class Transfer {
 
 	private int transferID;
+	private int transactionID;
 	private int fromBankAcc;
 	private int toBankAcc;
-	private double transferAmount;
-	private Timestamp transferDate;
+	
+	public Transfer () {
+		
+	}
+	public Transfer (int transactionId, int fromBankAcc, int toBankAcc) {
+		this.transactionID = transactionId;
+		this.fromBankAcc = fromBankAcc;
+		this.toBankAcc = toBankAcc;
+	}
 	/**
 	 * @return the transferID
 	 */
@@ -40,33 +46,21 @@ public class Transfer {
 		return toBankAcc;
 	}
 	/**
+	 * @return the transactionID
+	 */
+	public int getTransactionID() {
+		return transactionID;
+	}
+	/**
+	 * @param transactionID the transactionID to set
+	 */
+	public void setTransactionID(int transactionID) {
+		this.transactionID = transactionID;
+	}
+	/**
 	 * @param toBankAcc the toBankAcc to set
 	 */
 	public void setToBankAcc(int toBankAcc) {
 		this.toBankAcc = toBankAcc;
-	}
-	/**
-	 * @return the transferAmount
-	 */
-	public double getTransferAmount() {
-		return transferAmount;
-	}
-	/**
-	 * @param transferAmount the transferAmount to set
-	 */
-	public void setTransferAmount(double transferAmount) {
-		this.transferAmount = transferAmount;
-	}
-	/**
-	 * @return the TimeStamp
-	 */
-	public Timestamp getTransferDate() {
-		return transferDate;
-	}
-	/**
-	 * @param TimeStamp the TimeStamp to set
-	 */
-	public void setTransferDate(Timestamp date) {
-		this.transferDate = date;
 	}
 }

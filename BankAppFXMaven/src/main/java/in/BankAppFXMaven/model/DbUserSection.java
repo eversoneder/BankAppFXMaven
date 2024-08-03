@@ -61,10 +61,11 @@ public class DbUserSection {
 	 */
 	public User getUser(ResultSet rs) {
 
-		User newUser = new User();
+		User newUser = null;
 
 		try {
 			if (!rs.wasNull()) {
+				newUser = new User();
 				newUser.setId(rs.getInt("user_id"));
 				newUser.setName(rs.getString("name"));
 				newUser.setSurname(rs.getString("surname"));
