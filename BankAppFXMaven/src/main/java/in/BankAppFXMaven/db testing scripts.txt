@@ -8,20 +8,46 @@ SELECT * FROM bankappfx.user;
 SELECT * FROM bankappfx.transfer;
 SELECT * FROM bankappfx.transaction;
 
-SELECT * FROM user WHERE user.email = "everson_eder@hotmail.com"; 
+SELECT * FROM transaction WHERE bank_acc_id = 4 AND transaction_date = '2024-08-03 11:04:10';
+SELECT * FROM transfer WHERE from_bank_acc_id = 4 AND transfer_date = '2024-08-03 12:31:40';
+
+UPDATE bank_account SET bank_acc_balance = 4060 WHERE user_id = 4;
+UPDATE bank_account SET bank_acc_balance = 0 WHERE user_id = 1;
+
+SELECT * FROM transaction WHERE bank_acc_id = 4 AND transaction_date = '2024-07-30 00:15:39';
+
+SELECT * FROM transaction WHERE bank_acc_id = 4;
+
+UPDATE login SET password_hash = '6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b' WHERE user_id = 4;
+
+SELECT * FROM user JOIN login ON user.user_id = login.user_id WHERE user.email = 'edTesting3@gmail.com' AND login.password_hash = '6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b';
+
+SELECT * FROM user WHERE user.email = "everson_eder@hotmail.com";
+
+UPDATE user SET name = null, surname = null WHERE user_id = 4;
+SELECT * FROM user JOIN login ON user.user_id = login.user_id WHERE user.email = 'edTesting4@gmail.com' AND login.password_hash = '6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b';
+SELECT * FROM transaction WHERE bank_acc_id = 1;
 
 DELETE FROM bank_account WHERE (bank_acc_id = 2);
 DELETE FROM user WHERE (user_id = 2);
 DELETE FROM login WHERE (login_id = 2);
 DELETE FROM statement WHERE (statement_id = 2);
+DELETE FROM transaction WHERE (transaction_id = 6);
+DELETE FROM transfer WHERE (transfer_id = 2);
+
+UPDATE bank_account SET bank_acc_balance = 3950 WHERE user_id = 4;
+
+INSERT INTO transaction (bank_acc_id, transaction_type, transaction_amount, transaction_date) VALUES (4, 'withdraw', 10, '2024-07-29 22:43:29');
 
 SET FOREIGN_KEY_CHECKS = 0; -- Disable FK checks (for delete/update)
 SET FOREIGN_KEY_CHECKS = 1; -- Re-enable FK checks
 
+ALTER TABLE transfer AUTO_INCREMENT = 0;
 ALTER TABLE bank_account AUTO_INCREMENT = 2;
 ALTER TABLE login AUTO_INCREMENT = 2;
 ALTER TABLE statement AUTO_INCREMENT = 2;
 ALTER TABLE user AUTO_INCREMENT = 2;
+ALTER TABLE transaction AUTO_INCREMENT = 5;
 
 SELECT * FROM user, bank_account;
 SELECT * FROM user JOIN login ON user.user_id = login.user_id;

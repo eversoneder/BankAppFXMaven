@@ -231,7 +231,7 @@ public class TransferScene extends Application {
 						// get bank of this user and transfer to his balance
 						BankAccount RecipientBankAcc = dbController.getBankAccByUserID(recipientUser.getId());
 
-						LoggedUser.getInstance().getBankAccount();
+//						LoggedUser.getInstance().getBankAccount();
 
 						// subtract from sender in the database
 						int senderResponse = dbController.updateAccountBalance(-transferAmountInput,
@@ -348,16 +348,16 @@ public class TransferScene extends Application {
 			}
 		});
 
-		Button cancelBtn = new Button("Cancel");
-		cancelBtn.setLayoutX(90.0);
-		cancelBtn.setLayoutY(400.0);
-		cancelBtn.setPrefHeight(30.0);
-		cancelBtn.setPrefWidth(140.0);
-		cancelBtn.setStyle("-fx-background-color: #B3B3B3; -fx-background-radius: 8px; -fx-cursor: hand;");
-		cancelBtn.setTextAlignment(TextAlignment.CENTER);
-		cancelBtn.setTextFill(Color.web("#ffffff"));
-		cancelBtn.setFont(Font.font("Roboto Bold", 16.0));
-		cancelBtn.setOnAction(e -> {
+		Button backBtn = new Button("Back");
+		backBtn.setLayoutX(90.0);
+		backBtn.setLayoutY(400.0);
+		backBtn.setPrefHeight(30.0);
+		backBtn.setPrefWidth(140.0);
+		backBtn.setStyle("-fx-background-color: #B3B3B3; -fx-background-radius: 8px; -fx-cursor: hand;");
+		backBtn.setTextAlignment(TextAlignment.CENTER);
+		backBtn.setTextFill(Color.web("#ffffff"));
+		backBtn.setFont(Font.font("Roboto Bold", 16.0));
+		backBtn.setOnAction(e -> {
 			try {
 				transactionsSceneSingletonInstance.start(primaryStage);
 			} catch (Exception e1) {
@@ -365,7 +365,7 @@ public class TransferScene extends Application {
 			}
 		});
 
-		whiteMiddlePane.getChildren().addAll(cancelBtn, confirmBtn);
+		whiteMiddlePane.getChildren().addAll(backBtn, confirmBtn);
 
 		anchorPane.getChildren().add(whiteMiddlePane);
 

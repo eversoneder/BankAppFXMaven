@@ -28,17 +28,6 @@ public class DatabaseController {
 	private DatabaseController() {
 	}
 
-//	public static boolean getAccValidity(String email, String accNum) {
-//		String emailTest = "test";
-//		String accNumTest = "test";
-//
-//		if (email.equalsIgnoreCase(emailTest) && accNum.equalsIgnoreCase(accNumTest)) {
-//			return true;
-//		} else {
-//			return false;
-//		}
-//	}
-
 	public static ArrayList<User> getUsers() {
 		return db.getUsers();
 	}
@@ -118,6 +107,15 @@ public class DatabaseController {
 	public BankAccount getBankAccByUserID(int userID) {
 		return db.getBankAccByUserID(userID);
 	}
+	
+	/**
+	 * @param amount to withdraw
+	 * @param user to get it's balance updated
+	 * @return 1 if successful, 0 if unsuccessful
+	 */
+	public int updateAccountBalance(double amount, User user) {
+		return db.updateAccountBalance(amount, user);
+	}
 
 	/**
 	 * @param bankAccId to get the statement from
@@ -135,8 +133,26 @@ public class DatabaseController {
 		return db.getStatementTransactionList(statement);
 	}
 	
+	/**
+	 * get specific transaction through it's transaction id
+	 * 
+	 * @param transactionId of transaction
+	 * @return specific transfer
+	 */
+	public Transfer getTransfer(int transactionId) {
+		return db.getTransfer(transactionId);
+	}
+	
 	public int addNewTransfer (Transfer newTransfer) {
 		return db.addNewTransfer(newTransfer);
+	}
+	
+	/**
+	 * @param transaction to be added
+	 * @return 1 if successful, 0 if not successful
+	 */
+	public int addNewTransaction(Transaction transaction) {
+		return db.addNewTransaction(transaction);
 	}
 	
 	/**
@@ -146,6 +162,15 @@ public class DatabaseController {
 	 */
 	public Transaction getTransaction(int fromBankAccId, Timestamp timeStampDate) {
 		return db.getTransaction(fromBankAccId, timeStampDate);
+	}
+	
+	/**
+	 * Get specific transaction through it's transaction id
+	 * @param transactionId of transaction
+	 * @return transaction of the transaction id given
+	 */
+	public Transaction getTransaction(int transactionId) {
+		return db.getTransaction(transactionId);
 	}
 
 	public boolean accNumberExists(int randomNumber) {
@@ -185,58 +210,42 @@ public class DatabaseController {
 		return db.emailExists(email);
 	}
 
-	/**
-	 * You SENT cash and want to get history of who received at this specific
-	 * date.(get to_bank_acc_id)
-	 * 
-	 * @param userId        of receiving bank holder
-	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
-	 * @return specific dated transfer from userId
-	 */
-	public Transfer getSpecificReceiverTransfer(int userId, Timestamp timeStampDate) {
-		return db.getSpecificReceiverTransfer(userId, timeStampDate);
-	}
 
-	/**
-	 * You RECEIVED cash and want to know who sent you at this specific date.(get
-	 * from_bank_acc_id)
-	 * 
-	 * @param userId        of sent bank holder
-	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
-	 * @return specific dated transfer from userId
-	 */
-	public Transfer getSpecificSenderTransfer(int userId, Timestamp timeStampDate) {
-		return db.getSpecificSenderTransfer(userId, timeStampDate);
-	}
+//	/**
+//	 * According to the bank_acc_id, get specific transfer at timeStampDate date
+//	 * 
+//	 * @param userId        of sent bank holder
+//	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
+//	 * @return specific dated transfer from userId
+//	 */
+//	public Transfer getSpecificTransfer(int userId, Timestamp timeStampDate) {
+//		return db.getSpecificTransfer(userId, timeStampDate);
+//	}
 
-	/**
-	 * @param userId from bank account who sent
-	 * @return ArrayList of transfers from UserId
-	 */
-	public ArrayList<Transfer> getTransfersSent(int userId) {
-		return db.getTransfersSent(userId);
-	}
-
-	/**
-	 * @param userId from bank account who received
-	 * @return ArrayList of transfers from UserId
-	 */
-	public ArrayList<Transfer> getTransfersReceived(int userId) {
-		return db.getTransfersSent(userId);
-	}
-
-	/**
-	 * @param amount to withdraw
-	 * @param user to get it's balance updated
-	 * @return 1 if successful, 0 if unsuccessful
-	 */
-	public int updateAccountBalance(double amount, User user) {
-		return db.updateAccountBalance(amount, user);
-	}
+//	/**
+//	 * @param userId from bank account who sent
+//	 * @return ArrayList of transfers from UserId
+//	 */
+//	public ArrayList<Transfer> getTransfersSent(int userId) {
+//		return db.getTransfersSent(userId);
+//	}
+//
+//	/**
+//	 * @param userId from bank account who received
+//	 * @return ArrayList of transfers from UserId
+//	 */
+//	public ArrayList<Transfer> getTransfersReceived(int userId) {
+//		return db.getTransfersSent(userId);
+//	}
 	
-	public int addNewTransaction(Transaction transaction) {
-		return db.addNewTransaction(transaction);
-	}
+
 	
-	
+//	/**
+//	 * @param bank_acc_Id column of transaction
+//	 * @param timeStampDate of transaction
+//	 * @return specific transaction
+//	 */
+//	public Transaction getSpecificTransaction(int bank_acc_Id, Timestamp timeStampDate) {
+//		return db.getSpecificTransaction(bank_acc_Id, timeStampDate);
+//	}
 }

@@ -54,11 +54,6 @@ public class DatabaseDAO {
 	}
 
 	private DatabaseDAO() {
-		connect();
-	}
-
-	private void connect() {
-
 		Properties prop = new Properties();
 		InputStream input = null;
 
@@ -69,25 +64,37 @@ public class DatabaseDAO {
 			url = prop.getProperty("db.url");
 			user = prop.getProperty("db.user");
 			password = prop.getProperty("db.password");
-			System.out.println("URL: " + url + ". User: " + user + ". Password: " + password + ".");
 
 			Class.forName("com.mysql.cj.jdbc.Driver");
-
 			connection = DriverManager.getConnection(url, user, password);
+			st = connection.createStatement();
 
 			if (connection != null) {
 				System.out.println("Database Connected.");
 			}
-
-			st = connection.createStatement();
+			System.out.println("URL: " + url + ". User: " + user + ". Password: " + password + ".");
 
 		} catch (ClassNotFoundException | IOException | SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * @return database connection
+	 */
 	protected Connection getConnection() {
 		return this.connection;
+	}
+	
+	/**
+	 * Creates the db entry for user, login, bank_account and statement on mySql db
+	 * 
+	 * @param email    user's email
+	 * @param password user's password
+	 * @return true if created
+	 */
+	public boolean createUser(String email, String password) {
+		return dbUser.createUser(email, password);
 	}
 
 	/**
@@ -108,101 +115,10 @@ public class DatabaseDAO {
 		return userList;
 	}
 
-	public void showNameSurnameDialogAndSave() {
-
-		// Create a boolean flag to track if the save button was clicked
-		final boolean[] saveClicked = { false };
-
-		// Create the custom dialog.
-		Dialog<Pair<String, String>> dialog = new Dialog<>();
-		dialog.initModality(Modality.APPLICATION_MODAL); // Set the dialog to be modal so user can't drag it and use the
-															// other page without giving their name
-		dialog.setTitle("Required");
-		dialog.setHeaderText("Please enter your Name and Surname.");
-
-		// Set the button types.
-		ButtonType loginButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().addAll(loginButtonType);
-
-		// Create the name and surname labels and fields.
-		GridPane grid = new GridPane();
-		grid.setAlignment(Pos.CENTER);
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(20, 150, 10, 10));
-
-		TextField nameTextField = new TextField();
-		nameTextField.setPromptText("Name");
-		TextField surnameTextField = new TextField();
-		surnameTextField.setPromptText("Surname");
-
-		grid.add(new Label("Name:"), 0, 0);
-		grid.add(nameTextField, 1, 0);
-		grid.add(new Label("Surname:"), 0, 1);
-		grid.add(surnameTextField, 1, 1);
-
-		// Enable/Disable save button depending on whether a name and surname were
-		// entered.
-		Node saveButton = dialog.getDialogPane().lookupButton(loginButtonType);
-		saveButton.setDisable(true);
-
-		// Do some validation (using the Java 8 lambda syntax).
-		// disable the save button if user haven't input anything or input only blank
-		// space on name field or on surname field
-		nameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			saveButton.setDisable(newValue.trim().isEmpty() || surnameTextField.getText().trim().isEmpty());
-		});
-		surnameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			saveButton.setDisable(newValue.trim().isEmpty() || nameTextField.getText().trim().isEmpty());
-		});
-
-		dialog.getDialogPane().setContent(grid);
-
-		// Request focus on the name field by default.
-		Platform.runLater(() -> nameTextField.requestFocus());
-
-		// Convert the result to a name-surname pair when the save button is clicked.
-		dialog.setResultConverter(dialogButton -> {
-			if (dialogButton == loginButtonType) {
-				saveClicked[0] = true;
-				return new Pair<>(nameTextField.getText(), surnameTextField.getText());
-			}
-			return null;
-		});
-
-		// Add an event filter to consume the close request when the 'X' button is
-		// clicked
-		dialog.getDialogPane().getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, event -> {
-			if (!saveClicked[0]) {
-				event.consume();
-			}
-		});
-
-		Optional<Pair<String, String>> result = dialog.showAndWait();
-
-		result.ifPresent(nameSurname -> {
-
-			LoggedUser loggedUser = LoggedUser.getInstance();
-
-//			User user = new User(); //this 2 commented lines are for junit testing purpose only
-//			loggedUser.setUser(user);
-
-			loggedUser.getUser().setName(nameSurname.getKey().trim());
-			loggedUser.getUser().setSurname(nameSurname.getValue().trim());
-
-			db.executeUpdateRS("UPDATE user SET name = '" + loggedUser.getUser().getName() + "', surname = '"
-					+ loggedUser.getUser().getSurname() + "' WHERE user_id = " + loggedUser.getUser().getId() + ";");
-
-			Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
-			confirmationAlert.setTitle("Confirmation");
-			confirmationAlert.setHeaderText(null);
-			confirmationAlert.setContentText("Name and Surname have been set.\n\nWelcome to Econo Bank "
-					+ nameSurname.getKey() + " " + nameSurname.getValue()
-					+ "! Your new bank account is ready for use! \nTake advantage of the many Econo Bank features!");
-			confirmationAlert.showAndWait();
-		});
-	}
-
+	/**
+	 * @param email to get user
+	 * @return user
+	 */
 	public User getUserByEmail(String email) {
 
 		User user = null;
@@ -218,6 +134,10 @@ public class DatabaseDAO {
 		return user;
 	}
 
+	/**
+	 * @param userId to get user
+	 * @return user
+	 */
 	public User getUserById(int userId) {
 
 		User user = null;
@@ -234,6 +154,13 @@ public class DatabaseDAO {
 	}
 
 	/**
+	 * Shows a dialog to user to enter name and surname to save to database
+	 */
+	public void showNameSurnameDialogAndSave() {
+		dbUser.showNameSurnameDialogAndSave();
+	}
+	
+	/**
 	 * This method retrieves login information. If last_login is null, it sets the
 	 * current time; otherwise, it updates last_login but only after the next login.
 	 * 
@@ -248,32 +175,23 @@ public class DatabaseDAO {
 			rs = st.executeQuery("SELECT * FROM login WHERE user_id = " + userId + ";");
 			rs.next();
 
-			try {
-				if (!rs.wasNull()) {
-					login.setLoginId(rs.getInt("login_id"));
-					login.setUserId(rs.getInt("user_id"));
-					login.setPasswordHash(rs.getString("password_hash"));
-					login.setLastLogin(rs.getTimestamp("last_login"));
+			if (!rs.wasNull()) {
+				login.setLoginId(rs.getInt("login_id"));
+				login.setUserId(rs.getInt("user_id"));
+				login.setPasswordHash(rs.getString("password_hash"));
+				login.setLastLogin(rs.getTimestamp("last_login"));
 
-					System.out.println("login_id: " + login.getLoginId());
-					System.out.println("user_id: " + login.getUserId());
-					System.out.println("password_hash: " + login.getPasswordHash());
-					System.out.println("last_login: " + login.getLastLogin());
-					System.out.println();
-				}
-
-			} catch (SQLException sqle) {
-				db.exceptionMessages(sqle);
-				sqle.printStackTrace();
-			} catch (Exception e) {
-				System.out.println(e.getMessage());
-				System.out.println("User with this email does not exist.");
+				System.out.println("login_id: " + login.getLoginId());
+				System.out.println("user_id: " + login.getUserId());
+				System.out.println("password_hash: " + login.getPasswordHash());
+				System.out.println("last_login: " + login.getLastLogin());
+				System.out.println();
 			}
 
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
+		} catch (SQLException e) {
+			db.exceptionMessages(e);
+			System.out.println("User with this email does not exist.");
 		}
-
 		return login;
 	}
 
@@ -501,6 +419,34 @@ public class DatabaseDAO {
 
 		return statementList;
 	}
+	
+	/**
+	 * get specific transaction through it's transaction id
+	 * 
+	 * @param transactionId of transaction
+	 * @return specific transaction
+	 */
+	public Transaction getTransaction(int transactionId) {
+
+		String query = "SELECT * FROM transaction WHERE transaction_id = " + transactionId + ";";
+		ResultSet rs = executeQueryRS(query);
+
+		Transaction transaction = null;
+		try {
+			if (!rs.wasNull()) {
+				transaction = new Transaction();
+				transaction.setTransactionID(rs.getInt("transaction_id"));
+				transaction.setBankAccID(rs.getInt("bank_acc_id"));
+				transaction.setTransactionType(rs.getString("transaction_type"));
+				transaction.setTransactionAmount(rs.getDouble("transaction_amount"));
+				transaction.setTransactionDate(rs.getTimestamp("transaction_date"));
+			}
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return transaction;
+	}
 
 	/**
 	 * @param fromBankAccId to get transaction from
@@ -511,10 +457,10 @@ public class DatabaseDAO {
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String formattedDate = sdf.format(timeStampDate);
-		
+
 		Transaction transaction = null;
-		String query = "SELECT * FROM transaction WHERE bank_acc_id = " + fromBankAccId
-				+ " AND transaction_date = '" + formattedDate + "';";
+		String query = "SELECT * FROM transaction WHERE bank_acc_id = " + fromBankAccId + " AND transaction_date = '"
+				+ formattedDate + "';";
 
 		rs = executeQueryRS(query);
 
@@ -532,6 +478,54 @@ public class DatabaseDAO {
 		}
 		return transaction;
 	}
+	
+	/**
+	 * @param transaction to be added
+	 * @return 1 if successful, 0 if not successful
+	 */
+	public int addNewTransaction(Transaction transaction) {
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String formattedDate = sdf.format(transaction.getTransactionDate());
+
+		int updateResponse = db.executeUpdateRS(
+				"INSERT INTO transaction (bank_acc_id, transaction_type, transaction_amount, transaction_date) VALUES ("
+						+ transaction.getBankAccID() + ", '" + transaction.getTransactionType() + "', "
+						+ transaction.getTransactionAmount() + ", '" + formattedDate + "');");
+
+		if (updateResponse == 1) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+	
+	/**
+	 * get specific transaction through it's transaction id
+	 * 
+	 * @param transferId of transaction
+	 * @return specific transaction
+	 */
+	public Transfer getTransfer(int transactionId) {
+
+		String query = "SELECT * FROM transfer WHERE transaction_id = " + transactionId + ";";
+		ResultSet rs = executeQueryRS(query);
+
+		Transfer transfer = null;
+		try {
+			if (!rs.wasNull()) {
+				transfer = new Transfer();
+				transfer.setTransferID(rs.getInt("transfer_id"));
+				transfer.setTransactionID(rs.getInt("transaction_id"));
+				transfer.setFromBankAcc(rs.getInt("from_bank_acc_id"));
+				transfer.setToBankAcc(rs.getInt("to_bank_acc_id"));
+			}
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return transfer;
+	}
 
 	/**
 	 * @param newTransfer to insert to database
@@ -544,7 +538,7 @@ public class DatabaseDAO {
 				+ newTransfer.getToBankAcc() + ");";
 
 		int response = executeUpdateRS(query);
-		
+
 		return response;
 	}
 
@@ -575,68 +569,6 @@ public class DatabaseDAO {
 		}
 
 		return ba;
-	}
-
-	/**
-	 * Creates the db entry for user, login, bank_account and statement on mySql db
-	 * 
-	 * @param email    user's email
-	 * @param password user's password
-	 * @return true if created
-	 */
-	public boolean createUser(String email, String password) {
-		// gets email & password from sign up page
-		// login saves user_id & password_hash
-		// bank_account saves user_id and bank_account from AccountNumberGenerator class
-		// statement saves only bank_account_id
-
-		// user entity insert: email
-		// login entity insert: user.id, login.password_hash
-		// bank_account entity insert: user.id, bank_acc_number
-		// statement entity insert: bank_acc_id
-
-		try {
-			String userQuery = "INSERT INTO user (email) VALUES('" + email + "');";
-			this.getConnection();
-			executeUpdateRS(userQuery);
-
-			// now get user_id since it was created using the email above
-			User user = getUserByEmail(email);
-
-			try {
-				password = HashingUtility.hashPassword(password);
-
-				String loginQuery = "INSERT INTO login (user_id, password_hash) VALUES (" + user.getId() + ", '"
-						+ password + "');";
-				executeUpdateRS(loginQuery);
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			// insert login.user_id & login.password_hash
-
-			// set user_id in bank_account table (auto incremented) creating a bank_acc_id
-
-			String bankAccountQuery = "INSERT INTO bank_account (user_id, bank_acc_number) VALUES (" + user.getId()
-					+ ", " + AccountNumberGenerator.generateRandomNumber(dbController) + ");";
-			executeUpdateRS(bankAccountQuery);
-
-			// get bank_acc_id from bank_account table (auto incremented) to save into
-			// statement
-			String getBankAccIdQuery = "SELECT * FROM bank_account WHERE user_id = " + user.getId() + ";";
-			BankAccount ba = getBankAccountReusableMethod(getBankAccIdQuery);
-
-			String statementQuery = "INSERT INTO statement (bank_acc_id) VALUES (" + ba.getBankAccID() + ");";
-			executeUpdateRS(statementQuery);
-
-			return true;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return false;
 	}
 
 	public boolean accNumberExists(int randomNumber) {
@@ -715,6 +647,151 @@ public class DatabaseDAO {
 		}
 	}
 
+//	/**
+//	 * @param bank_acc_Id column of transaction
+//	 * @param timeStampDate of transaction
+//	 * @return specific transaction
+//	 */
+//	public Transaction getSpecificTransaction(int bank_acc_Id, Timestamp timeStampDate) {
+//
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		String formattedDate = sdf.format(timeStampDate);
+//
+//		String query = "SELECT * FROM transaction WHERE bank_acc_id = " + bank_acc_Id
+//				+ "AND transaction_type = 'transfer' AND transaction_date = '" + formattedDate + "';";
+//
+//		ResultSet rs = executeQueryRS(query);
+//
+//		Transaction transaction = null;
+//		try {
+//			if (!rs.wasNull()) {
+//				transaction = new Transaction();
+//				transaction.setTransactionID(rs.getInt("transaction_id"));
+//				transaction.setBankAccID(rs.getInt("bank_acc_id"));
+//				transaction.setTransactionType(rs.getString("transaction_type"));
+//				transaction.setTransactionAmount(rs.getDouble("transaction_amount"));
+//				transaction.setTransactionDate(rs.getTimestamp("transaction_date"));
+//			}
+//
+//		} catch (SQLException e) {
+//			System.out.println(e.getMessage());
+//		}
+//		return transaction;
+//	}
+
+//	/**
+//	 * You SENT cash and want to get history of who received at this specific
+//	 * date.(get to_bank_acc_id)
+//	 * 
+//	 * @param userId        of receiving bank holder
+//	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
+//	 * @return specific dated transfer from userId
+//	 */
+//	public Transfer getSpecificTransfer(int userId, Timestamp timeStampDate) {
+//
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		String formattedDate = sdf.format(timeStampDate);
+//
+//		String query = "SELECT * FROM transaction WHERE bank_acc_id = " + userId
+//				+ "AND transaction_type = 'transfer' AND transaction_date = '" + formattedDate + "';";
+//
+//		ResultSet rs = executeQueryRS(query);
+//
+//		return reusableTransferDAO(rs).get(0);
+//	}
+
+//	/**
+//	 * You RECEIVED cash and want to know who sent you at this specific date.(get
+//	 * from_bank_acc_id)
+//	 * 
+//	 * @param userId        of sent bank holder
+//	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
+//	 * @return specific dated transfer from userId
+//	 */
+//	public Transfer getSpecificSenderTransfer(int userId, Timestamp timeStampDate) {
+//
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		String formattedDate = sdf.format(timeStampDate);
+//		
+//		String query = "SELECT * FROM transfer WHERE to_bank_acc_id = " + userId + " AND transfer_date = '"
+//				+ formattedDate + "';";
+//
+//		ResultSet rs = executeQueryRS(query);
+//		return reusableTransferDAO(rs).get(0);
+//	}
+
+//	/**
+//	 * @param userId from bank account who received
+//	 * @return ArrayList of transfers from UserId
+//	 */
+//	public ArrayList<Transfer> getTransfersReceived(int userId) {
+//
+//		String query = "SELECT * FROM transfer WHERE to_bank_acc_id = " + userId + ";";
+//		ResultSet rs = executeQueryRS(query);
+//		return reusableTransferDAO(rs);
+//	}
+//
+//	/**
+//	 * @param userId from bank account who sent
+//	 * @return ArrayList of transfers from UserId
+//	 */
+//	public ArrayList<Transfer> getTransfersSent(int userId) {
+//
+//		String query = "SELECT * FROM transfer WHERE from_bank_acc_id = " + userId + ";";
+//		ResultSet rs = executeQueryRS(query);
+//		return reusableTransferDAO(rs);
+//	}
+
+	/**
+	 * Reusable method to get transfer table depending on ResultSet/Query
+	 * 
+	 * @param rs ready executed query on ResultSet
+	 * @return ArrayList of Transfer
+	 */
+	public ArrayList<Transfer> reusableTransferDAO(ResultSet rs) {
+
+		ArrayList<Transfer> transfers = new ArrayList<Transfer>();
+		try {
+			if (!rs.wasNull()) {
+
+				Transfer transfer = new Transfer();
+				transfer.setTransferID(rs.getInt("transfer_id"));
+				transfer.setTransactionID(rs.getInt("transaction_id"));
+				transfer.setFromBankAcc(rs.getInt("from_bank_acc_id"));
+				transfer.setToBankAcc(rs.getInt("to_bank_acc_id"));
+				transfers.add(transfer);
+			}
+
+		} catch (SQLException sqle) {
+			db.exceptionMessages(sqle);
+			sqle.printStackTrace();
+			System.out.println("Transfer couldn't be retrieved from db.");
+		}
+		return transfers;
+	}
+
+	/**
+	 * @param amount to withdraw
+	 * @param user   to get it's balance updated
+	 * @return 1 if successful, 0 if unsuccessful
+	 */
+	public int updateAccountBalance(double amount, User user) {
+
+		BankAccount userBankAcc = getBankAccByUserID(user.getId());
+		double userBalance = userBankAcc.getBankAccBalance();
+
+		double newBalance = userBalance + amount;
+
+		int updateResponse = db.executeUpdateRS(
+				"UPDATE bank_account SET bank_acc_balance = " + newBalance + " WHERE user_id = " + user.getId() + ";");
+
+		if (updateResponse == 1) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+	
 	/**
 	 * @param query the query to execute (reusable method for SELECT queries)
 	 * @return ResultSet of query given
@@ -767,129 +844,6 @@ public class DatabaseDAO {
 			System.out.println("Message: " + sqle.getMessage());
 			System.out.println("Error: " + sqle.getErrorCode());
 			sqle = sqle.getNextException();
-		}
-	}
-
-	/**
-	 * You SENT cash and want to get history of who received at this specific
-	 * date.(get to_bank_acc_id)
-	 * 
-	 * @param userId        of receiving bank holder
-	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
-	 * @return specific dated transfer from userId
-	 */
-	public Transfer getSpecificReceiverTransfer(int userId, Timestamp timeStampDate) {
-
-		String query = "SELECT * FROM transfer WHERE from_bank_acc_id = " + userId + " AND transfer_date = '"
-				+ timeStampDate + "';";
-
-		ResultSet rs = executeQueryRS(query);
-		return reusableTransferDAO(rs).get(0);
-	}
-
-	/**
-	 * You RECEIVED cash and want to know who sent you at this specific date.(get
-	 * from_bank_acc_id)
-	 * 
-	 * @param userId        of sent bank holder
-	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
-	 * @return specific dated transfer from userId
-	 */
-	public Transfer getSpecificSenderTransfer(int userId, Timestamp timeStampDate) {
-
-		String query = "SELECT * FROM transfer WHERE to_bank_acc_id = " + userId + " AND transfer_date = '"
-				+ timeStampDate + "';";
-
-		ResultSet rs = executeQueryRS(query);
-		return reusableTransferDAO(rs).get(0);
-	}
-
-	/**
-	 * @param userId from bank account who received
-	 * @return ArrayList of transfers from UserId
-	 */
-	public ArrayList<Transfer> getTransfersReceived(int userId) {
-
-		String query = "SELECT * FROM transfer WHERE to_bank_acc_id = " + userId + ";";
-		ResultSet rs = executeQueryRS(query);
-		return reusableTransferDAO(rs);
-	}
-
-	/**
-	 * @param userId from bank account who sent
-	 * @return ArrayList of transfers from UserId
-	 */
-	public ArrayList<Transfer> getTransfersSent(int userId) {
-
-		String query = "SELECT * FROM transfer WHERE from_bank_acc_id = " + userId + ";";
-		ResultSet rs = executeQueryRS(query);
-		return reusableTransferDAO(rs);
-	}
-
-	/**
-	 * Reusable method to get transfer table depending on ResultSet/Query
-	 * 
-	 * @param rs ready executed query on ResultSet
-	 * @return ArrayList of Transfer
-	 */
-	public ArrayList<Transfer> reusableTransferDAO(ResultSet rs) {
-
-		ArrayList<Transfer> transfers = new ArrayList<Transfer>();
-		try {
-			if (!rs.wasNull()) {
-
-				Transfer transfer = new Transfer();
-				transfer.setTransferID(rs.getInt("transfer_id"));
-				transfer.setTransactionID(rs.getInt("transaction_id"));
-				transfer.setFromBankAcc(rs.getInt("from_bank_acc_id"));
-				transfer.setToBankAcc(rs.getInt("to_bank_acc_id"));
-				transfers.add(transfer);
-			}
-
-		} catch (SQLException sqle) {
-			db.exceptionMessages(sqle);
-			sqle.printStackTrace();
-			System.out.println("Transfer couldn't be retrieved from db.");
-		}
-		return transfers;
-	}
-
-	/**
-	 * @param amount to withdraw
-	 * @param user   to get it's balance updated
-	 * @return 1 if successful, 0 if unsuccessful
-	 */
-	public int updateAccountBalance(double amount, User user) {
-
-		BankAccount userBankAcc = getBankAccByUserID(user.getId());
-		double userBalance = userBankAcc.getBankAccBalance();
-
-		double newBalance = userBalance + amount;
-
-		int updateResponse = db.executeUpdateRS(
-				"UPDATE bank_account SET bank_acc_balance = " + newBalance + " WHERE user_id = " + user.getId() + ";");
-
-		if (updateResponse == 1) {
-			return 1;
-		} else {
-			return 0;
-		}
-	}
-
-	public int addNewTransaction(Transaction transaction) {
-		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String formattedDate = sdf.format(transaction.getTransactionDate());
-
-		int updateResponse = db.executeUpdateRS(
-				"INSERT INTO transaction (bank_acc_id, transaction_type, transaction_amount, transaction_date) VALUES ("
-						+ transaction.getBankAccID() + ", '" + transaction.getTransactionType() + "', "
-						+ transaction.getTransactionAmount() + ", '" + formattedDate + "');");
-
-		if (updateResponse == 1) {
-			return 1;
-		} else {
-			return 0;
 		}
 	}
 }

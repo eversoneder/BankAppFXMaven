@@ -44,6 +44,7 @@ public class BalanceScene extends Application {
 	private static AccountOverviewScene transactionSceneSingletonInstance;
 	private static DatabaseController dbController;
 	private static LoggedUser loggedUser;
+	private ArrayList<TransactionView> transactionViewList;
 
 	private BalanceScene() {
 	}
@@ -211,14 +212,13 @@ public class BalanceScene extends Application {
 		VBox transactionsList = new VBox();
 		transactionsList.setPadding(new Insets(10, 10, 10, 10)); // Padding for texts
 		transactionsList.setSpacing(5); // Space between each transaction
-		
-		// TransactionView that will appear in the BalanceScene & dialog
-		ArrayList<TransactionView> transactions = new ArrayList<TransactionView>();
-		transactions = sortTransactionTypeSenderMessage(transactions);
 
-		int numTransactions = transactions.size();
+		// TransactionView that will appear in the BalanceScene & dialog
+		transactionViewList = getTransactionViewList();
+
+		int numTransactions = transactionViewList.size();
 		int startIndex = Math.max(numTransactions - 3, 0); // Ensure startIndex is non-negative
-		
+
 		// BalanceScene structure, show the last 3 transactions
 		for (int i = startIndex; i < numTransactions; i++) {
 
@@ -226,31 +226,30 @@ public class BalanceScene extends Application {
 			GridPane transactionGrid = new GridPane();
 			transactionGrid.setHgap(10);
 
-			Text emailText = new Text(transactions.get(i).getEmail());
+			Text emailText = new Text(transactionViewList.get(i).getEmail());
 			emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
 			emailText.setWrappingWidth(150);
 			emailText.setTextAlignment(TextAlignment.LEFT);
 
-			Text amountText = new Text(String.format("%,.2f", transactions.get(i).getAmount()));
+			Text amountText = new Text(String.format("%,.2f", transactionViewList.get(i).getAmount()));
 			amountText.setFont(Font.font("Roboto", FontWeight.BOLD, 16.0));
 			amountText.setWrappingWidth(100);
 			amountText.setTextAlignment(TextAlignment.RIGHT);
-			
-			if (transactions.get(i).getAmount() < 0) {
+
+			if (transactionViewList.get(i).getAmount() < 0) {
 				amountText.setFill(Color.RED);
 			} else {
 				amountText.setFill(Color.GREEN);
 			}
 
-			Text transactionDate = new Text(transactions.get(i).getDate());
+			Text transactionDate = new Text(transactionViewList.get(i).getDate());
 			transactionDate.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
 			transactionDate.setWrappingWidth(100);
 			transactionDate.setTextAlignment(TextAlignment.RIGHT);
-			
-			transactionGrid.add(emailText, 0 , 0);
-			transactionGrid.add(amountText, 1 , 0);
-			transactionGrid.add(transactionDate, 2 , 0);
-			
+
+			transactionGrid.add(emailText, 0, 0);
+			transactionGrid.add(amountText, 1, 0);
+			transactionGrid.add(transactionDate, 2, 0);
 
 			// Add the transaction to the transactions list
 			transactionsList.getChildren().add(transactionGrid);
@@ -311,12 +310,23 @@ public class BalanceScene extends Application {
 		primaryStage.show();
 	}
 
-	public ArrayList<TransactionView> sortTransactionTypeSenderMessage(ArrayList<TransactionView> transactions) {
+	/**
+	 * Creates and returns an TransactionView ArrayList. Each TransactionView in it
+	 * consists of a sender message(email), amount and date. eg of a sorted
+	 * TransactionView. "everson_spinola@hotmail.com transferred to you €50,00
+	 * 04/08/2024 22:41:25"
+	 * 
+	 * @return TransactionView with ready transaction list data to display on
+	 *         front-end GUI
+	 */
+	public ArrayList<TransactionView> getAndSortTransactionListDataToGUI() {
 
-		// get data from db to pass to TransactionView
 		loggedUser = LoggedUser.getInstance();
 		dbController = DatabaseController.getInstance();
+
+		// get data from db to pass to TransactionView
 		ArrayList<Transaction> dbTransactions = dbController.getStatementTransactionList(loggedUser.getStatement());
+		ArrayList<TransactionView> transactionViewList = new ArrayList<TransactionView>();
 
 		// setting up the "sender" message, date and date to dialog
 		for (int i = 0; i < dbTransactions.size(); i++) {
@@ -346,13 +356,24 @@ public class BalanceScene extends Application {
 				int userId = loggedUser.getUser().getId();
 				java.sql.Timestamp timeStampDate = dbTransactions.get(i).getTransactionDate();
 
+				// get transaction id to query transfer table & get 'from_acc_id' or 'to_acc_id'
+				int transactionId = dbTransactions.get(i).getTransactionID();
+				
+				Transfer transfer = dbController.getTransfer(transactionId);
+				
+				
+
+				// get transfer table and get 'to_bank_acc_id' and 'transaction_id', query the
+				// transaction_id and to_bank_acc_id,
+				// with the 'to_bank_acc_id
+
 				// get 'from_bank_acc_id' out of this to discover sender's email
 				// if You transferred money to other account = negative transaction
 				if (dbTransactions.get(i).getTransactionAmount() < 0) {
 
 					// get data from receiver since I know I sent transfer.from_bank_acc_id = userId
 					// & time(get to)
-					Transfer transfer = dbController.getSpecificReceiverTransfer(userId, timeStampDate);
+//					Transfer transfer = dbController.getSpecificTransfer(userId, timeStampDate);
 
 					int receiverID = transfer.getToBankAcc();
 					User receiverUser = dbController.getUserById(receiverID);
@@ -363,7 +384,7 @@ public class BalanceScene extends Application {
 				} else {
 					// get data from sender since I know I received transfer.to_bank_acc_id = userId
 					// & time(get from)
-					Transfer transfer = dbController.getSpecificSenderTransfer(userId, timeStampDate);
+//					Transfer transfer = dbController.getSpecificTransfer(userId, timeStampDate);
 
 					int senderID = transfer.getFromBankAcc();
 					User senderUser = dbController.getUserById(senderID);
@@ -377,12 +398,12 @@ public class BalanceScene extends Application {
 				break;
 			}
 
-			TransactionView t = new TransactionView(currentSender, date, doubleAmount);
+			TransactionView transactionView = new TransactionView(currentSender, date, doubleAmount);
 //					TransactionView t = new TransactionView(sender[i], amounts[i], dates[i]);
-			transactions.add(t);
+			transactionViewList.add(transactionView);
 		}
 
-		return transactions;
+		return transactionViewList;
 	}
 
 	/**
@@ -402,30 +423,29 @@ public class BalanceScene extends Application {
 		allTransactionsList.setSpacing(5); // Space between each transaction
 
 		// sort trasactionType sender messages
-		ArrayList<TransactionView> transactions = new ArrayList<TransactionView>();
-		transactions = sortTransactionTypeSenderMessage(transactions);
+		transactionViewList = getTransactionViewList();
 
 		// Add all transactions to the VBox
-		for (int i = 0; i < transactions.size(); i++) {
+		for (int i = 0; i < transactionViewList.size(); i++) {
 			GridPane transactionGrid = new GridPane();
 			transactionGrid.setHgap(10);
 
-			Text emailText = new Text(transactions.get(i).getEmail());
+			Text emailText = new Text(transactionViewList.get(i).getEmail());
 			emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
 			emailText.setWrappingWidth(250);
 
-			Text amountText = new Text(String.format("%,.2f", transactions.get(i).getAmount()));
+			Text amountText = new Text(String.format("%,.2f", transactionViewList.get(i).getAmount()));
 			amountText.setFont(Font.font("Roboto", FontWeight.BOLD, 16.0));
 			amountText.setWrappingWidth(100);
 //			amountText.setTextAlignment(TextAlignment.RIGHT); // Align amount to the right
 
-			if (transactions.get(i).getAmount() < 0) {
+			if (transactionViewList.get(i).getAmount() < 0) {
 				amountText.setFill(Color.RED);
 			} else {
 				amountText.setFill(Color.GREEN);
 			}
 
-			Text dateText = new Text(transactions.get(i).getDate());
+			Text dateText = new Text(transactionViewList.get(i).getDate());
 			dateText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
 			dateText.setWrappingWidth(100);
 			dateText.setTextAlignment(TextAlignment.RIGHT);
@@ -472,5 +492,18 @@ public class BalanceScene extends Application {
 
 		// Show the dialog
 		dialog.showAndWait();
+	}
+
+	/**
+	 * @return an existing TransactionView ArrayList instance or create new and
+	 *         return it
+	 */
+	private ArrayList<TransactionView> getTransactionViewList() {
+
+		if (transactionViewList == null) {
+			return transactionViewList = getAndSortTransactionListDataToGUI();
+		} else {
+			return transactionViewList;
+		}
 	}
 }
