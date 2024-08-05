@@ -24,6 +24,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -165,7 +166,7 @@ public class BalanceScene extends Application {
 		ImageView transferIconImageView = new ImageView();
 		transferIconImageView.setFitWidth(140.0);
 		transferIconImageView.setLayoutX(175.0);
-		transferIconImageView.setLayoutY(100.0);
+		transferIconImageView.setLayoutY(94.0);
 		transferIconImageView.setPickOnBounds(true);
 		transferIconImageView.setPreserveRatio(true);
 
@@ -178,7 +179,7 @@ public class BalanceScene extends Application {
 
 		Pane greyBalanceStrip = new Pane();
 		greyBalanceStrip.setLayoutX(0);
-		greyBalanceStrip.setLayoutY(240.0);
+		greyBalanceStrip.setLayoutY(223.0);
 		greyBalanceStrip.setPrefHeight(55.0);
 		greyBalanceStrip.setPrefWidth(500.0);
 		greyBalanceStrip.setStyle("-fx-background-color: #E6E6E6;");
@@ -221,42 +222,62 @@ public class BalanceScene extends Application {
 
 		// BalanceScene structure, show the last 3 transactions
 		for (int i = startIndex; i < numTransactions; i++) {
+		    // HBox that will contain only last 3 transactions
+		    HBox transactionBox = new HBox();
+		    transactionBox.setSpacing(10);
+		    transactionBox.setPrefSize(400, 40); // Set preferred size for the HBox
+		    transactionBox.setAlignment(Pos.CENTER); // Align contents to the center vertically
+//		    transactionBox.setStyle("-fx-border-color: red; -fx-border-width: 1; -fx-border-style: solid;");
 
-			// GridPane that will contain only last 3 transactions
-			GridPane transactionGrid = new GridPane();
-			transactionGrid.setHgap(10);
+		    Text emailText = new Text(transactionViewList.get(i).getEmail());
+		    emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
+		    emailText.setWrappingWidth(230);
+		    emailText.setTextAlignment(TextAlignment.LEFT);
 
-			Text emailText = new Text(transactionViewList.get(i).getEmail());
-			emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
-			emailText.setWrappingWidth(150);
-			emailText.setTextAlignment(TextAlignment.LEFT);
+		    Text amountText = new Text(String.format("%,.2f", transactionViewList.get(i).getAmount()));
+		    amountText.setFont(Font.font("Roboto", FontWeight.BOLD, 16.0));
+		    amountText.setWrappingWidth(80);
+		    amountText.setTextAlignment(TextAlignment.RIGHT);
 
-			Text amountText = new Text(String.format("%,.2f", transactionViewList.get(i).getAmount()));
-			amountText.setFont(Font.font("Roboto", FontWeight.BOLD, 16.0));
-			amountText.setWrappingWidth(100);
-			amountText.setTextAlignment(TextAlignment.RIGHT);
+		    if (transactionViewList.get(i).getAmount() < 0) {
+		        amountText.setFill(Color.RED);
+		    } else {
+		        amountText.setFill(Color.GREEN);
+		    }
 
-			if (transactionViewList.get(i).getAmount() < 0) {
-				amountText.setFill(Color.RED);
-			} else {
-				amountText.setFill(Color.GREEN);
-			}
+		    Text transactionDate = new Text(transactionViewList.get(i).getDate());
+		    transactionDate.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
+		    transactionDate.setWrappingWidth(90);
+		    transactionDate.setTextAlignment(TextAlignment.RIGHT);
 
-			Text transactionDate = new Text(transactionViewList.get(i).getDate());
-			transactionDate.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
-			transactionDate.setWrappingWidth(100);
-			transactionDate.setTextAlignment(TextAlignment.RIGHT);
+		    //for testing
+//		    emailText.setText("You transferred to everson_spinola@hotmail.com.");
+//		    emailText.setText("You deposited");
+//		    amountText.setText("1990.95");
+//		    transactionDate.setText("05/08/2024");
 
-			transactionGrid.add(emailText, 0, 0);
-			transactionGrid.add(amountText, 1, 0);
-			transactionGrid.add(transactionDate, 2, 0);
+		    // Wrap each Text node in a VBox to center-align them vertically
+		    VBox emailBox = new VBox(emailText);
+		    emailBox.setAlignment(Pos.CENTER_LEFT);
+		    //for testing
+//		    emailBox.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-border-style: solid;");
+		    
+		    VBox amountBox = new VBox(amountText);
+		    amountBox.setAlignment(Pos.CENTER);
+//		    amountBox.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-border-style: solid;");
+		    
+		    VBox dateBox = new VBox(transactionDate);
+		    dateBox.setAlignment(Pos.CENTER_RIGHT);
+//		    dateBox.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-border-style: solid;");
 
-			// Add the transaction to the transactions list
-			transactionsList.getChildren().add(transactionGrid);
+		    transactionBox.getChildren().addAll(emailBox, amountBox, dateBox);
+
+		    // Add the transaction to the transactions list
+		    transactionsList.getChildren().add(transactionBox);
 		}
 
-		transactionsList.setLayoutX(55);
-		transactionsList.setLayoutY(315.0);
+		transactionsList.setLayoutX(30);
+		transactionsList.setLayoutY(277.0);
 
 		whiteMiddlePane.getChildren().add(transactionsList);
 
@@ -264,7 +285,7 @@ public class BalanceScene extends Application {
 
 		Button backBtn = new Button("Back");
 		backBtn.setLayoutX(80.0);
-		backBtn.setLayoutY(410.0);
+		backBtn.setLayoutY(425.0);
 		backBtn.setPrefHeight(30.0);
 		backBtn.setPrefWidth(140.0);
 		backBtn.setStyle("-fx-background-color: #B3B3B3; -fx-background-radius: 8px; -fx-cursor: hand;");
@@ -325,7 +346,7 @@ public class BalanceScene extends Application {
 		dbController = DatabaseController.getInstance();
 
 		// get data from db to pass to TransactionView
-		ArrayList<Transaction> dbTransactions = dbController.getStatementTransactionList(loggedUser.getStatement());
+		ArrayList<Transaction> dbTransactions = loggedUser.getStatement().getTransactionList();
 		ArrayList<TransactionView> transactionViewList = new ArrayList<TransactionView>();
 
 		// setting up the "sender" message, date and date to dialog
@@ -352,48 +373,35 @@ public class BalanceScene extends Application {
 			// get data through db transfer.to_bank_acc_id = loggedUserId & time
 			case "transfer":
 
-				// get specific transfer to get sender's email (using id & date)
-				int userId = loggedUser.getUser().getId();
-				java.sql.Timestamp timeStampDate = dbTransactions.get(i).getTransactionDate();
-
-				// get transaction id to query transfer table & get 'from_acc_id' or 'to_acc_id'
+				// get transaction_id from transfer record to query transfer table & get
+				// 'from_acc_id'
+				// or 'to_acc_id'
 				int transactionId = dbTransactions.get(i).getTransactionID();
-				
-				Transfer transfer = dbController.getTransfer(transactionId);
-				
-				
+				Transfer transfer = dbController.getTransferByTransactionId(transactionId);
 
-				// get transfer table and get 'to_bank_acc_id' and 'transaction_id', query the
-				// transaction_id and to_bank_acc_id,
-				// with the 'to_bank_acc_id
-
-				// get 'from_bank_acc_id' out of this to discover sender's email
-				// if You transferred money to other account = negative transaction
+				// if negative, set sender = "You transferred..."
 				if (dbTransactions.get(i).getTransactionAmount() < 0) {
 
-					// get data from receiver since I know I sent transfer.from_bank_acc_id = userId
-					// & time(get to)
-//					Transfer transfer = dbController.getSpecificTransfer(userId, timeStampDate);
-
-					int receiverID = transfer.getToBankAcc();
-					User receiverUser = dbController.getUserById(receiverID);
+					// get receiver from transfer.transaction_id
+					int toBankAcc = transfer.getToBankAcc();
+					BankAccount receiverBankAcc = dbController.getBankAccByUserID(toBankAcc);
+					int receiverUserId = receiverBankAcc.getUserID();
+					User receiverUser = dbController.getUserById(receiverUserId);
 					String receiverEmail = receiverUser.getEmail();
 
 					currentSender = "You transferred to " + receiverEmail + ".";// get recipient's email
 
+					// if positive, set sender = "You received..."
 				} else {
-					// get data from sender since I know I received transfer.to_bank_acc_id = userId
-					// & time(get from)
-//					Transfer transfer = dbController.getSpecificTransfer(userId, timeStampDate);
 
-					int senderID = transfer.getFromBankAcc();
-					User senderUser = dbController.getUserById(senderID);
+					// get receiver from transfer.transaction_id
+					int toBankAcc = transfer.getFromBankAcc();
+					BankAccount senderBankAcc = dbController.getBankAccByUserID(toBankAcc);
+					int senderUserId = senderBankAcc.getUserID();
+					User senderUser = dbController.getUserById(senderUserId);
 					String senderEmail = senderUser.getEmail();
 
 					currentSender = "Transfer received from" + senderEmail + ".";
-
-					// test
-//							dbTransactions.get(i).getBankAccID() == loggedUser.getBankAccount().getBankAccID()
 				}
 				break;
 			}
@@ -499,11 +507,6 @@ public class BalanceScene extends Application {
 	 *         return it
 	 */
 	private ArrayList<TransactionView> getTransactionViewList() {
-
-		if (transactionViewList == null) {
-			return transactionViewList = getAndSortTransactionListDataToGUI();
-		} else {
-			return transactionViewList;
-		}
+		return transactionViewList = getAndSortTransactionListDataToGUI();
 	}
 }

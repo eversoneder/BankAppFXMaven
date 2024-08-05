@@ -355,22 +355,20 @@ public class SignInScene extends Application {
 						loggedUser = LoggedUser.getInstance();
 						dbController = DatabaseController.getInstance();
 
-//						loggedUser.setUser(dbController.getUserByEmail(email));
 						loggedUser.setUser(dbController.getUserById(userId));
 						loggedUser.setLogin(dbController.getLoginByUserId(userId));
 						loggedUser.setBankAccount(dbController.getBankAccByUserID(userId));
-
+						
+						// set statement with all transaction list included
 						Statement statement = dbController.getStatement(loggedUser.getBankAccount().getBankAccID());
-
-						// set all transaction list (including transfers) as ArrayList<Transaction>
-						statement.setTransactionList(dbController.getStatementTransactionList(statement));
 						loggedUser.setStatement(statement);
+						statement.getTransactionList();//fetch transaction list
 
 						// get last login date from db
-						java.sql.Timestamp ts = dbController.getLastLogin(userId);
+						java.sql.Timestamp timestamp = dbController.getLastLogin(userId);
 
 						// new account and have never logged in
-						if (ts == null) {
+						if (timestamp == null) {
 
 							// new users have never given their name and surnames, this piece of code force
 							// them to set their name and surname before getting into their Account Overview
@@ -384,7 +382,7 @@ public class SignInScene extends Application {
 							// set new TimeStamp to database
 							dbController.updateLastLoginNow(userId);
 							// set old last_login so that user can see their previous visit
-							loggedUser.getLogin().setLastLogin(ts);
+							loggedUser.getLogin().setLastLogin(timestamp);
 
 							AccountOverviewScene.getInstance().start(primaryStage);
 						}

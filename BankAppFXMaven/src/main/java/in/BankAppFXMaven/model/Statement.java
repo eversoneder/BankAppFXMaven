@@ -2,6 +2,8 @@ package in.BankAppFXMaven.model;
 
 import java.util.ArrayList;
 
+import in.BankAppFXMaven.controller.DatabaseController;
+
 public class Statement {
 
 	private int statementID;
@@ -36,6 +38,10 @@ public class Statement {
 	 * @return the transactionList
 	 */
 	public ArrayList<Transaction> getTransactionList() {
+
+		if(transactionList == null) {
+			return transactionList = DatabaseController.getInstance().getStatementTransactionList(LoggedUser.getInstance().getStatement());
+		}
 		return transactionList;
 	}
 	/**

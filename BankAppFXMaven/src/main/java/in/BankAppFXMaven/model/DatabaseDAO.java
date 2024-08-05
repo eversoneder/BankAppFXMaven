@@ -506,7 +506,7 @@ public class DatabaseDAO {
 	 * @param transferId of transaction
 	 * @return specific transaction
 	 */
-	public Transfer getTransfer(int transactionId) {
+	public Transfer getTransferByTransactionId(int transactionId) {
 
 		String query = "SELECT * FROM transfer WHERE transaction_id = " + transactionId + ";";
 		ResultSet rs = executeQueryRS(query);
@@ -646,101 +646,6 @@ public class DatabaseDAO {
 			throw new IllegalArgumentException("Invalid resultSetType: " + rsGetType);
 		}
 	}
-
-//	/**
-//	 * @param bank_acc_Id column of transaction
-//	 * @param timeStampDate of transaction
-//	 * @return specific transaction
-//	 */
-//	public Transaction getSpecificTransaction(int bank_acc_Id, Timestamp timeStampDate) {
-//
-//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//		String formattedDate = sdf.format(timeStampDate);
-//
-//		String query = "SELECT * FROM transaction WHERE bank_acc_id = " + bank_acc_Id
-//				+ "AND transaction_type = 'transfer' AND transaction_date = '" + formattedDate + "';";
-//
-//		ResultSet rs = executeQueryRS(query);
-//
-//		Transaction transaction = null;
-//		try {
-//			if (!rs.wasNull()) {
-//				transaction = new Transaction();
-//				transaction.setTransactionID(rs.getInt("transaction_id"));
-//				transaction.setBankAccID(rs.getInt("bank_acc_id"));
-//				transaction.setTransactionType(rs.getString("transaction_type"));
-//				transaction.setTransactionAmount(rs.getDouble("transaction_amount"));
-//				transaction.setTransactionDate(rs.getTimestamp("transaction_date"));
-//			}
-//
-//		} catch (SQLException e) {
-//			System.out.println(e.getMessage());
-//		}
-//		return transaction;
-//	}
-
-//	/**
-//	 * You SENT cash and want to get history of who received at this specific
-//	 * date.(get to_bank_acc_id)
-//	 * 
-//	 * @param userId        of receiving bank holder
-//	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
-//	 * @return specific dated transfer from userId
-//	 */
-//	public Transfer getSpecificTransfer(int userId, Timestamp timeStampDate) {
-//
-//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//		String formattedDate = sdf.format(timeStampDate);
-//
-//		String query = "SELECT * FROM transaction WHERE bank_acc_id = " + userId
-//				+ "AND transaction_type = 'transfer' AND transaction_date = '" + formattedDate + "';";
-//
-//		ResultSet rs = executeQueryRS(query);
-//
-//		return reusableTransferDAO(rs).get(0);
-//	}
-
-//	/**
-//	 * You RECEIVED cash and want to know who sent you at this specific date.(get
-//	 * from_bank_acc_id)
-//	 * 
-//	 * @param userId        of sent bank holder
-//	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
-//	 * @return specific dated transfer from userId
-//	 */
-//	public Transfer getSpecificSenderTransfer(int userId, Timestamp timeStampDate) {
-//
-//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//		String formattedDate = sdf.format(timeStampDate);
-//		
-//		String query = "SELECT * FROM transfer WHERE to_bank_acc_id = " + userId + " AND transfer_date = '"
-//				+ formattedDate + "';";
-//
-//		ResultSet rs = executeQueryRS(query);
-//		return reusableTransferDAO(rs).get(0);
-//	}
-
-//	/**
-//	 * @param userId from bank account who received
-//	 * @return ArrayList of transfers from UserId
-//	 */
-//	public ArrayList<Transfer> getTransfersReceived(int userId) {
-//
-//		String query = "SELECT * FROM transfer WHERE to_bank_acc_id = " + userId + ";";
-//		ResultSet rs = executeQueryRS(query);
-//		return reusableTransferDAO(rs);
-//	}
-//
-//	/**
-//	 * @param userId from bank account who sent
-//	 * @return ArrayList of transfers from UserId
-//	 */
-//	public ArrayList<Transfer> getTransfersSent(int userId) {
-//
-//		String query = "SELECT * FROM transfer WHERE from_bank_acc_id = " + userId + ";";
-//		ResultSet rs = executeQueryRS(query);
-//		return reusableTransferDAO(rs);
-//	}
 
 	/**
 	 * Reusable method to get transfer table depending on ResultSet/Query

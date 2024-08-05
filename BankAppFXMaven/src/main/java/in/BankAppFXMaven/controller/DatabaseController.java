@@ -139,8 +139,8 @@ public class DatabaseController {
 	 * @param transactionId of transaction
 	 * @return specific transfer
 	 */
-	public Transfer getTransfer(int transactionId) {
-		return db.getTransfer(transactionId);
+	public Transfer getTransferByTransactionId(int transactionId) {
+		return db.getTransferByTransactionId(transactionId);
 	}
 	
 	public int addNewTransfer (Transfer newTransfer) {
@@ -209,43 +209,4 @@ public class DatabaseController {
 	public boolean emailExists(String email) {
 		return db.emailExists(email);
 	}
-
-
-//	/**
-//	 * According to the bank_acc_id, get specific transfer at timeStampDate date
-//	 * 
-//	 * @param userId        of sent bank holder
-//	 * @param timeStampDate to get specific transfer 'to_bank_acc_id'
-//	 * @return specific dated transfer from userId
-//	 */
-//	public Transfer getSpecificTransfer(int userId, Timestamp timeStampDate) {
-//		return db.getSpecificTransfer(userId, timeStampDate);
-//	}
-
-//	/**
-//	 * @param userId from bank account who sent
-//	 * @return ArrayList of transfers from UserId
-//	 */
-//	public ArrayList<Transfer> getTransfersSent(int userId) {
-//		return db.getTransfersSent(userId);
-//	}
-//
-//	/**
-//	 * @param userId from bank account who received
-//	 * @return ArrayList of transfers from UserId
-//	 */
-//	public ArrayList<Transfer> getTransfersReceived(int userId) {
-//		return db.getTransfersSent(userId);
-//	}
-	
-
-	
-//	/**
-//	 * @param bank_acc_Id column of transaction
-//	 * @param timeStampDate of transaction
-//	 * @return specific transaction
-//	 */
-//	public Transaction getSpecificTransaction(int bank_acc_Id, Timestamp timeStampDate) {
-//		return db.getSpecificTransaction(bank_acc_Id, timeStampDate);
-//	}
 }

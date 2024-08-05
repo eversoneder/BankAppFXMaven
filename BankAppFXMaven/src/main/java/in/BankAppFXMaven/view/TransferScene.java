@@ -1,22 +1,23 @@
 package in.BankAppFXMaven.view;
 
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
+import java.util.Optional;
 
 import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.model.BankAccount;
 import in.BankAppFXMaven.model.LoggedUser;
-import in.BankAppFXMaven.model.Statement;
 import in.BankAppFXMaven.model.Transaction;
+import in.BankAppFXMaven.model.Statement;
 import in.BankAppFXMaven.model.Transfer;
 import in.BankAppFXMaven.model.User;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -228,103 +229,117 @@ public class TransferScene extends Application {
 
 					if (recipientUser != null) {
 
-						// get bank of this user and transfer to his balance
-						BankAccount RecipientBankAcc = dbController.getBankAccByUserID(recipientUser.getId());
+						// confirmation message
+						try {
+							DecimalFormat df = new DecimalFormat("#0.00");
+							String formattedAmount = df.format(transferAmountInput);
+							
+							Alert transferAlert = new Alert(AlertType.WARNING);
+							transferAlert.setTitle("Transferring money");
+							transferAlert.setHeaderText(null);
+							transferAlert.setContentText("You are about to transfer €" + formattedAmount + " to "
+									+ recipientEmail + ", are you sure?");
+							transferAlert.getButtonTypes().setAll(ButtonType.YES, ButtonType.CANCEL);
+							Optional<ButtonType> result = transferAlert.showAndWait();
 
-//						LoggedUser.getInstance().getBankAccount();
+							if (result.isPresent() && result.get() == ButtonType.YES) {
+								// handle the user choosing YES
 
-						// subtract from sender in the database
-						int senderResponse = dbController.updateAccountBalance(-transferAmountInput,
-								loggedUser.getUser());
-						// do db transaction entry of /\
-						// add to db transfer
+								// subtract from sender in the database
+								int senderResponse = dbController.updateAccountBalance(-transferAmountInput,
+										loggedUser.getUser());
+								// do db transaction entry of /\
+								// add to db transfer
 
-						if (senderResponse == 1) {
-							// add to recipient in the database
-							int recipientResponse = dbController.updateAccountBalance(transferAmountInput,
-									recipientUser);
+								if (senderResponse == 1) {
+									// add to recipient in the database
+									int recipientResponse = dbController.updateAccountBalance(transferAmountInput,
+											recipientUser);
 
-							if (recipientResponse == 1) {
+									if (recipientResponse == 1) {
 
-								Timestamp timeStamp = new java.sql.Timestamp(System.currentTimeMillis());
+										Timestamp timeStamp = new java.sql.Timestamp(System.currentTimeMillis());
 
-//								timeStamp = convertTimeStampToCorrectFormat(timeStamp);
+//										timeStamp = convertTimeStampToCorrectFormat(timeStamp);
 
-								// create 2 transaction entries, 1 negative and 1 positive, to show each user
-								Transaction newSenderTransaction = new Transaction(
-										loggedUser.getBankAccount().getBankAccID(), "transfer", timeStamp,
-										-transferAmountInput);
-								Transaction newReceiverTransaction = new Transaction(RecipientBankAcc.getBankAccID(),
-										"transfer", timeStamp, transferAmountInput);
+										// create 2 transaction entries, 1 negative and 1 positive, to show each user
+										Transaction newSenderTransaction = new Transaction(
+												loggedUser.getBankAccount().getBankAccID(), "transfer", timeStamp,
+												-transferAmountInput);
 
-								// upload sender & receiver transaction to database
-								int transactionResponse1 = dbController.addNewTransaction(newSenderTransaction);
-								int transactionResponse2 = dbController.addNewTransaction(newReceiverTransaction);
+										// get bank of recipient user to transfer amount to his balance
+										BankAccount RecipientBankAcc = dbController
+												.getBankAccByUserID(recipientUser.getId());
+										Transaction newReceiverTransaction = new Transaction(
+												RecipientBankAcc.getBankAccID(), "transfer", timeStamp,
+												transferAmountInput);
 
-								if (transactionResponse1 == 0) {
-									System.out.println("Couldn't add transaction entry to database.");
-								}
-								if (transactionResponse2 == 0) {
-									System.out.println("Couldn't add transaction entry to database.");
-								}
+										// upload sender & receiver transaction to database
+										int transactionResponse1 = dbController.addNewTransaction(newSenderTransaction);
+										int transactionResponse2 = dbController
+												.addNewTransaction(newReceiverTransaction);
 
-								// download updated bank account after transfer
-								loggedUser
-										.setBankAccount(dbController.getBankAccByUserID(loggedUser.getUser().getId()));
+										if (transactionResponse1 == 0) {
+											System.out.println("Couldn't add transaction entry to database.");
+										}
+										if (transactionResponse2 == 0) {
+											System.out.println("Couldn't add transaction entry to database.");
+										}
 
-								// download updated transaction after transfer
-								Statement statement = loggedUser.getStatement();
-								statement.setTransactionList(dbController.getStatementTransactionList(statement));
-								loggedUser.setStatement(statement);
+										// download updated bank account after transfer
+										loggedUser.setBankAccount(
+												dbController.getBankAccByUserID(loggedUser.getUser().getId()));
 
-								// get transaction where from_bank_acc_id is
-								// loggedUser.getBankAccount().getBankAccID() and date is timeStamp
-								Transaction doneSenderTransaction = dbController
-										.getTransaction(loggedUser.getBankAccount().getBankAccID(), timeStamp);
-								
-								// get transactionId to add to new db transfer entry
-								Transfer newSenderTransfer = new Transfer(doneSenderTransaction.getTransactionID(),
-										loggedUser.getBankAccount().getBankAccID(), RecipientBankAcc.getBankAccID());
-								
-								
-								Transaction doneReceiverTransaction = dbController
-										.getTransaction(RecipientBankAcc.getBankAccID(), timeStamp);
-								
-								
-								Transfer newReceiverTransfer = new Transfer(doneReceiverTransaction.getTransactionID(),
-										loggedUser.getBankAccount().getBankAccID(), RecipientBankAcc.getBankAccID());
-								
-								
-								// add transfers entries of the transactions of this specific date
-								int transferSenderResponse = dbController.addNewTransfer(newSenderTransfer);
-								int transferReceiverResponse = dbController.addNewTransfer(newReceiverTransfer);
+										// download updated transaction list & set locally
+										loggedUser.getStatement().setTransactionList(DatabaseController.getInstance()
+												.getStatementTransactionList(LoggedUser.getInstance().getStatement()));
 
-								if (transferSenderResponse == 1 && transferReceiverResponse == 1) {
-									// clear the transfer amount input and show success dialog
-									toTxtInput.clear();
-									transferAmountTxtInput.clear();
+										// get transaction where from_bank_acc_id is
+										// loggedUser.getBankAccount().getBankAccID() and date is timeStamp
+										Transaction doneSenderTransaction = dbController
+												.getTransaction(loggedUser.getBankAccount().getBankAccID(), timeStamp);
 
-									Alert alert = new Alert(Alert.AlertType.INFORMATION);
-									alert.setTitle("Transference successful.");
+										// get transactionId to add to new db transfer entry
+										Transfer newSenderTransfer = new Transfer(
+												doneSenderTransaction.getTransactionID(),
+												loggedUser.getBankAccount().getBankAccID(),
+												RecipientBankAcc.getBankAccID());
+
+										// add transfers entries of the transactions of this specific date
+										int transferSenderResponse = dbController.addNewTransfer(newSenderTransfer);
+
+										if (transferSenderResponse == 1) {
+											// clear the transfer amount input and show success dialog
+											toTxtInput.clear();
+											transferAmountTxtInput.clear();
+
+											Alert alert = new Alert(Alert.AlertType.INFORMATION);
+											alert.setTitle("Transference successful.");
+											alert.setHeaderText(null);
+											alert.setContentText("Transference successfull. You have transferred €"
+													+ transferAmountInput + " to " + recipientEmail + ".");
+											alert.showAndWait();
+										}
+
+									} else {
+										Alert alert = new Alert(Alert.AlertType.ERROR);
+										alert.setTitle("Transfer error.");
+										alert.setHeaderText(null);
+										alert.setContentText("Error while updating recipient account.");
+										alert.showAndWait();
+									}
+								} else {
+									Alert alert = new Alert(Alert.AlertType.ERROR);
+									alert.setTitle("Transfer error.");
 									alert.setHeaderText(null);
-									alert.setContentText("Transference successfull. You have transered €"
-											+ transferAmountInput + " to " + recipientEmail + ".");
+									alert.setContentText("Error while updating transferer account.");
 									alert.showAndWait();
 								}
 
-							} else {
-								Alert alert = new Alert(Alert.AlertType.ERROR);
-								alert.setTitle("Transfer error.");
-								alert.setHeaderText(null);
-								alert.setContentText("Error while updating recipient account.");
-								alert.showAndWait();
 							}
-						} else {
-							Alert alert = new Alert(Alert.AlertType.ERROR);
-							alert.setTitle("Transfer error.");
-							alert.setHeaderText(null);
-							alert.setContentText("Error while updating transferer account.");
-							alert.showAndWait();
+
+						} catch (Exception e1) {
+							e1.printStackTrace();
 						}
 
 					} else {
@@ -344,6 +359,12 @@ public class TransferScene extends Application {
 				}
 
 			} catch (Exception e2) {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Amount format error.");
+				alert.setHeaderText(null);
+				alert.setContentText("Enter amount as number format like '80' or '80.80'.");
+				alert.showAndWait();
+
 				e2.printStackTrace();
 			}
 		});

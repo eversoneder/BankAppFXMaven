@@ -338,8 +338,6 @@ public class AccountOverviewScene extends Application {
 					loggedUser.clearUserInfo();
 					signInSceneSingletonInstance = SignInScene.getInstance();
 					signInSceneSingletonInstance.start(primaryStage);
-				} else {
-					// handle the user choosing CANCEL or closing the dialog
 				}
 
 			} catch (Exception e1) {

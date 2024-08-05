@@ -31,50 +31,6 @@ public class Main extends Application {
 		try {
 			mainScene.start(primaryStage);
 			
-//			String a = "2";
-//			
-//			try {
-//				a = HashingUtility.hashPassword(a);
-//			} catch (NoSuchAlgorithmException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			
-//			System.out.println(a);
-			
-			
-			//hard code for testing
-			
-//			//SENDERS-------------------------------------------------------------------
-//			String[] sender = { "AlbertoOswaldo92@gmail.com", "user2@example.com", "user3@example.com", "user4@example.com",
-//					"user5@example.com", "user6@example.com", "user8@example.com", "user9@example.com", "user10@example.com",};
-//			//------------------------------------------------------------------------
-//			//AMOUNTS-----------------------------------------------------------------
-//			double[] amount = { 90.00, 50.00, -200.50, -75.90, 80.00, 90.00, 50.00, 1200.50, -75.90 };
-//			//------------------------------------------------------------------------
-//			//DATES-------------------------------------------------------------------
-//			java.sql.Timestamp newTimeStamp = new java.sql.Timestamp(System.currentTimeMillis());
-//			String date1 = TimeStampToYear.timeStampToLocalDateString(newTimeStamp);
-//			// timeStampToYearString receives LocalDate and return String
-//			String date2 = TimeStampToYear.addDaysToDateString(newTimeStamp, 2);
-//			String date3 = TimeStampToYear.addDaysToDateString(newTimeStamp, 3);
-//			String date4 = TimeStampToYear.addDaysToDateString(newTimeStamp, 5);
-//			String date5 = TimeStampToYear.addDaysToDateString(newTimeStamp, 7);
-//			String date6 = TimeStampToYear.addDaysToDateString(newTimeStamp, 2);
-//			String date7 = TimeStampToYear.addDaysToDateString(newTimeStamp, 3);
-//			String date8 = TimeStampToYear.addDaysToDateString(newTimeStamp, 5);
-//			String date9 = TimeStampToYear.addDaysToDateString(newTimeStamp, 7);
-//			String dates[] = {date1, date2, date3, date4, date5, date6, date7, date8, date9};
-//			//------------------------------------------------------------------------
-//			
-//			ArrayList<TransactionView> transactions = new ArrayList<TransactionView>();
-//			for(int i = 0; i < sender.length; i++) {
-//			TransactionView t = new TransactionView(sender[i], dates[i], amount[i]);
-//			transactions.add(t);
-//			}
-//			
-//			BalanceScene.showStatementDialog(transactions);
-			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

@@ -250,7 +250,7 @@ public class WithdrawScene extends Application {
 
 							// download transaction after withdrawal
 							Statement statement = loggedUser.getStatement();
-							statement.setTransactionList(dbController.getStatementTransactionList(statement));
+							statement.getTransactionList();//fetch updated transaction list
 							loggedUser.setStatement(statement);
 
 							withdrawTxtInput.clear();
