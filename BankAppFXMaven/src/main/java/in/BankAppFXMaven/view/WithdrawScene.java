@@ -1,6 +1,7 @@
 package in.BankAppFXMaven.view;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 
 import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.model.LoggedUser;
@@ -222,13 +223,10 @@ public class WithdrawScene extends Application {
 
 						// successful withdrawal case
 						if (withdrawalResponse == 1) {
-							// message display success withdrawal
-							Alert alert = new Alert(AlertType.INFORMATION);
-							alert.setTitle("Withdraw Succeeded");
-							alert.setHeaderText(null);
-							alert.setContentText("You withdrew €" + withdrawInput + " from your bank account.");
-							alert.showAndWait();
-
+							
+							DecimalFormat df = new DecimalFormat("#0.00");
+							String formattedAmount = df.format(withdrawInput);
+							
 							// now also add the transaction database entry
 							Timestamp timeStamp = new java.sql.Timestamp(System.currentTimeMillis());
 
@@ -248,11 +246,21 @@ public class WithdrawScene extends Application {
 							// download bank account after withdrawal
 							loggedUser.setBankAccount(dbController.getBankAccByUserID(loggedUser.getUser().getId()));
 
-							// download transaction after withdrawal
-							Statement statement = loggedUser.getStatement();
-							statement.getTransactionList();//fetch updated transaction list
-							loggedUser.setStatement(statement);
+							// download updated bank account after withdraw
+							loggedUser.setBankAccount(
+									dbController.getBankAccByUserID(loggedUser.getUser().getId()));
 
+							// download updated transaction list & set locally
+							loggedUser.getStatement().setTransactionList(DatabaseController.getInstance()
+									.getStatementTransactionList(LoggedUser.getInstance().getStatement()));
+
+							// message display success withdrawal
+							Alert alert = new Alert(AlertType.INFORMATION);
+							alert.setTitle("Withdraw Succeeded");
+							alert.setHeaderText(null);
+							alert.setContentText("You withdrew €" + formattedAmount + " from your bank account.");
+							alert.showAndWait();
+							
 							withdrawTxtInput.clear();
 
 						} else {
@@ -279,7 +287,7 @@ public class WithdrawScene extends Application {
 					alert.setContentText("Enter amount as number format like '80' or '80.80'.");
 					alert.showAndWait();
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					
 				}
 
 			} catch (Exception e2) {

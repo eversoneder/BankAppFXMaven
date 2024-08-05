@@ -26,7 +26,7 @@ import javafx.util.Pair;
 
 public class DbUserSection {
 
-	private DatabaseDAO db;
+	private static DatabaseDAO db;
 	private static DbUserSection dbUserSection;
 
 	private DbUserSection() {
@@ -35,6 +35,7 @@ public class DbUserSection {
 	public static DbUserSection getInstance() {
 		if (dbUserSection == null) {
 			dbUserSection = new DbUserSection();
+			db = DatabaseDAO.getInstance();
 		}
 		return dbUserSection;
 	}

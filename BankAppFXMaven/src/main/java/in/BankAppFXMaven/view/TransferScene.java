@@ -316,7 +316,7 @@ public class TransferScene extends Application {
 											Alert alert = new Alert(Alert.AlertType.INFORMATION);
 											alert.setTitle("Transference successful.");
 											alert.setHeaderText(null);
-											alert.setContentText("Transference successfull. You have transferred €"
+											alert.setContentText("Transaction successfull. You have transferred €"
 													+ transferAmountInput + " to " + recipientEmail + ".");
 											alert.showAndWait();
 										}
@@ -396,34 +396,4 @@ public class TransferScene extends Application {
 		primaryStage.setResizable(false);
 		primaryStage.show();
 	}
-
-//	/**
-//	 * Java creates the Timestamp as "2024-08-03 10:04:36.59" (Counting
-//	 * milliseconds) this method converts not to have milliseconds since it's this
-//	 * way that the MySql gets stored, not to have error when trying to retrieve
-//	 * with milliseconds
-//	 * 
-//	 * @return formatted Timestamp
-//	 */
-//	public Timestamp convertTimeStampToCorrectFormat(Timestamp timestamp) {
-//		// Format the timestamp to the desired format
-//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//		String formattedDate = sdf.format(timestamp);
-//
-//		return timestamp = convertStringToTimestamp(formattedDate);
-//	}
-//
-//	public static Timestamp convertStringToTimestamp(String dateString) {
-//		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//		try {
-//			// Parse the input string to a java.util.Date object
-//			java.util.Date parsedDate = dateFormat.parse(dateString);
-//			// Convert java.util.Date to java.sql.Timestamp
-//			return new Timestamp(parsedDate.getTime());
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//			System.out.println("Couldn't parse the date string.");
-//			return null;
-//		}
-//	}
 }

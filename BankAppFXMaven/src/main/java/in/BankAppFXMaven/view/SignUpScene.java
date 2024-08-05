@@ -241,10 +241,10 @@ public class SignUpScene extends Application {
 
 						User user = db.getUserByEmail(emailTxtInput.getText().trim());
 						
-						System.out.println("Name: "+user.getName()+".");
+//						System.out.println("Name: "+user.getName()+".");
 
 						//user exists in db, display dialog "User already exists."
-						if (user.getEmail() != null) {
+						if (user != null) {
 							Alert alert = new Alert(Alert.AlertType.ERROR);
 							alert.setTitle("User already exists.");
 							alert.setHeaderText(null);
@@ -263,6 +263,8 @@ public class SignUpScene extends Application {
 							emailTxtInput.clear();
 							passwordField.clear();
 							passwordConfirm.clear();
+							
+							SignInScene.getInstance().start(primaryStage);
 							
 						}
 					}

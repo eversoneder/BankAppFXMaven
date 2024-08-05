@@ -1,6 +1,7 @@
 package in.BankAppFXMaven.view;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 
 import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.model.LoggedUser;
@@ -218,11 +219,15 @@ public class DepositScene extends Application {
 					
 					//successful deposit case
 					if (depositResponse == 1) {
+						
+						DecimalFormat df = new DecimalFormat("#0.00");
+						String formattedAmount = df.format(depositInput);
+						
 						// message display success deposit
 						Alert alert = new Alert(AlertType.INFORMATION);
 						alert.setTitle("Deposit Succeeded");
 						alert.setHeaderText(null);
-						alert.setContentText("You deposited €" + depositInput + " to your bank account.");
+						alert.setContentText("You deposited €" + formattedAmount + " to your bank account.");
 						alert.showAndWait();
 						
 						//now also add the transaction database entry
@@ -239,13 +244,13 @@ public class DepositScene extends Application {
 						
 						//load again the updated data from database to local, both account balance and transaction list
 						
-						//download bank account after withdrawal
-						loggedUser.setBankAccount(dbController.getBankAccByUserID(loggedUser.getUser().getId()));
-						
-						//download transaction after withdrawal
-						Statement statement = loggedUser.getStatement();
-						statement.setTransactionList(dbController.getStatementTransactionList(statement));
-						loggedUser.setStatement(statement);
+						// download updated bank account after deposit
+						loggedUser.setBankAccount(
+								dbController.getBankAccByUserID(loggedUser.getUser().getId()));
+
+						// download updated transaction list & set locally
+						loggedUser.getStatement().setTransactionList(DatabaseController.getInstance()
+								.getStatementTransactionList(LoggedUser.getInstance().getStatement()));
 						
 						depositTxtInput.clear();
 						

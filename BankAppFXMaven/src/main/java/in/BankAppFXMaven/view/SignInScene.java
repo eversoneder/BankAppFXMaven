@@ -358,11 +358,10 @@ public class SignInScene extends Application {
 						loggedUser.setUser(dbController.getUserById(userId));
 						loggedUser.setLogin(dbController.getLoginByUserId(userId));
 						loggedUser.setBankAccount(dbController.getBankAccByUserID(userId));
-						
+
 						// set statement with all transaction list included
 						Statement statement = dbController.getStatement(loggedUser.getBankAccount().getBankAccID());
 						loggedUser.setStatement(statement);
-						statement.getTransactionList();//fetch transaction list
 
 						// get last login date from db
 						java.sql.Timestamp timestamp = dbController.getLastLogin(userId);
@@ -379,6 +378,13 @@ public class SignInScene extends Application {
 							// not a new user (there's a TimeStamp in database)
 						} else {
 
+							try {
+								statement.getTransactionList();// fetch transaction list
+							} catch (Exception e3) {
+								e3.printStackTrace();
+								System.out.println("No transactions yet.");
+							}
+							
 							// set new TimeStamp to database
 							dbController.updateLastLoginNow(userId);
 							// set old last_login so that user can see their previous visit

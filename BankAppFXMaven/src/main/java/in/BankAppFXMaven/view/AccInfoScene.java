@@ -183,7 +183,7 @@ public class AccInfoScene extends Application {
 		accNumTxtField.setLayoutY(190.0);
 		accNumTxtField.setPrefHeight(30.0);
 		accNumTxtField.setPrefWidth(380.0);
-		accNumTxtField.setText("95010200");
+		accNumTxtField.setText(Integer.toString(loggedUser.getBankAccount().getBankAccNum()));
 		accNumTxtField.setFont(Font.font("Roboto Regular", 16.0));
 		accNumTxtField.setEditable(false); // Making the TextField non-editable
 		accNumTxtField.setMouseTransparent(true); // Making the TextField to not respond to mouse clicks
@@ -258,7 +258,7 @@ public class AccInfoScene extends Application {
 					Alert nameChangedAlert = new Alert(AlertType.INFORMATION);
 					nameChangedAlert.setTitle("Name Changed.");
 					nameChangedAlert.setHeaderText(null);
-					nameChangedAlert.setContentText("New Name changed in the database!");
+					nameChangedAlert.setContentText("Name updated!");
 					nameChangedAlert.showAndWait();
 				} else {
 				}
@@ -337,7 +337,7 @@ public class AccInfoScene extends Application {
 					Alert surnameChangedAlert = new Alert(AlertType.INFORMATION);
 					surnameChangedAlert.setTitle("Surname Changed.");
 					surnameChangedAlert.setHeaderText(null);
-					surnameChangedAlert.setContentText("New Surname changed in the database!");
+					surnameChangedAlert.setContentText("Surname updated!");
 					surnameChangedAlert.showAndWait();
 				} else {
 				}
@@ -478,7 +478,7 @@ public class AccInfoScene extends Application {
 								Alert passChangedAlert = new Alert(AlertType.INFORMATION);
 								passChangedAlert.setTitle("Password Changed.");
 								passChangedAlert.setHeaderText(null);
-								passChangedAlert.setContentText("New password changed in the database!");
+								passChangedAlert.setContentText("Password updated!");
 								passChangedAlert.showAndWait();
 
 							} else {
