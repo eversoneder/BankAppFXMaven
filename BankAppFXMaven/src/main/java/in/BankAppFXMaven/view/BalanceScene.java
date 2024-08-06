@@ -233,6 +233,7 @@ public class BalanceScene extends Application {
 		    emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
 		    emailText.setWrappingWidth(230);
 		    emailText.setTextAlignment(TextAlignment.LEFT);
+		    emailText.setFill(Color.web("#777777"));
 
 		    Text amountText = new Text(String.format("%,.2f", transactionViewList.get(i).getAmount()));
 		    amountText.setFont(Font.font("Roboto", FontWeight.BOLD, 16.0));
@@ -249,6 +250,7 @@ public class BalanceScene extends Application {
 		    transactionDate.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
 		    transactionDate.setWrappingWidth(90);
 		    transactionDate.setTextAlignment(TextAlignment.RIGHT);
+		    transactionDate.setFill(Color.web("#777777"));
 
 		    //for testing
 //		    emailText.setText("You transferred to everson_spinola@hotmail.com.");
