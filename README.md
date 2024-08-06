@@ -8,7 +8,7 @@ To further ensure security and efficient memory management, the application impl
 <img src="BankAppFXMaven/src/main/resources/img/econobankexample.png" alt="Econo Bank Example" width="800">
 
 ## Features
-- Log-in system
+- Sign-up/Log-in system
 - Account management capabilities
 - Transaction functionalities: deposit, withdraw, transfer
 - Account balance and transaction history (statements)
