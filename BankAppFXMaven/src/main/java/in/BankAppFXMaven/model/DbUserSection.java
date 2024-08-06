@@ -202,11 +202,18 @@ public class DbUserSection {
 
 		// Convert the result to a name-surname pair when the save button is clicked.
 		dialog.setResultConverter(dialogButton -> {
-			if (dialogButton == loginButtonType) {
-				saveClicked[0] = true;
-				return new Pair<>(nameTextField.getText(), surnameTextField.getText());
-			}
-			return null;
+		    if (dialogButton == loginButtonType) {
+		        saveClicked[0] = true;
+		        String name = nameTextField.getText().trim();
+		        String surname = surnameTextField.getText().trim();
+		        
+		        // Capitalize the first letter of name and surname
+		        name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+		        surname = surname.substring(0, 1).toUpperCase() + surname.substring(1).toLowerCase();
+		        
+		        return new Pair<>(name, surname);
+		    }
+		    return null;
 		});
 
 		// Add an event filter to consume the close request when the 'X' button is

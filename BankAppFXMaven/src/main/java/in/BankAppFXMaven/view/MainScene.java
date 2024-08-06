@@ -19,7 +19,6 @@ public class MainScene extends Application {
 	private static MainScene mainSceneSingletonInstance;
 	private static SignUpScene signUpSceneSingletonInstance = SignUpScene.getInstance();
 	private static SignInScene signInSceneSingletonInstance = SignInScene.getInstance();
-//	private ListenerControllerFX listenerController = new ListenerControllerFX(primaryStage);
 
 	private MainScene() {
 	}
@@ -176,8 +175,6 @@ public class MainScene extends Application {
 
 //ALL was put into AnchorPane (ALL -> AnchorPane -> Scene -> primaryStage to finally .show()
 		Scene scene = new Scene(anchorPane);
-		// MainSceneController controller = loader.getController();
-		// controller.start(primaryStage);
 		primaryStage.setTitle("EconoBank");
 		primaryStage.setScene(scene);
 
