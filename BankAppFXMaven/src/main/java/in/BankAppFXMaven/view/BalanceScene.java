@@ -215,73 +215,84 @@ public class BalanceScene extends Application {
 		transactionsList.setSpacing(5); // Space between each transaction
 
 		// TransactionView that will appear in the BalanceScene & dialog
-		transactionViewList = getTransactionViewList();
-
-		int numTransactions = transactionViewList.size();
-		int startIndex = Math.max(numTransactions - 3, 0); // Ensure startIndex is non-negative
-
-		// BalanceScene structure, show the last 3 transactions
-		for (int i = startIndex; i < numTransactions; i++) {
-		    // HBox that will contain only last 3 transactions
-		    HBox transactionBox = new HBox();
-		    transactionBox.setSpacing(10);
-		    transactionBox.setPrefSize(400, 40); // Set preferred size for the HBox
-		    transactionBox.setAlignment(Pos.CENTER); // Align contents to the center vertically
-//		    transactionBox.setStyle("-fx-border-color: red; -fx-border-width: 1; -fx-border-style: solid;");
-
-		    Text emailText = new Text(transactionViewList.get(i).getEmail());
-		    emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
-		    emailText.setWrappingWidth(230);
-		    emailText.setTextAlignment(TextAlignment.LEFT);
-		    emailText.setFill(Color.web("#777777"));
-
-		    Text amountText = new Text(String.format("%,.2f", transactionViewList.get(i).getAmount()));
-		    amountText.setFont(Font.font("Roboto", FontWeight.BOLD, 16.0));
-		    amountText.setWrappingWidth(80);
-		    amountText.setTextAlignment(TextAlignment.RIGHT);
-
-		    if (transactionViewList.get(i).getAmount() < 0) {
-		        amountText.setFill(Color.RED);
-		    } else {
-		        amountText.setFill(Color.GREEN);
-		    }
-
-		    Text transactionDate = new Text(transactionViewList.get(i).getDate());
-		    transactionDate.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
-		    transactionDate.setWrappingWidth(90);
-		    transactionDate.setTextAlignment(TextAlignment.RIGHT);
-		    transactionDate.setFill(Color.web("#777777"));
-
-		    //for testing
-//		    emailText.setText("You transferred to everson_spinola@hotmail.com.");
-//		    emailText.setText("You deposited");
-//		    amountText.setText("1990.95");
-//		    transactionDate.setText("05/08/2024");
-
-		    // Wrap each Text node in a VBox to center-align them vertically
-		    VBox emailBox = new VBox(emailText);
-		    emailBox.setAlignment(Pos.CENTER_LEFT);
-		    //for testing
-//		    emailBox.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-border-style: solid;");
-		    
-		    VBox amountBox = new VBox(amountText);
-		    amountBox.setAlignment(Pos.CENTER);
-//		    amountBox.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-border-style: solid;");
-		    
-		    VBox dateBox = new VBox(transactionDate);
-		    dateBox.setAlignment(Pos.CENTER_RIGHT);
-//		    dateBox.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-border-style: solid;");
-
-		    transactionBox.getChildren().addAll(emailBox, amountBox, dateBox);
-
-		    // Add the transaction to the transactions list
-		    transactionsList.getChildren().add(transactionBox);
+		
+		dbController = DatabaseController.getInstance();
+		boolean transaction = false;
+		try {
+		transaction = dbController.getTransaction(loggedUser.getBankAccount().getBankAccID());
+		}catch(NullPointerException e) {
+//			e.printStackTrace();
+			System.out.println("line 225, balancescene");
 		}
+		if(transaction) {
+			transactionViewList = getTransactionViewList();
+			
+			int numTransactions = transactionViewList.size();
+			int startIndex = Math.max(numTransactions - 3, 0); // Ensure startIndex is non-negative
 
-		transactionsList.setLayoutX(30);
-		transactionsList.setLayoutY(277.0);
+			// BalanceScene structure, show the last 3 transactions
+			for (int i = startIndex; i < numTransactions; i++) {
+			    // HBox that will contain only last 3 transactions
+			    HBox transactionBox = new HBox();
+			    transactionBox.setSpacing(10);
+			    transactionBox.setPrefSize(400, 35); // Set preferred size for the HBox
+			    transactionBox.setAlignment(Pos.CENTER); // Align contents to the center vertically
+//			    transactionBox.setStyle("-fx-border-color: red; -fx-border-width: 1; -fx-border-style: solid;");
 
-		whiteMiddlePane.getChildren().add(transactionsList);
+			    Text emailText = new Text(transactionViewList.get(i).getEmail());
+			    emailText.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
+			    emailText.setWrappingWidth(230);
+			    emailText.setTextAlignment(TextAlignment.LEFT);
+			    emailText.setFill(Color.web("#777777"));
+
+			    Text amountText = new Text(String.format("%,.2f", transactionViewList.get(i).getAmount()));
+			    amountText.setFont(Font.font("Roboto", FontWeight.BOLD, 16.0));
+			    amountText.setWrappingWidth(80);
+			    amountText.setTextAlignment(TextAlignment.RIGHT);
+
+			    if (transactionViewList.get(i).getAmount() < 0) {
+			        amountText.setFill(Color.RED);
+			    } else {
+			        amountText.setFill(Color.GREEN);
+			    }
+
+			    Text transactionDate = new Text(transactionViewList.get(i).getDate());
+			    transactionDate.setFont(Font.font("Roboto", FontWeight.NORMAL, 16.0));
+			    transactionDate.setWrappingWidth(90);
+			    transactionDate.setTextAlignment(TextAlignment.RIGHT);
+			    transactionDate.setFill(Color.web("#777777"));
+
+			    //for testing
+//			    emailText.setText("You transferred to everson_spinola@hotmail.com.");
+//			    emailText.setText("You deposited");
+//			    amountText.setText("1990.95");
+//			    transactionDate.setText("05/08/2024");
+
+			    // Wrap each Text node in a VBox to center-align them vertically
+			    VBox emailBox = new VBox(emailText);
+			    emailBox.setAlignment(Pos.CENTER_LEFT);
+			    //for testing
+//			    emailBox.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-border-style: solid;");
+			    
+			    VBox amountBox = new VBox(amountText);
+			    amountBox.setAlignment(Pos.CENTER);
+//			    amountBox.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-border-style: solid;");
+			    
+			    VBox dateBox = new VBox(transactionDate);
+			    dateBox.setAlignment(Pos.CENTER_RIGHT);
+//			    dateBox.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-border-style: solid;");
+
+			    transactionBox.getChildren().addAll(emailBox, amountBox, dateBox);
+
+			    // Add the transaction to the transactions list
+			    transactionsList.getChildren().add(transactionBox);
+			}
+
+			transactionsList.setLayoutX(30);
+			transactionsList.setLayoutY(277.0);
+
+			whiteMiddlePane.getChildren().add(transactionsList);
+		}
 
 //00000000000000000000000000000000000000000000000000000000000000000
 
@@ -315,7 +326,16 @@ public class BalanceScene extends Application {
 		moreTransactionsBtn.setOnAction(e -> {
 			try {
 				// make dialog show when clicked this button
-				showStatementDialog();
+				
+				if(isTransactionListExistent()) {
+					showStatementDialog();
+				} else {
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("No records.");
+					alert.setHeaderText(null);
+					alert.setContentText("You haven't done any transactions yet.");
+					alert.showAndWait();
+				}
 
 			} catch (Exception e2) {
 				e2.printStackTrace();
@@ -331,6 +351,29 @@ public class BalanceScene extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
 		primaryStage.show();
+	}
+	
+	public boolean isTransactionListExistent() {
+		try {
+			boolean transaction = false;
+			try {
+				// exist transactions? if true, call statement.getTransactionList()
+				transaction = dbController
+						.getTransaction(loggedUser.getBankAccount().getBankAccID());
+			} catch (NullPointerException e5) {
+//			e5.printStackTrace();
+				System.out.println("line 388, signinscene");
+			}
+			System.out.println(transaction);
+			if (transaction) {
+				return true;
+			}
+
+		} catch (NullPointerException e3) {
+//			e3.printStackTrace();
+			System.out.println("No transactions yet.");
+		}
+		return false;
 	}
 
 	/**

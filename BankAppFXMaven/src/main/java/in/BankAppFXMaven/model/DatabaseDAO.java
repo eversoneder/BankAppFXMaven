@@ -421,25 +421,19 @@ public class DatabaseDAO {
 	}
 	
 	/**
-	 * get specific transaction through it's transaction id
-	 * 
-	 * @param transactionId of transaction
-	 * @return specific transaction
+	 * check if bankAccId has any transaction
+	 * @param bankAccId of transaction
+	 * @return true if transaction of bankAccId exists
 	 */
-	public Transaction getTransaction(int transactionId) {
+	public boolean getTransaction(int bankAccId) {
 
-		String query = "SELECT * FROM transaction WHERE transaction_id = " + transactionId + ";";
+		String query = "SELECT * FROM transaction WHERE bank_acc_id = " + bankAccId + ";";
 		ResultSet rs = executeQueryRS(query);
 
-		Transaction transaction = null;
+		boolean transaction = false;
 		try {
 			if (!rs.wasNull()) {
-				transaction = new Transaction();
-				transaction.setTransactionID(rs.getInt("transaction_id"));
-				transaction.setBankAccID(rs.getInt("bank_acc_id"));
-				transaction.setTransactionType(rs.getString("transaction_type"));
-				transaction.setTransactionAmount(rs.getDouble("transaction_amount"));
-				transaction.setTransactionDate(rs.getTimestamp("transaction_date"));
+				transaction = true;
 			}
 
 		} catch (SQLException e) {

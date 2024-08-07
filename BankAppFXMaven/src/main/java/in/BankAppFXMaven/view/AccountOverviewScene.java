@@ -296,7 +296,18 @@ public class AccountOverviewScene extends Application {
 			try {
 				loggedUser = LoggedUser.getInstance();
 				balanceSceneSingletonInstance = BalanceScene.getInstance();
-				balanceSceneSingletonInstance.showStatementDialog();
+				
+				if(BalanceScene.getInstance().isTransactionListExistent()) {
+					balanceSceneSingletonInstance.showStatementDialog();
+				} else {
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("No records.");
+					alert.setHeaderText(null);
+					alert.setContentText("You haven't done any transactions yet.");
+					alert.showAndWait();
+				}
+				
+				
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

@@ -4,6 +4,7 @@ import java.util.Optional;
 import in.BankAppFXMaven.controller.DatabaseController;
 import in.BankAppFXMaven.model.LoggedUser;
 import in.BankAppFXMaven.model.Statement;
+import in.BankAppFXMaven.model.Transaction;
 import in.BankAppFXMaven.utility.EmailValidator;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -378,13 +379,11 @@ public class SignInScene extends Application {
 							// not a new user (there's a TimeStamp in database)
 						} else {
 
-							try {
+							//if any transaction already exist, get list
+							if(BalanceScene.getInstance().isTransactionListExistent()) {
 								statement.getTransactionList();// fetch transaction list
-							} catch (Exception e3) {
-								e3.printStackTrace();
-								System.out.println("No transactions yet.");
 							}
-							
+
 							// set new TimeStamp to database
 							dbController.updateLastLoginNow(userId);
 							// set old last_login so that user can see their previous visit

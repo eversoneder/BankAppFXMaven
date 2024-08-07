@@ -165,12 +165,12 @@ public class DatabaseController {
 	}
 	
 	/**
-	 * Get specific transaction through it's transaction id
-	 * @param transactionId of transaction
-	 * @return transaction of the transaction id given
+	 * check if bankAccId has any transaction
+	 * @param bankAccId of transaction
+	 * @return true if transaction of bankAccId exists
 	 */
-	public Transaction getTransaction(int transactionId) {
-		return db.getTransaction(transactionId);
+	public boolean getTransaction(int bankAccId) {
+		return db.getTransaction(bankAccId);
 	}
 
 	public boolean accNumberExists(int randomNumber) {
