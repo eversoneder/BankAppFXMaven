@@ -6,6 +6,7 @@ Econo Bank is a simple banking application developed in Java, featuring a JavaFX
 To further ensure security and efficient memory management, the application implements the singleton pattern across all classes, allowing only one instantiation of each class.
 
 <img src="BankAppFXMaven/src/main/resources/img/econobankexample.png" alt="Econo Bank Example" width="800">
+[Check the App Pages Structure by clicking here!] (https://github.com/eversoneder/BankAppFXMaven/blob/master/Econo_Bank_App_Structure.md)
 
 ## Features
 - Sign-up/Log-in system

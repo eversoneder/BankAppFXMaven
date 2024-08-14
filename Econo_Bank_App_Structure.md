@@ -5,24 +5,25 @@
 <img src="BankAppFXMaven/src/main/resources/img/pagesPNG/MainScene.png" alt="Econo Bank Main Scene" width="400">
 
 ## Sign-Up Page
-- Requires three fields for creating an account: email, password, and confirm password.
+- Email field(unique email validation system) and two password fields for input matching.
+- Buttons to sign up, go back to Main Screen (back arrow or cancel buttons) or to Sign-In page.
 <img src="BankAppFXMaven/src/main/resources/img/pagesPNG/SignUpScene.png" alt="Econo Bank Sign Up Scene" width="400">
 
 ## Sign-In Page
-- Includes a "forgot password" button.
-- Users must enter their email and bank account number to prove ownership.
-- If the user hasn't provided their name and surname, a required field prompts them to do so.
-<img src="BankAppFXMaven/src/main/resources/img/pagesPNG/SignInScene.png" alt="Econo Bank Sign In Scene" width="400">
+- Includes a "Forgot password" button to recover user account.
+- Sign-in system.
+- Buttons to go back to Main Screen (back arrow) or to Sign-Up page.
+- <img src="BankAppFXMaven/src/main/resources/img/pagesPNG/SignInScene.png" alt="Econo Bank Sign In Scene" width="400">
 
 ## Account Overview Page
-- Displays a welcome message on the account overview page with the user's name and surname.
+- Displays a welcome message on the account overview page with the user's name.
 - Buttons for various actions:
   - Withdraw: Specify the withdrawal amount.
   - Deposit: Enter the deposit amount.
   - Transfer: Requires recipient's email and transfer amount.
   - Balance: Displays total balance and latest transactions.
   - Statement: A scrollable dialog showing all transaction history (email, amount, date).
-  - Logout: Clears user data and returns to the main screen.
+  - Logout: Clears local user data and returns to the main screen.
 <img src="BankAppFXMaven/src/main/resources/img/pagesPNG/AccountOverviewScene.png" alt="Econo Bank Account Overview Scene" width="400">
 
 ## Withdraw Page
@@ -75,7 +76,7 @@
 
 ## Transfer:
 - The Transfer records only account-to-account transactions.
-- Attributes: transfer_id, from_bank_acc_id, to_bank_acc_id, transfer_amount, and transfer_date.
+- Attributes: transfer_id, from_bank_acc_id, to_bank_acc_id.
 - Relationships:
  - Many-to-One with Bank Account:
   - Multiple transfers can be associated with one bank account (both outgoing and incoming).
